@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+readonly provider=$1
+readonly repoid=$2
+
+rpm --import https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
+rpm --import https://archive.cloudera.com/cm5/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera
+
+[[ "$provider/$repoid" == "centos-6.10/base" ]] && opts="-g comps.xml"
+
+
+echo '-----------------------------------------------'
+echo "Reposync $provider/$repoid                     "
+echo '-----------------------------------------------'
+mkdir -p /repos/$provider/$repoid
+reposync \
+  --gpgcheck \
+  --repoid=$repoid \
+  --plugins \
+  --newest-only \
+  --delete \
+  --downloadcomps \
+  --download-metadata \
+  --download_path=/repos/$provider
+
+createrepo \
+  /repos/$provider/$repoid \
+  $opts
+
+exit 0

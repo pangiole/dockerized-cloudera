@@ -1,0 +1,155 @@
+# Dockerized Cloudera
+This project gives you an easy way to build and start a fully functional Cloudera Hadoop cluster of Docker containers on your local machine.
+
+> WARN  
+> This project is meant to facilitate software development and testing. It is **not** meant for production.
+
+
+It provides you with:
+
+- Linux CentOS 6.10
+- MIT Kerberos 5-1.10.3
+- Cloudera Hadoop
+    * HDFS NameNode
+    * HDFS DataNode
+    * MapRed JobHistory
+    * YARN ResourceManager
+    * YARN NodeManager
+    * Kerberos Authentication
+    * Hadoop Encryption
+- **no** Cloudera Manager
+- **no** Cloudera Parcels
+
+## Requirements
+All you is need Docker Desktop to be installed as per [official documentation](https://www.docker.com/products/docker-desktop).
+
+## Start
+You can start the whole Cloudera Hadoop cluster with Kerberos authentication (default) or without. It's as simple as follows:
+
+```
+Usage: ./start [ --version <version> ] [ --simple | --kerberos ]
+```
+
+### Versions
+
+Version available are:
+
+- 5.16.1
+
+
+### Stop
+You can start the whole Cloudera Hadoop cluster simply as follows:
+
+```bash
+./stop
+```
+
+## Containers
+The dockerized Cloudera Hadoop cluster is made of the following containers and services:
+
+- namenode
+- datanode1
+- jobhistory
+- resourcemanager
+- nodemanager1
+- edge
+
+
+### Edge
+You can execute ``Bash`` within the so-called ``edge`` container to mimic operations from a typical _"edge node"_ of classical cluster:
+
+```bash
+./login edge
+su - alice
+```
+
+That's where you can execute Hadoop client programs or Spark shells for data analysis.
+
+
+## Clients
+The dockerized Cloudera Hadoop cluster supports any client written matching Hadoop libraries. Examples are: the command line `hadoop` tool, the Apache SparkSubmit and the Alpine/Chorus Datasources.
+
+If you wish to run Hadoop client programs on host (for example the command line `hadoop` tool) then read the [HADOOP.md](HADOOP.md) file for further information.
+
+### Resources
+Once the cluster is started, it will reveal its configuration by generating the following files to your local working directory:
+
+```
+├── .cdh
+│   ├── conf
+│   │   ├── core-site.xml
+│   │   ├── hdfs-site.xml
+│   │   ├── mapred-site.xml
+│   │   └── yarn-site.xml
+│   ├── secrets
+│   │   ├── alice.keytab
+│   │   ├── hdfs.keytab
+│   │   ├── yarn.keytab
+...
+```
+Those XML configuration and Kerberos keytab files will make you able to configure your client applications correctly.
+
+### Configuration
+Be aware that the minimal configuration your client applications require to correctly interact with the dockerized Cloudera Hadoop cluster is
+
+```bash
+fs.defaultFS="hdfs://namenode.docker.net:8020"
+dfs.client.use.datanode.hostname="true"
+yarn.resourcemanager.address="namenode.docker.net:8032"
+```
+
+
+### Networking
+All of the containers belonging to the Clouder Hadoop cluster will join the same Docker network named `docker.net`
+
+Docker port forwarding will allow applications/services running on your Docker host to communicate with the dockerized services running in the cluster as long as you update your `/etc/hosts` file as follows
+
+```bash
+sudo cat <<CAT >> /etc/hosts
+
+# Dockerized Cloudera Hadoop cluster
+#
+127.0.0.1    kdc.docker.net
+127.0.0.1    namenode.docker.net
+127.0.0.1    resourcemanager.docker.net
+127.0.0.1    jobhistory.docker.net
+127.0.0.1    datanode1.docker.net
+127.0.0.1    nodemanager1.docker.net
+CAT
+```
+
+
+
+## Build
+You can build new versions of Cloudera Hadoop images as explained below.
+
+### YUM
+As preliminary step, you need to build local mirrors of Linux RedHat YUM repositories. Set the desired version of Cloudera Hadoop and the path to the RPM Package of the Oracle JDK for Linux x64 as follows:
+
+```bash
+export CLOUDERA_VERSION="5.16.1"
+export ORACLE_JDK="/path/to/jdk-8u201-linux-x64.rpm"
+./yum/build
+```
+
+Be patient as building YUM mirrors takes very long time to complete.
+
+### Docker
+After you got the YUM repositories, you can finally build the new Docker images as follows:
+
+```bash
+./images/build
+```
+
+Once done, double check that all images have been built correctly by listing and inspecting them.
+
+```bash
+docker image ls | grep cloudera
+docker image inspect cloudera/base:$CLOUDERA_VERSION
+```
+
+
+
+
+## Publish
+TBD
