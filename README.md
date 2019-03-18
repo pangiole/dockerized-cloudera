@@ -42,7 +42,7 @@ You can start the whole Cloudera Hadoop cluster either with `kerberos` authentic
 
 ```
 ./start \
-  --version 5.16.1 \
+  --cloudera-version 5.16.1 \
   --simple
 ```
 
