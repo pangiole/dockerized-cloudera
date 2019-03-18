@@ -12,12 +12,12 @@ function check_args {
   while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
-      --cloudera-version)
+      --version)
           cloudera_version="$2"
           shift
           shift # past value
         ;;
-      --oracle-jdk)
+      --jdk)
           oracle_jdk="$2"
           shift
           shift # past value
@@ -30,7 +30,7 @@ function check_args {
 
   if [[ "${cloudera_version}x" == "x" ]]; then cat <<CAT
 
-${red}Error: missing --cloudera-version argument${reset}
+${red}Error: missing --version argument${reset}
 
   You're required to pass a specific Cloudera Hadoop version to build.
   Try with one of the following
@@ -42,7 +42,7 @@ CAT
 
   if [[ "${oracle_jdk}x" == "x" || ! -e ${oracle_jdk} ]]; then cat <<CAT
 
-${red}Error: missing --oracle-jdk argument${reset}
+${red}Error: missing --jdk argument${reset}
 
   You are required to download the 64bit RPM package of the
   Oracle JDK - Java Development Toolkit from the official

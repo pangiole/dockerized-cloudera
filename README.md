@@ -42,7 +42,7 @@ You can start the whole Cloudera Hadoop cluster either with `kerberos` authentic
 
 ```bash
 ./start \
-  --cloudera-version 5.16.1 \
+  --version 5.16.1 \
   --simple
 ```
 
@@ -141,7 +141,6 @@ CAT
 ```
 
 
-
 ## Build
 You can build new versions of Cloudera Hadoop images as explained below.
 
@@ -150,8 +149,8 @@ As preliminary step, you need to build local mirrors of Linux RedHat YUM reposit
 
 ```bash
 ./yum/build \
-  --cloudera-version 5.16.1 \
-  --oracle-jdk /path/to/jdk-8u201-linux-x64.rpm
+  --version 5.16.1 \
+  --jdk /path/to/jdk-8u201-linux-x64.rpm
 ```
 
 Be patient as building YUM mirrors takes very long time to complete.
@@ -161,7 +160,7 @@ After you got the YUM repositories, you can finally build the new Docker images 
 
 ```bash
 ./images/build \
-  --cloudera-version 5.16.1
+  --version 5.16.1
 ```
 
 Once done, double check that all images have been built correctly by listing and inspecting them.
@@ -177,5 +176,5 @@ You can push the new Docker images to our private Docker Registry as follows:
 
 ```bash
 ./images/push \
-  --cloudera-version 5.16.1
+  --version 5.16.1
 ```

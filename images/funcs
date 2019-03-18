@@ -15,7 +15,7 @@ function check_args {
   while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
-      --cloudera-version)
+      --version)
           cloudera_version="$2"
           shift
           shift # past value
@@ -28,7 +28,7 @@ function check_args {
 
   if [[ "${cloudera_version}x" == "x" ]]; then cat <<CAT
 
-${red}Error: missing --cloudera-version argument${reset}
+${red}Error: missing --version argument${reset}
 
   You're required to pass a specific Cloudera Hadoop version to build.
   Try with one of the following
