@@ -42,9 +42,7 @@ CAT
 function publish {
   local image="$1"
   local version="${cloudera_version}"
-
-  docker push \
-    --tag ${registry}/${repository}/${image}:${version}
+  docker push ${registry}/${repository}/${image}:${version}
 }
 
 
