@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+
+export HADOOP_AUTHENTICATION=${HADOOP_AUTHENTICATION:-'simple'}
+if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then
+    #                  user   group    domain
+    /etc/docker/setup  hdfs   hadoop   docker.net
+    /etc/docker/setup  yarn   hadoop   docker.net
+
+    cat <<EOF >> /etc/default/hadoop-hdfs-datanode
+export HADOOP_SECURE_DN_USER=hdfs
+export HADOOP_SECURE_DN_PID_DIR=/var/lib/hadoop-hdfs
+export HADOOP_SECURE_DN_LOG_DIR=/var/log/hadoop-hdfs
+export JSVC_HOME=/usr/lib/bigtop-utils/
+EOF
+fi
+
+
+#
+# Render configuration templates by replacing {{ PLACEHOLDER }}
+# with corresponding shell environment variable values
+#
+/etc/docker/render  /etc/hadoop/conf/core-site.xml
+/etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
+/etc/docker/render  /etc/hadoop/conf/mapred-site.xml
+/etc/docker/render  /etc/hadoop/conf/yarn-site.xml
+
+
+#
+# Set Unix sticky bits on the Hadoop YARN container-executor script
+#
+chown root:yarn /usr/lib/hadoop-yarn/bin/container-executor
+chmod 6050 /usr/lib/hadoop-yarn/bin/container-executor
+# ---Sr-s--- root:yarn /usr/lib/hadoop-yarn/bin/container-executor
+#
+chown root:yarn /etc/hadoop/conf/container-executor.cfg
+chmod 0400 /etc/hadoop/conf/container-executor.cfg
+
+
+#
+# Make Hadoop DFS log directories
+#
+mkdir -p /var/log/hadoop-hdfs
+chown hdfs:hdfs /var/log/hadoop-hdfs
+chmod 755 /var/log/hadoop-hdfs
+#
+# Make Hadoop YARN log directories
+#
+mkdir -p /var/log/hadoop-yarn
+chown -R yarn:yarn /var/log/hadoop-yarn
+chmod 755 /var/log/hadoop-yarn
+
+#
+# Make local Hadoop DFS data directories
+#
+# export HADOOP_DFS_DROP=${HADOOP_DFS_DROP:-'yes'}
+# if [[ "${HADOOP_DFS_DROP}" == "yes" ]]; then
+#   rm -Rf /data/1/hdfs/dn
+  mkdir -p /data/1/hdfs/dn
+  chown -R hdfs:hdfs /data/1/hdfs/dn
+  chmod 700 /data/1/hdfs/dn
+# fi
+
+#
+# Make local Hadoop YARN localized resources directories
+#
+mkdir -p /var/local/hadoop-yarn
+chown -R yarn:yarn /var/local/hadoop-yarn
+chmod 755 /var/local/hadoop-yarn
+
+#
+# Wait until namenode service is available
+#
+while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
+
+#
+# Wait until resourecemanager service is available
+#
+while ! echo exit | nc resourcemanager.docker.net 8032; do sleep 10; done
+
+#
+# Make remote Hadoop YARN log directories
+#
+su - yarn <<'EOF'
+hadoop fs -mkdir -p /var/log/hadoop-yarn
+hadoop fs -chown yarn:hadoop /var/log/hadoop-yarn
+hadoop fs -chmod 1777 /var/log/hadoop-yarn
+EOF
+
+#
+# Start the Hadoop DFS datanode service
+#
+service hadoop-hdfs-datanode start
+
+#
+# Start the Hadoop YARN NodeManager service
+#
+service hadoop-yarn-nodemanager start
+
+#
+# Keep this container running
+#
+/etc/docker/idle

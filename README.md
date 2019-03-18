@@ -172,10 +172,10 @@ docker image inspect cloudera/base:5.16.1
 ```
 
 
-## Publish
-You can publish the new Docker images to our private Docker Registry as follows:
+## Push
+You can push the new Docker images to our private Docker Registry as follows:
 
 ```bash
-./images/publish \
+./images/push \
   --cloudera-version 5.16.1
 ```

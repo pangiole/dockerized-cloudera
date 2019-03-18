@@ -45,6 +45,9 @@ for file in $files; do
   cp /etc/hadoop/conf/$file /conf
 done
 
+# Publish the Kerberos configuration too
+cp /etc/krb5.conf /conf
+
 
 # Keep this container running
 /etc/docker/idle

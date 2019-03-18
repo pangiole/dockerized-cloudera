@@ -8,7 +8,7 @@ readonly green="$(tput setaf 2)"
 readonly reset="$(tput setaf 7)"
 
 
-function check_requirements {
+function check_args {
   while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
@@ -136,7 +136,7 @@ function download_spark {
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-check_requirements $*
+check_args $*
 copy_jdk
 download_hadoop
 download_spark

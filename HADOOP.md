@@ -123,13 +123,5 @@ Copy the native libraries over:
 ```bash
 cp -rp \
   ./hadoop-dist/target/hadoop-2.6.0/lib/native \
-  $HADOOP_HOME/lib/native
-```
-
-and finally edit your shell profile:
-
-```bash
-cat <<CAT >> ~/.bash_profile
-export HADOOP_OPTS="-D$HADOOP_HOME/lib/native $HADOOP_OPTS"
-CAT
+  $HADOOP_HOME/lib
 ```

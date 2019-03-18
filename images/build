@@ -5,38 +5,7 @@ readonly network="build.net"
 readonly registry="registry.alpinedata.tech"
 readonly repository="pangiolet/cloudera"
 
-readonly red="$(tput setaf 1)"
-readonly green="$(tput setaf 2)"
-readonly reset="$(tput setaf 7)"
-
-
-function check_requirements {
-  while [[ $# -gt 0 ]]; do
-  key="$1"
-  case $key in
-      --cloudera-version)
-          cloudera_version="$2"
-          shift
-          shift # past value
-        ;;
-      *)
-        shift
-      ;;
-  esac
-  done
-
-  if [[ "${cloudera_version}x" == "x" ]]; then cat <<CAT
-
-${red}Error: missing --cloudera-version argument${reset}
-
-  You're required to pass a specific Cloudera Hadoop version to build.
-  Try with one of the following
-    - ${green}5.4.2${reset}
-    - ${green}5.16.1${reset}
-CAT
-  exit -1
-  fi
-}
+source $selfdir/funcs
 
 
 function create_network {
@@ -105,21 +74,6 @@ CAT
 }
 
 
-function build_images {
-  build base
-  build   kdc
-  build   hadoop/dfs/namenode
-  build   hadoop/dfs/datanode
-  build   hadoop/mapred/jobhistory
-  build   hadoop/yarn/resourcemanager
-  build   hadoop/yarn/nodemanager
-  # build   hive
-  # build   master
-  # build   worker
-  build   edge
-}
-
-
 function tear_down {
   docker container stop repos
   docker container prune --force
@@ -131,10 +85,10 @@ function tear_down {
 
 # ~~~~~~~~~~~~ M A I N ~~~~~
 
-check_requirements $*
+check_args $*
 create_network
 run_repo_server
-build_images
+perform build
 tear_down
 
 exit 0

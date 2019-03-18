@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+readonly network="build.net"
+readonly registry="registry.alpinedata.tech"
+readonly repository="pangiolet/cloudera"
+
+source $selfdir/funcs
+
+function rm {
+  local image="$1"
+  local version="${cloudera_version}"
+  docker image rm ${repository}/${image}:${version}
+  docker image rm ${registry}/${repository}/${image}:${version}
+}
+
+
+check_args $*
+perform rm

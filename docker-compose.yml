@@ -27,7 +27,7 @@ services:
 
 
   namenode:
-    image: "$registry/$repository/hadoop/dfs/namenode:$version"
+    image: "$registry/$repository/hadoop-hdfs/namenode:$version"
     hostname: "namenode.docker.net"
     container_name: "namenode"
     environment:
@@ -46,7 +46,7 @@ services:
 
 
   datanode1:
-    image: "$registry/$repository/hadoop/dfs/datanode:$version"
+    image: "$registry/$repository/hadoop-hdfs/datanode:$version"
     hostname: "datanode1.docker.net"
     container_name: "datanode1"
     environment:
@@ -72,7 +72,7 @@ services:
 
 
   jobhistory:
-    image: "$registry/$repository/hadoop/mapred/jobhistory:$version"
+    image: "$registry/$repository/hadoop-mapred/jobhistory:$version"
     hostname: "jobhistory.docker.net"
     container_name: "jobhistory"
     environment:
@@ -90,7 +90,7 @@ services:
 
 
   resourcemanager:
-    image: "$registry/$repository/hadoop/yarn/resourcemanager:$version"
+    image: "$registry/$repository/hadoop-yarn/resourcemanager:$version"
     hostname: "resourcemanager.docker.net"
     container_name: "resourcemanager"
     environment:
@@ -109,7 +109,7 @@ services:
 
 
   nodemanager1:
-    image: "$registry/$repository/hadoop/yarn/nodemanager:$version"
+    image: "$registry/$repository/hadoop-yarn/nodemanager:$version"
     hostname: "nodemanager1.docker.net"
     container_name: "nodemanager1"
     environment:

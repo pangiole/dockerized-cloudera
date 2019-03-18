@@ -10,21 +10,38 @@ readonly selfname=$(dirname "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 readonly cwd=$(pwd)
 
-echo "Configuring local Hadoop Client if any"
 if [[ "${HADOOP_CONF_DIR}x" == "x" ]]; then
   echo "warning: HADOOP_CONF_DIR is undefined!"
   exit 0
 fi
 
-RESOURCES_DIR=${RESOURCES_DIR:-$cwd/.cdh}
+echo "Setting up HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+resources=${resources:-$cwd/.cdh}
 files="core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml"
 for file in $files; do
-  printf "%-24s ... " "$file"
-  rm $HADOOP_CONF_DIR/$file
-  cp $RESOURCES_DIR/conf/$file $HADOOP_CONF_DIR/$file
+  printf "Overwriting %-24s ... " "$file"
+  rm -Rf $HADOOP_CONF_DIR/$file
+  cp $resources/conf/$file $HADOOP_CONF_DIR/$file
   base=$(echo "$cwd" | sed 's/\//\\\//g')
   expr="s/\/secrets/$base\/tmp\/conf/g"
   sed $expr $HADOOP_CONF_DIR/$file > $HADOOP_CONF_DIR/$file.local
   mv $HADOOP_CONF_DIR/$file.local $HADOOP_CONF_DIR/$file
-  printf "done\n"
 done
+
+
+if [[ -f $resources/secrets/alice.keytab ]]; then
+  export KRB5_CONFIG="${resources}/conf/krb5.conf"
+  keytab="${resources}/secrets/alice.keytab"
+  principal="alice@DOCKER.NET"
+
+  file="$HADOOP_CONF_DIR/hadoop-krb5.sh"
+  printf "Creating %-24s ... " "$(basename $file)"
+  cat <<CAT > $file
+# Set MIT Kerberos configuration
+export KRB5_CONFIG="$KRB5_CONFIG"
+export HADOOP_OPTS="\$HADOOP_OPTS -Djava.security.krb5.conf=\$KRB5_CONFIG"
+CAT
+
+  printf "Acquiring Kerberos TGT for ${principal} ..."
+  kinit -k -t ${keytab} ${principal}
+fi

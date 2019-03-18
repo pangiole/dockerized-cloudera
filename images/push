@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+readonly registry="registry.alpinedata.tech"
+readonly repository="pangiolet/cloudera"
+
+source $selfdir/funcs
+
+
+function push {
+  local image="$1"
+  local version="${cloudera_version}"
+  docker image push ${registry}/${repository}/${image}:${version}
+}
+
+check_args $*
+perform push
