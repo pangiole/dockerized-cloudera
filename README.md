@@ -28,7 +28,7 @@ All you is need Docker Desktop to be installed as per [official documentation](h
 ## Login
 The provided `./start` script will make your Docker host pull the new images from our corporate GitLab Docker Registry. Make sure you can login as follows:
 
-```
+```bash
 docker login \
   registry.alpinedata.tech \
   -u <username> \
@@ -40,7 +40,7 @@ More information are given in the official [GitLab documentation](https://docs.g
 ## Start
 You can start the whole Cloudera Hadoop cluster either with `kerberos` authentication (default) or with `simple` authentication.
 
-```
+```bash
 ./start \
   --cloudera-version 5.16.1 \
   --simple
@@ -55,7 +55,7 @@ The only versions available are:
 ### Stop
 You can stop the whole Cloudera Hadoop cluster as follows:
 
-```
+```bash
 ./stop
 ```
 
