@@ -54,9 +54,9 @@ function publish_images {
   publish   hadoop/mapred/jobhistory
   publish   hadoop/yarn/resourcemanager
   publish   hadoop/yarn/nodemanager
-  # publish   hive
-  # publish   master
-  # publish   worker
+  publish   hive
+  publish   master
+  publish   worker
   publish   edge
 }
 

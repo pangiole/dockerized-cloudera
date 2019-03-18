@@ -90,7 +90,7 @@ If you wish to run Hadoop client programs on host (for example on your macOS lap
 Once the containers cluster is started, it will reveal its configuration by generating the following files to your local working directory:
 
 ```
-├── .cloudera
+├── .cdh
 │   ├── conf
 │   │   ├── core-site.xml
 │   │   ├── hdfs-site.xml
@@ -114,7 +114,10 @@ yarn.resourcemanager.address="namenode.docker.net:8032"
 dfs.client.use.datanode.hostname="true"
 
 # Additional settings when Kerberos authentication is enabled
-
+dfs.namenode.kerberos.principal="alice@DOCKER.NET"
+dfs.namenode.keytab.file="/path/to/.cdh/secrets/alice.keytab"
+yarn.resourcemanager.principal="alice@DOCKER.NET"
+yarn.resourcemanager.keytab="/path/to/.cdh/secrets/alice.keytab"
 ```
 
 
