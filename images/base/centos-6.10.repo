@@ -1,0 +1,23 @@
+[centos-base]
+name=CentOS Base
+baseurl=http://repos/centos-6.10/base
+gpgcheck=0
+enabled=1
+
+[centos-centosplus]
+name=CentOS CentosPlus
+baseurl=http://repos/centos-6.10/centosplus
+gpgcheck=0
+enabled=1
+
+[centos-extras]
+name=CentOS Extras
+baseurl=http://repos/centos-6.10/extras
+gpgcheck=0
+enabled=1
+
+[centos-updates]
+name=CentOS Updates
+baseurl=http://repos/centos-6.10/updates
+gpgcheck=0
+enabled=1

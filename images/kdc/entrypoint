@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Cleanup previous secrets
+rm -Rf /secrets/*
+
+
+# Initialize the Kerberos realm database
+chmod +x /etc/docker/init
+/etc/docker/init
+
+
+# Start the Kerberos KDC daemon
+/usr/sbin/krb5kdc
+
+
+# (Optional) Start Kerberos Admin daemon
+# /usr/sbin/kadmind
+
+
+# Keep this container running
+/etc/docker/idle

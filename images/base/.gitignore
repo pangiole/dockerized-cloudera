@@ -1,0 +1,2 @@
+*.repo
+!centos-6.10.repo

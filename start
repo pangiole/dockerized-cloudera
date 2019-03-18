@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+#
+# This shell script is meant for software developers who wish to start a
+# "dockerized" Cloudera Hadoop cluster for development and testing purposes only.
+#
+# DO NOT use it in production systems!
+#
+# author: Paolo Angioletti <pangiole@tibco.com>
+#
+
+readonly selfname=$(basename "$0")
+readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+readonly cwd="$(pwd)"
+
+readonly registry="registry.alpinedata.tech"
+readonly repository="pangiolet/cloudera"
+authentication="kerberos"
+opts=""
+
+while [[ $# -gt 0 ]]; do
+key="$1"
+case $key in
+    -v|--version)
+        version="$2"
+        shift
+        shift # past value
+      ;;
+    --kerberos)
+        :
+        shift
+      ;;
+    --simple)
+        authentication="simple"
+        opts="--scale kdc=0"
+        shift
+      ;;
+    *)
+      shift
+    ;;
+esac
+done
+
+
+if [[ "${version}x" == "x" ]]; then
+  echo "Usage: $selfname --version <version> [ --simple | --kerberos]"
+  exit 1
+fi
+
+
+export resources=${resources:-$cwd/.cdh}
+export authentication
+export registry
+export repository
+export version
+
+cat <<CAT
+-----------------------------------
+Starting Cloudera Hadoop $version
+
+CAT
+
+docker-compose \
+    --project-name cdh-$version \
+    --file $selfdir/docker-compose.yml \
+    up --detach $opts
+
+exit $?

@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+#
+# This script installs and configure Hadoop 2.6 binaries onto your macoOS laptop
+#
+# author: Paolo Angioletti <pangiole@tibco.com>
+#
+
+readonly selfname=$(dirname "$0")
+readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+mkdir -p $selfdir/tmp
+
+version="2.6.0"
+tarball="$selfdir/tmp/hadoop-${version}.tar.gz"
+if [[ ! -f $tarball ]]; then
+  curl -l \
+    -o $tarball \
+    https://archive.apache.org/dist/hadoop/core/hadoop-${version}/hadoop-${version}.tar.gz
+fi
+
+HADOOP_HOME=$HOME/Applications/hadoop-${version}
+HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
+rm -Rf $HADOOP_HOME
+mkdir -p $(dirname $HADOOP_HOME)
+tar xvfz $tarball -C $(dirname $HADOOP_HOME)
+
+
+mv $HADOOP_CONF_DIR $(dirname $HADOOP_CONF_DIR)/hadoop.default
+cp -rp $(dirname $HADOOP_CONF_DIR)/hadoop.default $(dirname $HADOOP_CONF_DIR)/hadoop.docker.net
+ln -snf $(dirname $HADOOP_CONF_DIR)/hadoop.docker.net $HADOOP_CONF_DIR
+
+
+$selfdir/configure
+
+
+cat <<CAT >> ~/.bash_profile
+
+#
+# Hadoop settings
+#
+export HADOOP_HOME=$HADOOP_HOME
+export HADOOP_CONF_DIR=$HADOOP_CONF_DIR
+export HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native"
+CAT
+
+
+cat <<CAT
+
+-----------------
+Please execute:
+
+$ sudo mv /Library/Preferences/edu.mit.Kerberos /Library/Preferences/edu.mit.Kerberos.backup
+$ sudo mv /etc/krb5.conf /etc/krb5.conf.backup
+
+$ sudo cat <<EOF >> /etc/hosts
+#
+# Dockerized Cloudera CDH5 cluster
+#
+127.0.0.1    kdc.docker.net
+127.0.0.1    namenode.docker.net
+127.0.0.1    datanode1.docker.net
+127.0.0.1    jobhistory.docker.net
+127.0.0.1    resourcemanager.docker.net
+127.0.0.1    nodemanager1.docker.net
+EOF
+CAT

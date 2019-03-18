@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#
+# This is a idle script to keep this container running
+# 
+# @author Paolo Angioletti <pangiole@tibco.com>
+#
+
+trap : TERM INT; sleep infinity & wait

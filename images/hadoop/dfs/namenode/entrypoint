@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+chmod +x /etc/docker/setup
+chmod +x /etc/docker/render
+
+export HADOOP_AUTHENTICATION=${HADOOP_AUTHENTICATION:-'simple'}
+if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then
+    #                  user   group   domain
+    /etc/docker/setup  hdfs   hadoop  docker.net
+fi
+
+
+#
+# Render configuration templates by replacing {{ PLACEHOLDER }}
+# with corresponding shell environment variable values
+
+/etc/docker/render  /etc/hadoop/conf/core-site.xml
+/etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
+
+
+#
+# Make log directories
+#
+mkdir -p /var/log/hadoop-hdfs
+chown hdfs:hdfs /var/log/hadoop-hdfs
+chmod 755 /var/log/hadoop-hdfs
+# TODO ln -snf /dev/stdout /var/log/hadoop-hdfs/hadoop-hdfs-namenode-namenode.docker.net.log
+
+
+#
+# (Maybe) Drop and format the Hadoop HDFS filesystem
+#
+# export HADOOP_DFS_DROP=${HADOOP_DFS_DROP:-'yes'}
+# if [[ "${HADOOP_DFS_DROP}" == "yes" ]]; then
+  rm -Rf /data/1/hdfs/nn
+  mkdir -p /data/1/hdfs/nn
+  hdfs namenode -format -force
+  chown -R hdfs:hdfs /data/1/hdfs/nn
+  chmod 700 /data/1/hdfs/nn
+# fi
+
+
+# Start namenode service
+service hadoop-hdfs-namenode start
+
+
+# Wait until namenode service is available
+while ! echo exit | nc namenode.docker.net 8020; do sleep 1; done
+
+
+# If you do not create /tmp properly, with the right permissions as shown below,
+# you may have problems with CDH components later. Specifically, if you do not
+# create /tmp yourself, another process may create it automatically with
+# restrictive permissions that will prevent your other applications from using it.
+#
+su - hdfs <<'EOF'
+hadoop fs -chown hdfs:hadoop /
+hadoop fs -chmod 755 /
+
+hadoop fs -mkdir -p /tmp
+hadoop fs -chmod -R 1777 /tmp
+
+hadoop fs -mkdir -p /user/hive/warehouse
+hadoop fs -chmod -R 1777 /user/hive/warehouse
+EOF
+
+
+# Keep this container running
+/etc/docker/idle

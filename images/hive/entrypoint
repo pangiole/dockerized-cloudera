@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+chmod +x /etc/docker/setup
+chmod +x /etc/docker/render
+
+export HADOOP_AUTHENTICATION=${HADOOP_AUTHENTICATION:-'simple'}
+if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then
+    #                  user   group    domain
+    /etc/docker/setup  hive   hadoop   docker.net
+fi
+
+
+#
+# Render configuration templates by replacing {{ PLACEHOLDER }}
+# with corresponding shell environment variable values
+
+/etc/docker/render /etc/hadoop/conf/core-site.xml
+/etc/docker/render /etc/hadoop/conf/hdfs-site.xml
+/etc/docker/render /etc/hadoop/conf/mapred-site.xml
+/etc/docker/render /etc/hadoop/conf/yarn-site.xml
+/etc/docker/render /etc/hive/conf/hive-site.xml
+
+
+# Wait until namenode service is available
+while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
+
+
+# Start Hive server
+service hive-server2 start
+
+
+# Keep this container running
+/etc/docker/idle

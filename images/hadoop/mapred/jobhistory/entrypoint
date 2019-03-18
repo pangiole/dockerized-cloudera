@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+chmod +x /etc/docker/setup
+chmod +x /etc/docker/render
+
+export HADOOP_AUTHENTICATION=${HADOOP_AUTHENTICATION:-'simple'}
+if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then
+    #                  user    group   domain
+    /etc/docker/setup  mapred  hadoop  docker.net
+fi
+
+#
+# Render configuration templates by replacing {{ PLACEHOLDER }}
+# with corresponding shell environment variable values
+
+/etc/docker/render  /etc/hadoop/conf/core-site.xml
+/etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
+/etc/docker/render  /etc/hadoop/conf/mapred-site.xml
+
+
+#
+# Make log directories
+#
+mkdir -p /var/log/hadoop-mapreduce
+chown mapred:mapred /var/log/hadoop-mapreduce
+chmod 755 /var/log/hadoop-mapreduce
+# TODO ln -snf /dev/stdout /var/log/hadoop-mapreduce/hadoop-mapreduce-???-???.docker.net.log
+
+
+# TODO https://www.cloudera.com/documentation/enterprise/5-15-x/topics/cdh_sg_users_groups_verify.html#topic_3_2_6
+
+
+# Wait until namenode service is available
+while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
+
+
+
+# Start the Hadoop MapReduce JobHistory service
+service hadoop-mapreduce-historyserver start
+
+
+# Keep this container running
+/etc/docker/idle

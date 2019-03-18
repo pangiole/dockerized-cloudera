@@ -1,0 +1,50 @@
+<configuration>
+  <property>
+    <!--
+      This property specifies the Hadoop NameNode and the default file system,
+      in the form hdfs://<namenode host>:<namenode port>/. The default value
+      is file///. The default file system is used to resolve relative paths;
+      for example, if fs.defaultFS is set to hdfs://mynamenode/, the relative
+      URI /mydir/myfile resolves to hdfs://mynamenode/mydir/myfile.
+
+      Note: for the cluster to function correctly, the <namenode> part of the
+      string must be the hostname (for example mynamenode), or the HA-enabled
+      logical URI, not the IP address.
+    -->
+    <name>fs.defaultFS</name>
+    <value>hdfs://namenode.docker.net:8020</value>
+  </property>
+
+
+  {% if HADOOP_AUTHENTICATION == 'kerberos' %}
+  <!-- See https://www.cloudera.com/documentation/enterprise/5-15-x/topics/cdh_sg_hadoop_security_enable.html -->
+
+  <!-- 	Enable Kerberos authentication -->
+  <property>
+    <name>hadoop.security.authentication</name>
+    <value>kerberos</value>
+  </property>
+
+  <!--
+    Controls whether tokens always use IP addresses. In secure multi-homed
+    environments, the following parameter will need to be set to false
+    (it is true by default) on both cluster servers and clients
+  -->
+  <property>
+    <name>hadoop.security.token.service.use_ip</name>
+    <value>false</value>
+  </property>
+
+
+  {# TODO if HADOOP_ENCRYPTION_ENABLED == 'true' #}
+  <!--
+    authentication : authentication only
+    integrity : integrity check in addition to authentication
+    privacy : data encryption in addition to integrity
+  -->
+  <property>
+    <name>hadoop.rpc.protection</name>
+    <value>authentication</value>
+  </property>
+  {% endif %}
+</configuration>

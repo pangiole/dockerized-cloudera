@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+
+readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+readonly network="build.net"
+readonly registry="registry.alpinedata.tech"
+readonly repository="pangiolet/cloudera"
+
+readonly red="$(tput setaf 1)"
+readonly green="$(tput setaf 2)"
+readonly reset="$(tput setaf 7)"
+
+
+function check_requirements {
+  while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+      --cloudera-version)
+          cloudera_version="$2"
+          shift
+          shift # past value
+        ;;
+      *)
+        shift
+      ;;
+  esac
+  done
+
+  if [[ "${cloudera_version}x" == "x" ]]; then cat <<CAT
+
+${red}Error: missing --cloudera-version argument${reset}
+
+  You're required to pass a specific Cloudera Hadoop version to build.
+  Try with one of the following
+    - ${green}5.4.2${reset}
+    - ${green}5.16.1${reset}
+CAT
+  exit -1
+  fi
+}
+
+
+function create_network {
+  echo " "
+  echo "================================================"
+  echo "Creating Docker network named ${network}"
+  docker network ls | grep ${network} > /dev/null || docker network create ${network} > /dev/null
+}
+
+
+function run_repo_server {
+  echo " "
+  echo "================================================"
+  echo "Spawning Nginx to serve local YUM repositories"
+  docker container run --rm -d \
+    --name repos \
+    --network ${network}  \
+    --volume ${selfdir}/../yum/repos:/usr/share/nginx/html \
+    nginx
+  local status=$?
+  if [[ "${status}" -ne 0 ]]; then
+    tear_down
+    exit ${status}
+  fi
+}
+
+
+function build {
+  local image="${1}"
+  local version="${cloudera_version}"
+
+  if [[ "${image}" == "base" ]]; then cat <<CAT > ${selfdir}/base/cdh-${version}.repo
+[cdh-${version}]
+name=Cloudera's Distribution for Hadoop
+baseurl=http://repos/cloudera/cdh-${version}
+gpgcheck=0
+enabled=1
+CAT
+  fi
+
+  echo " "
+  echo "========================================================="
+  echo "Rebuilding Docker image ${repository}/${image}:${version}"
+  echo " "
+  docker image rm --force ${registry}/${repository}/${image}:${version} > /dev/null 2>&1
+  docker image rm --force ${repository}/${image}:${version} > /dev/null 2>&1
+  docker image prune --force
+
+  docker image build \
+    --network ${network}  \
+    --build-arg repository=${repository} \
+    --build-arg version=${cloudera_version} \
+    --file ${selfdir}/${image}/Dockerfile \
+    --tag ${repository}/${image}:${version} \
+    ${selfdir}/${image}
+
+  docker image tag \
+    ${repository}/${image}:${version} \
+    ${registry}/${repository}/${image}:${version}
+
+  local status=$?
+  if [[ "${status}" -ne 0 ]]; then
+    tear_down
+    exit ${status}
+  fi
+}
+
+
+function build_images {
+  build base
+  build   kdc
+  build   hadoop/dfs/namenode
+  build   hadoop/dfs/datanode
+  build   hadoop/mapred/jobhistory
+  build   hadoop/yarn/resourcemanager
+  build   hadoop/yarn/nodemanager
+  # build   hive
+  # build   master
+  # build   worker
+  build   edge
+}
+
+
+function tear_down {
+  docker container stop repos
+  docker container prune --force
+  docker image prune --force
+  docker network prune  --force
+}
+
+
+
+# ~~~~~~~~~~~~ M A I N ~~~~~
+
+check_requirements $*
+create_network
+run_repo_server
+build_images
+tear_down
+
+exit 0

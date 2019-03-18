@@ -1,0 +1,212 @@
+<configuration>
+  <!-- https://hadoop.apache.org/docs/r2.6.0/hadoop-project-dist/hadoop-hdfs/hdfs-default.xml -->
+
+  <!--
+    Specifies the UNIX group containing users that will be treated as superusers
+    by HDFS. You can stick with the value of 'hadoop' or pick your own group
+    depending on the security policies at your site.
+  -->
+  <property>
+    <name>dfs.permissions.superusergroup</name>
+    <value>hadoop</value>
+  </property>
+
+  <!--
+    This property sets the address and the base port where the dfs
+    namenode web ui will listen on.
+  -->
+  <property>
+    <name>dfs.namenode.http-address</name>
+    <value>0.0.0.0:50070</value>
+  </property>
+
+  <!--
+    This property specifies the URIs of the directories where the Hadoop
+    NameNode stores its metadata and edit logs. Cloudera recommends that
+    you specify at least two directories. One of these should be located
+    on an NFS mount point, unless you will be using a HDFS HA configuration.
+  -->
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>file:///data/1/hdfs/nn</value>
+  </property>
+
+  <!--
+    This property specifies the URIs of the directories where the Hadoop
+    DataNode stores blocks. Cloudera recommends that you configure the disks
+    on the DataNode in a JBOD configuration, mounted at /data/1/ through
+    /data/N, and configure dfs.datanode.data.dir to specify
+    file:///data/1/hdfs/dn through file:///data/N/dfs/dn/.
+  -->
+  <property>
+    <name>dfs.datanode.name.dir</name>
+    <value>file:///data/1/hdfs/dn</value>
+  </property>
+
+
+  <!--
+    The datanode IPC server address and port
+  -->
+  <property>
+    <name>dfs.datanode.ipc.address</name>
+    <value>datanode1.docker.net:50020</value>
+  </property>
+
+  <!--
+    The datanode data/messages transfer address and port
+  -->
+  <property>
+    <name>dfs.datanode.address</name>
+    <value>datanode1.docker.net:50010</value>
+  </property>
+
+  <!--
+    This configuration is required because when the DataNode registers with
+    the NameNode it will use an IP address by default. This means that the
+    client might not be able to locate the DataNode as it resides on a
+    different network and configuration changes are required for the system
+    to use hostnames instead of IP addresses for the name resolution.
+   -->
+  <property>
+    <name>dfs.client.use.datanode.hostname</name>
+    <value>true</value>
+  </property>
+  
+  <property>
+    <name>dfs.datanode.use.datanode.hostname</name>
+    <value>true</value>
+  </property>
+
+
+
+  {# ========================================================================= #}
+
+  {% if HADOOP_AUTHENTICATION == 'kerberos' %}
+  <!-- See https://www.cloudera.com/documentation/enterprise/5-15-x/topics/cdh_sg_secure_hdfs_config.html -->
+  <!--
+    Enable HDFS block access tokens for secure operations.
+  -->
+  <property>
+    <name>dfs.block.access.token.enable</name>
+    <value>true</value>
+  </property>
+
+  <!-- NameNode security config -->
+  <property>
+    <name>dfs.namenode.keytab.file</name>
+    <value>/secrets/hdfs.keytab</value>
+  </property>
+  <property>
+    <name>dfs.namenode.kerberos.principal</name>
+    <value>hdfs/docker.net@DOCKER.NET</value>
+  </property>
+  <property>
+    <name>dfs.namenode.kerberos.internal.spnego.principal</name>
+    <value>HTTP/docker.net@DOCKER.NET</value>
+  </property>
+
+  <!-- DataNode security config -->
+  <property>
+    <name>dfs.datanode.keytab.file</name>
+    <value>/secrets/hdfs.keytab</value>
+  </property>
+  <property>
+    <name>dfs.datanode.kerberos.principal</name>
+    <value>hdfs/docker.net@DOCKER.NET</value>
+  </property>
+
+  <!--
+    DataNode data/messages transfer ports
+
+    Secure DataNode must use privileged port in order to assure that the server was
+    started securely. This means that the server must be started via jsvc.
+    Alternatively, this must be set to a non-privileged port if using SASL to
+    authenticate data transfer protocol. (See dfs.data.transfer.protection.)
+  -->
+  <property>
+    <name>dfs.datanode.address</name>
+    <value>datanode1.docker.net:1004</value>
+    {# <value>datanode1.docker.net:50010</value> #}
+  </property>
+
+  <!--
+    Secure DataNode must use privileged port in order to assure that the server was
+    started securely. This means that the server must be started via jsvc.
+  -->
+  <property>
+    <name>dfs.datanode.http.address</name>
+    <value>datanode1.docker.net:1006</value>
+    {# <value>datanode1.docker.net:50075</value> #}
+  </property>
+
+  <!--
+    This property is UNSPECIFIED by default.
+
+    Setting this property enables SASL for authentication of data transfer protocol.
+    If this is enabled, then
+      * dfs.datanode.address must use a non-privileged port,
+      * dfs.http.policy must be set to HTTPS_ONLY
+      * and the HADOOP_SECURE_DN_USER  environment variable must be undefined when starting the DataNode process.
+
+    Possible values are
+      * authentication : authentication only
+      * integrity : integrity check in addition to authentication
+      * privacy : data encryption in addition to integrity
+  -->
+  <property>
+    <name>dfs.data.transfer.protection</name>
+    <value></value>
+    {# <value>privacy</value> #}
+  </property>
+
+  <!--
+    HTTPS_ONLY turns off http access.
+    This option takes precedence over the deprecated configuration dfs.https.enable
+    and hadoop.ssl.enabled. If using SASL to authenticate data transfer protocol
+    instead of running DataNode as root and using privileged ports, then this
+    property must be set to HTTPS_ONLY to guarantee authentication of HTTP servers.
+    (See dfs.data.transfer.protection.)
+  -->
+  <property>
+    <name>dfs.http.policy</name>
+    <value>HTTP_ONLY</value>
+    {# <value>HTTPS_ONLY</value> #}
+  </property>
+
+
+  <!-- Web Authentication config -->
+  <property>
+    <name>dfs.web.authentication.kerberos.principal</name>
+    <value>HTTP/docker.net@DOCKER.NET</value>
+  </property>
+
+  <property>
+    <name>dfs.web.authentication.kerberos.keytab</name>
+    <value>/secrets/HTTP.keytab</value>
+  </property>
+
+  {% else %}
+
+  <!--
+    Enable HDFS block access tokens for secure operations.
+  -->
+  <property>
+    <name>dfs.block.access.token.enable</name>
+    <value>false</value>
+  </property>
+
+  <!-- DataNode data/messages transfer ports -->
+  <property>
+    <name>dfs.datanode.address</name>
+    <value>datanode1.docker.net:50010</value>
+    {# <value>datanode1.docker.net:1004</value> #}
+  </property>
+
+  <property>
+    <name>dfs.datanode.http.address</name>
+    <value>datanode1.docker.net:50075</value>
+    {# <value>datanode1.docker.net:1006</value> #}
+  </property>
+
+  {% endif %}
+</configuration>

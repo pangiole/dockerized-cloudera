@@ -1,0 +1,63 @@
+<configuration>
+
+  <!--
+    If you plan on running YARN, you must set this property to the value of yarn.
+  -->
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
+
+
+  <!--
+    The address of the JobHistory Server host:port
+  -->
+  <property>
+    <name>mapreduce.jobhistory.address</name>
+    <value>jobhistory.docker.net:10020</value>
+  </property>
+
+
+  <!--
+    The address of the JobHistory Server Web UI host:port
+  -->
+  <property>
+    <name>mapreduce.jobhistory.webapp.address</name>
+    <value>jobhistory.docker.net:19888</value>
+  </property>
+
+
+  <!--
+    The staging dir used while submitting jobs.
+  -->
+  <property>
+    <name>yarn.app.mapreduce.am.staging-dir</name>
+    <value>/user</value>
+  </property>
+
+
+
+  {# ========================================================================= #}
+
+  {% if HADOOP_AUTHENTICATION == 'kerberos' %}
+
+  <property>
+    <name>mapreduce.jobhistory.keytab</name>
+    <value>/secrets/mapred.keytab</value>
+  </property>
+
+  <property>
+    <name>mapreduce.jobhistory.principal</name>
+    <value>mapred/docker.net@DOCKER.NET</value>
+  </property>
+
+  {#
+  <!-- TODO To enable TLS/SSL -->
+  <property>
+    <name>mapreduce.jobhistory.http.policy</name>
+    <value>HTTPS_ONLY</value>
+  </property>
+  #}
+
+  {% endif %}
+</configuration>

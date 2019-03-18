@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+## Setup Bash profile
+## --------------------------
+user="$1"
+group="$2"
+domain="$3"
+home="$(getent passwd ${user} | cut -d: -f6)"
+
+export comp1="$user"
+export comp2="$domain"
+cp /etc/docker/bash_profile.j2 ${home}/.bash_profile.j2
+/etc/docker/render ${home}/.bash_profile
+
+chown ${user}:${group} ${home}/.bash_profile
+chmod 644 ${home}/.bash_profile
+rm ${home}/.bash_profile.j2

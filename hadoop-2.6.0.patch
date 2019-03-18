@@ -1,0 +1,50 @@
+diff --git a/hadoop-common-project/hadoop-common/src/CMakeLists.txt b/hadoop-common-project/hadoop-common/src/CMakeLists.txt
+index b8ac460dd95..d09a3dc04f0 100644
+--- a/hadoop-common-project/hadoop-common/src/CMakeLists.txt
++++ b/hadoop-common-project/hadoop-common/src/CMakeLists.txt
+@@ -15,7 +15,7 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ #
+-
++SET(CUSTOM_OPENSSL_PREFIX /usr/local/opt/openssl)
+ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+ 
+ # Default to release builds
+@@ -116,8 +116,8 @@ set(T main/native/src/test/org/apache/hadoop)
+ GET_FILENAME_COMPONENT(HADOOP_ZLIB_LIBRARY ${ZLIB_LIBRARIES} NAME)
+ 
+ SET(STORED_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
+-set_find_shared_library_version("1")
+-find_package(BZip2 QUIET)
++set_find_shared_library_version("1.0")
++find_package(BZip2 REQUIRED)
+ if (BZIP2_INCLUDE_DIR AND BZIP2_LIBRARIES)
+     GET_FILENAME_COMPONENT(HADOOP_BZIP2_LIBRARY ${BZIP2_LIBRARIES} NAME)
+     set(BZIP2_SOURCE_FILES
+diff --git a/hadoop-common-project/hadoop-common/src/main/conf/core-site.xml b/hadoop-common-project/hadoop-common/src/main/conf/core-site.xml
+index d2ddf893e49..de28800a81e 100644
+--- a/hadoop-common-project/hadoop-common/src/main/conf/core-site.xml
++++ b/hadoop-common-project/hadoop-common/src/main/conf/core-site.xml
+@@ -17,4 +17,8 @@
+ <!-- Put site-specific property overrides in this file. -->
+ 
+ <configuration>
++  <property>
++    <name>io.compression.codec.bzip2.library</name>
++    <value>libbz2.dylib</value>
++  </property>
+ </configuration>
+diff --git a/hadoop-tools/hadoop-pipes/pom.xml b/hadoop-tools/hadoop-pipes/pom.xml
+index 132f9141fda..75973ba1e81 100644
+--- a/hadoop-tools/hadoop-pipes/pom.xml
++++ b/hadoop-tools/hadoop-pipes/pom.xml
+@@ -52,7 +52,7 @@
+                     <mkdir dir="${project.build.directory}/native"/>
+                     <exec executable="cmake" dir="${project.build.directory}/native" 
+                         failonerror="true">
+-                      <arg line="${RESOURCES_DIR}/src/ -DJVM_ARCH_DATA_MODEL=${sun.arch.data.model}"/>
++                      <arg line="${RESOURCES_DIR}/src/ -DJVM_ARCH_DATA_MODEL=${sun.arch.data.model} -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl"/>
+                     </exec>
+                     <exec executable="make" dir="${project.build.directory}/native" failonerror="true">
+                       <arg line="VERBOSE=1"/>

@@ -38,10 +38,12 @@ docker login \
 More information are given in the official [GitLab documentation](https://docs.gitlab.com/ee/user/project/container_registry.html)
 
 ## Start
-You can start the whole Cloudera Hadoop cluster with Kerberos authentication (default) or without (simple).
+You can start the whole Cloudera Hadoop cluster either with `kerberos` authentication (default) or with `simple` authentication.
 
 ```
-Usage: ./start [ --version <version> ] [ --simple | --kerberos ]
+./start \
+  --version 5.16.1 \
+  --simple
 ```
 
 The only versions available are:
@@ -51,14 +53,14 @@ The only versions available are:
 
 
 ### Stop
-You can start the whole Cloudera Hadoop cluster simply as follows:
+You can stop the whole Cloudera Hadoop cluster as follows:
 
 ```
-Usage: ./stop
+./stop
 ```
 
 ## Containers
-The dockerized Cloudera Hadoop cluster is made of the following containers and services:
+The dockerized Cloudera Hadoop cluster is made of the following containers:
 
 - namenode
 - datanode1
@@ -72,19 +74,20 @@ The dockerized Cloudera Hadoop cluster is made of the following containers and s
 You can execute `bash` within any of the above containers:
 
 ```
-Usage: ./login <container>
+./login <container>
 ```
 
-The ``edge`` container is special: it mimics operations from a typical _"edge node"_ of classical cluster. That's where data analysts usually execute Hadoop client programs or Spark shells.
+The ``edge`` container is special: it mimics operations from a typical _"edge node"_ of classical cluster. That's where data analysts usually execute client programs such as `hadoop`, `beeline` or `spark-shell`.
 
 
 ## Clients
-The dockerized Cloudera Hadoop cluster supports any client written matching Hadoop libraries. Examples are: the command line `hadoop` tool, the Apache SparkSubmit and the Alpine/Chorus Datasources.
+The containers cluster supports any client written with matching Hadoop libraries. Examples are: the command line `hadoop` tool, the Hive `beeline` tool, the Apache SparkSubmit tool and the Alpine/Chorus Datasources.
 
-If you wish to run Hadoop client programs on host (for example the command line `hadoop` tool) then read the [HADOOP.md](HADOOP.md) file for further information.
+If you wish to run Hadoop client programs on host (for example on your macOS laptop), such as the `hadoop` command line tool, then read the [HADOOP.md](HADOOP.md) file for further information.
+
 
 ### Resources
-Once the cluster is started, it will reveal its configuration by generating the following files to your local working directory:
+Once the containers cluster is started, it will reveal its configuration by generating the following files to your local working directory:
 
 ```
 ├── .cloudera

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+#
+# Render configuration templates by substituting $PLACEHOLDER
+# with corresponding shell environment variable values
+#
+# @author Paolo Angioletti <pangiole@tibco.com>
+#
+
+readonly RESOURCES_DIR="$(dirname $1)"
+readonly basename="$(basename $1)"
+
+function render {
+TEMPLATE="$1" python - <<EOF
+import jinja2
+import os
+
+file = open(os.environ['TEMPLATE'])
+template = jinja2.Template( file.read() )
+print(template.render(dict(os.environ)))
+EOF
+}
+
+render $1.j2 > $RESOURCES_DIR/$basename

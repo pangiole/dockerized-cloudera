@@ -1,0 +1,162 @@
+---
+
+# This is the composition of few Docker containers running the bare minimum
+# of Cloudera CDH 5 fundamental services such as Hadoop HDFS and YARN.
+#
+
+version: "3.7"
+
+networks:
+  docker-net:
+    name: "docker.net"
+
+services:
+  kdc:
+    image: "$registry/$repository/kdc:$version"
+    hostname: "kdc.docker.net"
+    container_name: "kdc"
+    environment:
+      HADOOP_AUTHENTICATION: "$authentication"
+    networks:
+      - docker-net
+    ports:
+      - "88:88"
+      - "88:88/udp"
+    volumes:
+      - "$resources/secrets:/secrets"
+
+
+  namenode:
+    image: "$registry/$repository/hadoop/dfs/namenode:$version"
+    hostname: "namenode.docker.net"
+    container_name: "namenode"
+    environment:
+      HADOOP_AUTHENTICATION: "$authentication"
+    networks:
+      - docker-net
+    ports:
+      - "50070:50070" # http
+      - "8020:8020"   # protobuf
+    volumes:
+      - "$resources/data/1/hdfs/nn:/data/1/hdfs/nn"
+      - "$resources/conf:/conf"
+      - "$resources/secrets:/secrets"
+    depends_on:
+      - kdc
+
+
+  datanode1:
+    image: "$registry/$repository/hadoop/dfs/datanode:$version"
+    hostname: "datanode1.docker.net"
+    container_name: "datanode1"
+    environment:
+      HADOOP_AUTHENTICATION: "$authentication"
+    # cap_add:
+    #   # Add Linux Kernel Capabilities (see http://man7.org/linux/man-pages/man7/capabilities.7.html)
+    #   - NET_BIND_SERVICE
+    privileged: true
+    networks:
+      - docker-net
+    ports:
+      - "50020:50020" # protbuf (ipc)
+      - "50010:50010" # protbuf (data transfer)
+      - "1004:1004"   # protbuf (data transfer)
+      - "50075:50075" # http
+      - "1006:1006"   # http
+    volumes:
+      - "$resources/data/1/hdfs/dn:/data/1/hdfs/dn"
+      - "$resources/conf:/conf"
+      - "$resources/secrets:/secrets"
+    depends_on:
+      - namenode
+
+
+  jobhistory:
+    image: "$registry/$repository/hadoop/mapred/jobhistory:$version"
+    hostname: "jobhistory.docker.net"
+    container_name: "jobhistory"
+    environment:
+      HADOOP_AUTHENTICATION: "$authentication"
+    networks:
+      - docker-net
+    ports:
+      - "19888:19888" # http
+      - "10020:10020" # protobuf
+    volumes:
+      - "$resources/conf:/conf"
+      - "$resources/secrets:/secrets"
+    depends_on:
+      - namenode
+
+
+  resourcemanager:
+    image: "$registry/$repository/hadoop/yarn/resourcemanager:$version"
+    hostname: "resourcemanager.docker.net"
+    container_name: "resourcemanager"
+    environment:
+      HADOOP_AUTHENTICATION: "$authentication"
+    networks:
+      - docker-net
+    ports:
+      - "8088:8088" # http
+      - "8032:8032" # protobuf
+    volumes:
+      - "$resources/conf:/conf"
+      - "$resources/secrets:/secrets"
+    depends_on:
+      - namenode
+      - jobhistory
+
+
+  nodemanager1:
+    image: "$registry/$repository/hadoop/yarn/nodemanager:$version"
+    hostname: "nodemanager1.docker.net"
+    container_name: "nodemanager1"
+    environment:
+      HADOOP_AUTHENTICATION: "$authentication"
+    networks:
+      - docker-net
+    ports:
+      - "8042:8042" # http
+      # "0:0"       # protobuf (random)
+    volumes:
+      - "$resources/conf:/conf"
+      - "$resources/secrets:/secrets"
+    depends_on:
+      - namenode
+      - jobhistory
+      - resourcemanager
+
+
+  # hive:
+  #   image: "$registry/$repository/hive:$version"
+  #   hostname: "hive.docker.net"
+  #   container_name: "hive"
+  #   environment:
+  #     HADOOP_AUTHENTICATION: "$authentication"
+  #   networks:
+  #     - docker-net
+  #   ports:
+  #     - "10000:10000" # jdbc
+  #   volumes:
+  #     - "$resources/conf:/conf"
+  #     - "$resources/secrets:/secrets"
+  #   depends_on:
+  #     - namenode
+  #     - resourcemanager
+
+
+  edge:
+    image: "$registry/$repository/edge:$version"
+    hostname: "edge.docker.net"
+    container_name: "edge"
+    environment:
+      HADOOP_AUTHENTICATION: "$authentication"
+    networks:
+      - docker-net
+    volumes:
+      - "$resources/conf:/conf"
+      - "$resources/secrets:/secrets"
+    depends_on:
+      - namenode
+      - resourcemanager

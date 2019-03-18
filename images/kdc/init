@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+# Create an empty Kerberos realm database.
+# The -s option indicates that we'll be using a stash file to store what Kerberos calls the "master key"
+rm -Rf /var/kerberos/krb5kdc/principal*
+rm -Rf /var/kerberos/krb5kdc/.k5.DOCKER.NET
+echo -e "root\nroot" | kdb5_util create -s
+
+
+# See https://www.cloudera.com/documentation/enterprise/5-15-x/topics/cdh_sg_kerberos_prin_keytab_deploy.html#topic_3_4
+# Create Kerberos principals (with random keys) and export them to keytab files
+
+# Add Hadoop principals
+function add {
+  user=$1
+  domain=$2
+  princs=""
+  if [[ "${domain}" == "yes" ]]; then
+    kadmin.local -q "addprinc -randkey $user/docker.net"
+  else
+    kadmin.local -q "addprinc -randkey $user"
+  fi
+}
+
+# Merge secrets in a resulting keytab
+function merge {
+  file=$1
+  users=$2
+  domain=$3
+  princs=""
+  for user in $users; do
+    if [[ "${domain}" == "yes" ]]; then
+      princs="$princs $user/docker.net"
+    else
+      princs="$princs $user"
+    fi
+  done
+  kadmin.local -q "ktadd -norandkey -k /secrets/$file $princs"
+  chmod 644 /secrets/$file
+}
+
+
+#     user            domain
+add   'alice'         'no'
+add   'bob'           'no'
+add   'spark'         'yes'
+add   'HTTP'          'yes'
+add   'hdfs'          'yes'
+add   'yarn'          'yes'
+add   'mapred'        'yes'
+
+
+#     file            users         domain
+merge 'alice.keytab'  'alice'       'no'
+merge 'bob.keytab'    'bob'
+merge 'spark.keytab'  'spark'       'yes'
+merge 'HTTP.keytab'   'HTTP'        'yes'
+merge 'hdfs.keytab'   'hdfs HTTP'   'yes'
+merge 'yarn.keytab'   'yarn HTTP'   'yes'
+merge 'mapred.keytab' 'mapred HTTP' 'yes'

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+chmod +x /etc/docker/setup
+chmod +x /etc/docker/render
+
+export HADOOP_AUTHENTICATION=${HADOOP_AUTHENTICATION:-'simple'}
+if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then
+    #                  user   group    domain
+    /etc/docker/setup  yarn   hadoop   docker.net
+fi
+
+
+#
+# Render configuration templates by replacing {{ PLACEHOLDER }}
+# with corresponding shell environment variable values
+
+/etc/docker/render  /etc/hadoop/conf/core-site.xml
+/etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
+/etc/docker/render  /etc/hadoop/conf/mapred-site.xml
+/etc/docker/render  /etc/hadoop/conf/yarn-site.xml
+
+
+#
+# Make local log directories
+#
+mkdir -p /var/log/hadoop-yarn
+chown -R yarn:yarn /var/log/hadoop-yarn
+chmod 755 /var/log/hadoop-yarn
+# TODO ln -snf /dev/stdout /var/log/hadoop-yarn/hadoop-yarn-resourcemanager-resourcemanager.docker.net.log
+
+
+
+# Wait until namenode service is available
+while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
+
+
+
+# YARN requires a staging directory for temporary files created by running jobs.
+# By default it creates /tmp/hadoop-yarn/staging with restrictive permissions
+# that may prevent your users from running jobs. To forestall this, you should
+# configure and create the staging directory yourself.
+#
+su - yarn <<'EOF'
+hadoop fs -mkdir -p /user/history
+hadoop fs -chown mapred:hadoop /user/history
+hadoop fs -chmod -R 1777 /user/history
+EOF
+
+
+
+# Start the Hadoop YARN ResourceManager service
+service hadoop-yarn-resourcemanager start
+
+
+
+# Keep this container running
+/etc/docker/idle

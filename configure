@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+#
+# This script configures you local Hadoop 2.6 binaries
+#
+# author: Paolo Angioletti <pangiole@tibco.com>
+#
+
+readonly selfname=$(dirname "$0")
+readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+readonly cwd=$(pwd)
+
+echo "Configuring local Hadoop Client if any"
+if [[ "${HADOOP_CONF_DIR}x" == "x" ]]; then
+  echo "warning: HADOOP_CONF_DIR is undefined!"
+  exit 0
+fi
+
+RESOURCES_DIR=${RESOURCES_DIR:-$cwd/.cdh}
+files="core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml"
+for file in $files; do
+  printf "%-24s ... " "$file"
+  rm $HADOOP_CONF_DIR/$file
+  cp $RESOURCES_DIR/conf/$file $HADOOP_CONF_DIR/$file
+  base=$(echo "$cwd" | sed 's/\//\\\//g')
+  expr="s/\/secrets/$base\/tmp\/conf/g"
+  sed $expr $HADOOP_CONF_DIR/$file > $HADOOP_CONF_DIR/$file.local
+  mv $HADOOP_CONF_DIR/$file.local $HADOOP_CONF_DIR/$file
+  printf "done\n"
+done

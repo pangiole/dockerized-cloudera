@@ -1,0 +1,19 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# User specific environment and startup programs
+PATH=$PATH:$HOME/bin
+export PATH
+
+{% if HADOOP_AUTHENTICATION == 'kerberos' %}
+# Set Kerberos authentication variables
+export KERBEROS_PRINCIPAL="{{ comp1 }}{% if comp2 %}/{{ comp2 }}{% endif %}"
+export KERBEROS_KEYTAB="/secrets/{{ comp1 }}.keytab"
+
+# Acquire Kerberos TGT
+kinit -k -t $KERBEROS_KEYTAB $KERBEROS_PRINCIPAL
+{% endif %}

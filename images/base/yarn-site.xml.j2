@@ -1,0 +1,159 @@
+<configuration>
+  <!-- https://hadoop.apache.org/docs/r2.6.0/hadoop-yarn/hadoop-yarn-common/yarn-default.xml -->
+
+  <!-- Classpath for typical applications -->
+  <property>
+    <name>yarn.application.classpath</name>
+    <value>
+      $HADOOP_CONF_DIR,
+      $HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,
+      $HADOOP_HDFS_HOME/*,$HADOOP_HDFS_HOME/lib/*,
+      $HADOOP_MAPRED_HOME/*,$HADOOP_MAPRED_HOME/lib/*,
+      $HADOOP_YARN_HOME/*,$HADOOP_YARN_HOME/lib/*
+    </value>
+  </property>
+
+  <!--
+    The following properties will be set to their default ports on this host:
+
+      yarn.resourcemanager.address,
+      yarn.resourcemanager admin.address,
+      yarn.resourcemanager.scheduler.address,
+      yarn.resourcemanager.resource-tracker.address, y
+      yarn.resourcemanager.webapp.address
+  -->
+  <property>
+    <name>yarn.resourcemanager.hostname</name>
+    <value>resourcemanager.docker.net</value>
+  </property>
+
+  <!--
+    Shuffle service that needs to be set for Map Reduce applications.
+  -->
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+    {# TODO <value>spark_shuffle</value> #}
+  </property>
+
+  {# TODO <property>
+    <name>yarn.nodemanager.aux-services.spark_shuffle.class</name>
+    <value>org.apache.spark.network.yarn.YarnShuffleService</value>
+  </property> #}
+
+
+  <!--
+    The class to use as the resource scheduler.
+    The YARN FIFO scheduler does not require any additional configuration.
+  -->
+  <property>
+    <name>yarn.resourcemanager.scheduler.class</name>
+    <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.fifo.FifoScheduler</value>
+  </property>
+
+  <!--
+    The hostname of the nodemanager
+  -->
+  <property>
+    <name>yarn.nodemanager.hostname</name>
+    <value>nodemanager1.docker.net</value>
+  </property>
+
+
+  {# TODO
+  <!--
+    Specifies the URIs of the directories where the NodeManager stores its
+    localized files. All of the files required for running a particular YARN
+    application will be put here for the duration of the application run.
+    Cloudera recommends that this property specify a directory on each of
+    the JBOD mount points;
+  -->
+  <property>
+    <name>yarn.nodemanager.build.net-dirs</name>
+    <value>file:///var/local/hadoop-yarn</value>
+  </property>
+  #}
+
+
+  <!--
+    List of directories to store localized files in.
+    An application's localized file directory will be found in:
+        ${yarn.nodemanager.local-dirs}/usercache/${user}/appcache/application_${appid}
+
+    Individual containers' work directories, called container_${contid}, will be subdirectories of this.
+  -->
+  <property>
+    <name>yarn.nodemanager.local-dirs</name>
+    <value>file:///var/local/hadoop-yarn</value>
+  </property>
+
+
+  <!--
+    Specifies the URIs of the directories where the NodeManager stores container
+    log files. Cloudera recommends that this property specify a directory on
+     each of the JBOD mount points
+  -->
+  <property>
+    <name>yarn.nodemanager.log-dirs</name>
+    <value>file:///var/log/hadoop-yarn</value>
+  </property>
+
+  <!--
+    Specifies the URI of the directory where logs are aggregated. Set the value
+    to either hdfs://namenode-host.company.com:8020/var/log/hadoop-yarn,
+    using the fully qualified domain name of your NameNode host, or
+    hdfs:/var/log/hadoop-yarn
+  -->
+  <property>
+    <name>yarn.log.aggregation-enable</name>
+    <value>true</value>
+  </property>
+
+
+  <property>
+    <name>yarn.nodemanager.remote-app-log-dir</name>
+    <value>hdfs://namenode.docker.net:8020/var/log/hadoop-yarn</value>
+  </property>
+
+  {% if HADOOP_AUTHENTICATION == 'kerberos' %}
+
+  <property>
+    <name>yarn.resourcemanager.keytab</name>
+    <value>/secrets/yarn.keytab</value>
+  </property>
+
+  <property>
+    <name>yarn.resourcemanager.principal</name>
+    <value>yarn/docker.net@DOCKER.NET</value>
+  </property>
+
+  <property>
+    <name>yarn.nodemanager.keytab</name>
+    <value>/secrets/yarn.keytab</value>
+  </property>
+
+  <property>
+    <name>yarn.nodemanager.principal</name>
+    <value>yarn/docker.net@DOCKER.NET</value>
+  </property>
+
+  <property>
+    <name>yarn.nodemanager.container-executor.class</name>
+    <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value>
+  </property>
+
+  <property>
+    <name>yarn.nodemanager.linux-container-executor.group</name>
+    <value>yarn</value>
+  </property>
+
+  {# TODO
+  <!-- To enable TLS/SSL -->
+  <property>
+    <name>yarn.http.policy</name>
+    <value>HTTPS_ONLY</value>
+  </property>
+  #}
+
+  {% endif %}
+</configuration>
