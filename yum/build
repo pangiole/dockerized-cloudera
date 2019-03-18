@@ -1,29 +1,52 @@
 #!/usr/bin/env bash
 
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+readonly selfname=$(basename "$0")
+
+readonly red="$(tput setaf 1)"
+readonly green="$(tput setaf 2)"
+readonly reset="$(tput setaf 7)"
 
 
 function check_requirements {
-  if [[ "${CLOUDERA_VERSION}x" == "x" ]]; then cat <<CAT
-CLOUDERA_VERSION undefined!
+  while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+      --cloudera-version)
+          cloudera_version="$2"
+          shift
+          shift # past value
+        ;;
+      --oracle-jdk)
+          oracle_jdk="$2"
+          shift
+          shift # past value
+        ;;
+      *)
+        shift
+      ;;
+  esac
+  done
 
-Try to build one of the following versions
-  - 5.4.2
-  - 5.16.2
+  if [[ "${cloudera_version}x" == "x" ]]; then cat <<CAT
+
+${red}Error: missing --cloudera-version argument${reset}
+
+  You're required to pass a specific Cloudera Hadoop version to build.
+  Try with one of the following
+    - ${green}5.4.2${reset}
+    - ${green}5.16.1${reset}
 CAT
-    exit -1
+  exit -1
   fi
-  if [[ "${ORACLE_JDK}x" == "x" || ! -e ${ORACLE_JDK} ]]; then cat <<CAT
-ORACLE_JDK undefined!
 
-You are required to download the 64bit RPM package of the
-Oracle JDK - Java Development Toolkit from the official
-website under the Oracle license terms.
+  if [[ "${oracle_jdk}x" == "x" || ! -e ${oracle_jdk} ]]; then cat <<CAT
 
-Thereafter, you will have to export the following environment
-variables:
+${red}Error: missing --oracle-jdk argument${reset}
 
-ORACLE_JDK="/path/to/Downloads/jdk-8x201-linux-x64.rpm"
+  You are required to download the 64bit RPM package of the
+  Oracle JDK - Java Development Toolkit from the official
+  website under the Oracle license terms.
 CAT
     exit -1
   fi
@@ -35,7 +58,7 @@ function build_yum_image {
   echo 'Building Docker YUM image'
   echo '-------------------------------'
   docker image ls | grep yum  && docker image rm yum
-  docker build --tag yum $selfdir
+  docker build --tag yum ${selfdir}
 }
 
 
@@ -43,39 +66,39 @@ function build_repo {
   local provider=$1
   local repoid=$2
 
-  dest="$selfdir/repos/$provider"
+  dest="${selfdir}/repos/${provider}"
   mkdir -p $dest
 
-  if [[ "$provider" == "cloudera" ]]; then cat <<CAT > $dest/$repoid.repo
+  if [[ "${provider}" == "cloudera" ]]; then cat <<CAT > $dest/$repoid.repo
 [$repoid]
 name=Cloudera's Distribution for Hadoop
-baseurl=https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/${CLOUDERA_VERSION}
+baseurl=https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/${cloudera_version}
 gpgkey=https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
 gpgcheck=1
 CAT
-    opts="--volume $dest/$repoid.repo:/etc/yum.repos.d/$provider-$repoid.repo"
+    opts="--volume $dest/$repoid.repo:/etc/yum.repos.d/${provider}-$repoid.repo"
   fi
 
   docker container run \
     --rm $opts \
-    --volume $selfdir/repos/build:/etc/yum/build \
-    --volume $selfdir/repos:/repos \
+    --volume ${selfdir}/repos/build:/etc/yum/build \
+    --volume ${selfdir}/repos:/repos \
     yum \
-    bash -c "/etc/yum/build $provider $repoid; exit 0"
+    bash -c "/etc/yum/build ${provider} $repoid; exit 0"
 }
 
 
 function copy_jdk {
-  dest="$selfdir/repos/oracle"
+  dest="${selfdir}/repos/oracle"
   mkdir -p $dest
-  echo "Copying $(basename $ORACLE_JDK)"
-  yes | cp -rf $ORACLE_JDK $selfdir/repos/oracle
-  ln -snf $(basename $ORACLE_JDK) $selfdir/repos/oracle/jdk.rpm
+  echo "Copying $(basename $oracle_jdk)"
+  yes | cp -rf $oracle_jdk ${selfdir}/repos/oracle
+  ln -snf $(basename $oracle_jdk) ${selfdir}/repos/oracle/jdk.rpm
 }
 
 
 function download_hadoop {
-  dest="$selfdir/repos/hadoop"
+  dest="${selfdir}/repos/hadoop"
   mkdir -p $dest
   for hadoop_version in "2.6.0"; do
     file="hadoop-${hadoop_version}.tar.gz"
@@ -92,7 +115,7 @@ function download_hadoop {
 
 
 function download_spark {
-  dest="$selfdir/repos/spark"
+  dest="${selfdir}/repos/spark"
   mkdir -p $dest
   for spark_version in "2.1.2"; do
   for hadoop_version in "2.6"; do
@@ -113,7 +136,7 @@ function download_spark {
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-check_requirements
+check_requirements $*
 copy_jdk
 download_hadoop
 download_spark
@@ -124,6 +147,6 @@ build_repo   centos-6.10   base
 build_repo   centos-6.10   centosplus
 build_repo   centos-6.10   extras
 build_repo   centos-6.10   updates
-build_repo   cloudera      cdh-${CLOUDERA_VERSION}
+build_repo   cloudera      cdh-${cloudera_version}
 
 exit 0

@@ -1,11 +1,13 @@
-# Dockerized Cloudera
+# Dockerized Cloudera Hadoop
 This project gives you an easy way to build and start a fully functional Cloudera Hadoop cluster of Docker containers on your local machine.
 
 > WARN  
-> This project is meant to facilitate software development and testing. It is **not** meant for production.
+> This project is meant to facilitate software development and testing of BigData application.
+>
+> It is **not** meant for production use!
 
 
-It provides you with:
+The Docker images built with this project will provide you with:
 
 - Linux CentOS 6.10
 - MIT Kerberos 5-1.10.3
@@ -23,25 +25,36 @@ It provides you with:
 ## Requirements
 All you is need Docker Desktop to be installed as per [official documentation](https://www.docker.com/products/docker-desktop).
 
+## Login
+The provided `./start` script will make your Docker host pull the new images from our corporate GitLab Docker Registry. Make sure you can login as follows:
+
+```
+docker login \
+  registry.alpinedata.tech \
+  -u <username> \
+  -t <token>
+```
+
+More information are given in the official [GitLab documentation](https://docs.gitlab.com/ee/user/project/container_registry.html)
+
 ## Start
-You can start the whole Cloudera Hadoop cluster with Kerberos authentication (default) or without. It's as simple as follows:
+You can start the whole Cloudera Hadoop cluster with Kerberos authentication (default) or without (simple).
 
 ```
 Usage: ./start [ --version <version> ] [ --simple | --kerberos ]
 ```
 
-### Versions
+The only versions available are:
 
-Version available are:
-
+- 5.4.2
 - 5.16.1
 
 
 ### Stop
 You can start the whole Cloudera Hadoop cluster simply as follows:
 
-```bash
-./stop
+```
+Usage: ./stop
 ```
 
 ## Containers
@@ -55,15 +68,14 @@ The dockerized Cloudera Hadoop cluster is made of the following containers and s
 - edge
 
 
-### Edge
-You can execute ``Bash`` within the so-called ``edge`` container to mimic operations from a typical _"edge node"_ of classical cluster:
+### Login
+You can execute `bash` within any of the above containers:
 
-```bash
-./login edge
-su - alice
+```
+Usage: ./login <container>
 ```
 
-That's where you can execute Hadoop client programs or Spark shells for data analysis.
+The ``edge`` container is special: it mimics operations from a typical _"edge node"_ of classical cluster. That's where data analysts usually execute Hadoop client programs or Spark shells.
 
 
 ## Clients
@@ -75,7 +87,7 @@ If you wish to run Hadoop client programs on host (for example the command line 
 Once the cluster is started, it will reveal its configuration by generating the following files to your local working directory:
 
 ```
-├── .cdh
+├── .cloudera
 │   ├── conf
 │   │   ├── core-site.xml
 │   │   ├── hdfs-site.xml
@@ -93,9 +105,13 @@ Those XML configuration and Kerberos keytab files will make you able to configur
 Be aware that the minimal configuration your client applications require to correctly interact with the dockerized Cloudera Hadoop cluster is
 
 ```bash
+# Simple cluster without Kerberos authentication
 fs.defaultFS="hdfs://namenode.docker.net:8020"
-dfs.client.use.datanode.hostname="true"
 yarn.resourcemanager.address="namenode.docker.net:8032"
+dfs.client.use.datanode.hostname="true"
+
+# Additional settings when Kerberos authentication is enabled
+
 ```
 
 
@@ -127,9 +143,9 @@ You can build new versions of Cloudera Hadoop images as explained below.
 As preliminary step, you need to build local mirrors of Linux RedHat YUM repositories. Set the desired version of Cloudera Hadoop and the path to the RPM Package of the Oracle JDK for Linux x64 as follows:
 
 ```bash
-export CLOUDERA_VERSION="5.16.1"
-export ORACLE_JDK="/path/to/jdk-8u201-linux-x64.rpm"
-./yum/build
+./yum/build \
+  --cloudera-version 5.16.1 \
+  --oracle-jdk /path/to/jdk-8u201-linux-x64.rpm
 ```
 
 Be patient as building YUM mirrors takes very long time to complete.
@@ -138,18 +154,22 @@ Be patient as building YUM mirrors takes very long time to complete.
 After you got the YUM repositories, you can finally build the new Docker images as follows:
 
 ```bash
-./images/build
+./images/build \
+  --cloudera-version 5.16.1
 ```
 
 Once done, double check that all images have been built correctly by listing and inspecting them.
 
 ```bash
 docker image ls | grep cloudera
-docker image inspect cloudera/base:$CLOUDERA_VERSION
+docker image inspect cloudera/base:5.16.1
 ```
 
 
-
-
 ## Publish
-TBD
+You can publish the new Docker images to our private Docker Registry as follows:
+
+```bash
+./images/publish \
+  --cloudera-version 5.16.1
+```
