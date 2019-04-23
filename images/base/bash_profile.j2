@@ -6,7 +6,7 @@ if [ -f ~/.bashrc ]; then
 fi
 
 # User specific environment and startup programs
-PATH=$PATH:$HOME/bin
+PATH="$PATH:$HOME/bin"
 export PATH
 
 {% if HADOOP_AUTHENTICATION == 'kerberos' %}

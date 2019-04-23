@@ -1,0 +1,54 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# User specific environment and startup programs
+PATH="$PATH:$HOME/bin"
+export PATH
+
+{% if HADOOP_AUTHENTICATION == 'kerberos' %}
+# Set Kerberos authentication variables
+export KERBEROS_PRINCIPAL="{{ comp1 }}{% if comp2 %}/{{ comp2 }}{% endif %}"
+export KERBEROS_KEYTAB="/secrets/{{ comp1 }}.keytab"
+
+# Acquire Kerberos TGT
+kinit -k -t $KERBEROS_KEYTAB $KERBEROS_PRINCIPAL
+{% endif %}
+
+# Configure Apache Spark
+export SPARK_HOME="/opt/spark"
+export HADOOP_CONF_DIR="/etc/hadoop/conf"
+export YARN_CONF_DIR="/etc/hadoop/conf"
+export PATH="$PATH:$SPARK_HOME/bin"
+
+# Configure Beeline
+export HIVE_JDBC_URL="jdbc:hive2://hive.docker.net:10000/default"
+{% if TLS_ENCRYPTION == 'true' %}
+export HIVE_JDBC_URL="$HIVE_JDBC_URL;ssl=true;sslTrustStore=hive.docker.net;trustStorePassword=changeit"
+{% endif %}
+
+
+cat <<CAT
+
+Welcome to edge node!
+This is where you can execute client programs such as Hadoop, Beeline,
+Spark and others.
+
+  Hadoop
+  --------
+    $ hadoop fs -ls /data
+
+
+  Hive
+  --------
+    $ beeline -u \$HIVE_JDBC_URL -n \$USER -p password
+
+
+  Spark
+  --------
+    $ spark-shell
+
+CAT

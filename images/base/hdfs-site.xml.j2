@@ -71,7 +71,7 @@
     <name>dfs.client.use.datanode.hostname</name>
     <value>true</value>
   </property>
-  
+
   <property>
     <name>dfs.datanode.use.datanode.hostname</name>
     <value>true</value>
@@ -155,9 +155,11 @@
   -->
   <property>
     <name>dfs.data.transfer.protection</name>
-    <value></value>
+    <value>{{ SASL_PROTECTION | default('') }}</value>
     {# <value>privacy</value> #}
   </property>
+
+  <!-- TODO Set dfs.encrypt.data.transfer as per hdfs-default.xml documentation -->
 
   <!--
     HTTPS_ONLY turns off http access.

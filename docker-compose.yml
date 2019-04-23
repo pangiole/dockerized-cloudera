@@ -15,8 +15,6 @@ services:
     image: "$registry/$repository/kdc:$version"
     hostname: "kdc.docker.net"
     container_name: "kdc"
-    environment:
-      HADOOP_AUTHENTICATION: "$authentication"
     networks:
       - docker-net
     ports:
@@ -31,12 +29,15 @@ services:
     hostname: "namenode.docker.net"
     container_name: "namenode"
     environment:
-      HADOOP_AUTHENTICATION: "$authentication"
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
     networks:
       - docker-net
     ports:
       - "50070:50070" # http
       - "8020:8020"   # protobuf
+      - "5051:5051"   # jvm-debug
     volumes:
       - "$resources/data/1/hdfs/nn:/data/1/hdfs/nn"
       - "$resources/conf:/conf"
@@ -50,7 +51,9 @@ services:
     hostname: "datanode1.docker.net"
     container_name: "datanode1"
     environment:
-      HADOOP_AUTHENTICATION: "$authentication"
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
     # cap_add:
     #   # Add Linux Kernel Capabilities (see http://man7.org/linux/man-pages/man7/capabilities.7.html)
     #   - NET_BIND_SERVICE
@@ -63,6 +66,7 @@ services:
       - "1004:1004"   # protbuf (data transfer)
       - "50075:50075" # http
       - "1006:1006"   # http
+      - "5052:5052"   # jvm-debug
     volumes:
       - "$resources/data/1/hdfs/dn:/data/1/hdfs/dn"
       - "$resources/conf:/conf"
@@ -76,12 +80,15 @@ services:
     hostname: "jobhistory.docker.net"
     container_name: "jobhistory"
     environment:
-      HADOOP_AUTHENTICATION: "$authentication"
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
     networks:
       - docker-net
     ports:
       - "19888:19888" # http
       - "10020:10020" # protobuf
+      - "5053:5053"   # jvm-debug
     volumes:
       - "$resources/conf:/conf"
       - "$resources/secrets:/secrets"
@@ -94,12 +101,16 @@ services:
     hostname: "resourcemanager.docker.net"
     container_name: "resourcemanager"
     environment:
-      HADOOP_AUTHENTICATION: "$authentication"
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
     networks:
       - docker-net
     ports:
-      - "8088:8088" # http
-      - "8032:8032" # protobuf
+      - "8088:8088"   # http
+      - "8032:8032"   # protobuf
+      - "8030:8030"   # protobuf
+      - "5054:5054"   # jvm-debug
     volumes:
       - "$resources/conf:/conf"
       - "$resources/secrets:/secrets"
@@ -113,12 +124,15 @@ services:
     hostname: "nodemanager1.docker.net"
     container_name: "nodemanager1"
     environment:
-      HADOOP_AUTHENTICATION: "$authentication"
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
     networks:
       - docker-net
     ports:
-      - "8042:8042" # http
-      # "0:0"       # protobuf (random)
+      - "8042:8042"   # http
+      # "0:0"         # protobuf (random)
+      - "5055:5055"   # jvm-debug
     volumes:
       - "$resources/conf:/conf"
       - "$resources/secrets:/secrets"
@@ -128,22 +142,25 @@ services:
       - resourcemanager
 
 
-  # hive:
-  #   image: "$registry/$repository/hive:$version"
-  #   hostname: "hive.docker.net"
-  #   container_name: "hive"
-  #   environment:
-  #     HADOOP_AUTHENTICATION: "$authentication"
-  #   networks:
-  #     - docker-net
-  #   ports:
-  #     - "10000:10000" # jdbc
-  #   volumes:
-  #     - "$resources/conf:/conf"
-  #     - "$resources/secrets:/secrets"
-  #   depends_on:
-  #     - namenode
-  #     - resourcemanager
+  hive:
+    image: "$registry/$repository/hive:$version"
+    hostname: "hive.docker.net"
+    container_name: "hive"
+    environment:
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
+    networks:
+      - docker-net
+    ports:
+      - "10000:10000" # jdbc
+      - "5056:5056"   # jvm-debug
+    volumes:
+      - "$resources/conf:/conf"
+      - "$resources/secrets:/secrets"
+    depends_on:
+      - namenode
+      - resourcemanager
 
 
   edge:
@@ -151,9 +168,16 @@ services:
     hostname: "edge.docker.net"
     container_name: "edge"
     environment:
-      HADOOP_AUTHENTICATION: "$authentication"
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
     networks:
       - docker-net
+    ports:
+       - "4040:4040"   # http (spark-shell)
+    #  - "9090:9090"   # http
+    #  - "5057:5057"   # jvm-debug
+    #  - "5058:5058"   # jvm-debug
     volumes:
       - "$resources/conf:/conf"
       - "$resources/secrets:/secrets"

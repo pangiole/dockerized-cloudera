@@ -36,15 +36,15 @@
   </property>
 
 
-  {# TODO if HADOOP_ENCRYPTION_ENABLED == 'true' #}
   <!--
     authentication : authentication only
-    integrity : integrity check in addition to authentication
-    privacy : data encryption in addition to integrity
+    integrity      : integrity check in addition to authentication
+    privacy        : data encryption in addition to integrity
   -->
   <property>
     <name>hadoop.rpc.protection</name>
-    <value>authentication</value>
+    <value>{{ SASL_PROTECTION | default('authentication') }}</value>
   </property>
+
   {% endif %}
 </configuration>

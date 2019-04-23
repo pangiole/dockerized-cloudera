@@ -15,7 +15,7 @@ function check_args {
   while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
-      --version)
+      -v|--version)
           cloudera_version="$2"
           shift
           shift # past value
@@ -49,7 +49,7 @@ function perform {
   ${action}   hadoop-mapred/jobhistory
   ${action}   hadoop-yarn/resourcemanager
   ${action}   hadoop-yarn/nodemanager
-  # ${action}   hive
+  ${action}   hive
   # ${action}   master
   # ${action}   worker
   ${action}   edge

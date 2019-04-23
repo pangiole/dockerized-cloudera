@@ -1,0 +1,238 @@
+#!/usr/bin/env bash
+#
+# This utility script creates Java keystore and trustore files for testing
+# purpose only.
+#
+# > DO NOT use this script in production environments!
+#
+# Rather than producing self-signed TLS certificates, this script tries to mimic
+# more realistic scenarios by producing the following 2 files:
+#
+#   - $outdir/$hostname.jks
+#     It bundles the Java server-side key pairs and certificates for the following
+#     two imaginary companies:
+#        1. MobyDock Root CA
+#        2. Alice & Bob Limited
+#     The first company plays the role of certification authority as it issues
+#     the certificate for the second company which plays the role of customer.
+#
+#   - $outdir/trustore.jks
+#     It bundles the Java client side certificate of the trusted signer which is
+#     the imaginary MobyDock Root CA
+#
+# This utility script is implemented using the Java keytool. Feel free to
+# implement an equivalent script using OpenSSL or the more advanced
+# Cloudflare's PKI and TLS toolkit
+#
+# @author Paolo Angioletti <pangiolet@tibco.com>
+#
+
+# Set default argument values
+outdir="$JAVA_HOME/jre/lib/security"
+password="changeit"
+# storetype="PKCS12"
+storetype="JSK"
+hostname="$(hostname -f)"
+certs="all"
+
+
+function clean_up {
+echo "Cleaning up $outdir"
+rm -f $outdir/rootca.jks /$outdir/$hostname.jks $outdir/truststore.jks
+}
+
+
+function print_usage {
+cat <<CAT
+Usage: ./mkcerts -o <outdir> [ --rootca | --host | --all ]
+CAT
+}
+
+
+function parse_args {
+while [[ $# -gt 0 ]]; do
+key="$1"
+case $key in
+    -h|--help)
+        print_usage
+        exit 0
+        ;;
+    -o|--outdir)
+        outdir="$2"
+        shift; shift
+        ;;
+    -p|--password)
+        password="$2"
+        shift; shift
+        ;;
+    --rootca)
+        certs="rootca"
+        shift
+        ;;
+    --host)
+        certs="host"
+        shift
+        ;;
+    --all)
+        certs="all"
+        shift
+        ;;
+    *)
+      shift
+    ;;
+esac
+done
+}
+
+
+function make_mobydock_rootca {
+# Create an imaginary root CA - Certification Authority with
+#    - a newly generated RSA public/private key pair
+#    - and a newly made self-signed certificate
+# all bundled within a new Java keystore file named keystore.jks
+#
+# This authority will later issue (sign) the customer certificate
+#
+keytool -genkeypair -v \
+  -alias rootca \
+  -dname "CN=MobyDock" \
+  -keystore $outdir/rootca.jks \
+  -keypass $password \
+  -storepass $password \
+  -keyalg RSA \
+  -keysize 4096 \
+  -ext KeyUsage:critical="keyCertSign" \
+  -ext BasicConstraints:critical="ca:true" \
+  -validity 9999
+
+# Export the MobyDock Root CA certificate from the above Java keystore file
+# to a standard rootca.crt file, so that it can be imported into some other
+# certificate bundles, such as the client-side Java truststore file
+#
+keytool -export -v \
+  -alias rootca \
+  -file $outdir/rootca.crt \
+  -keypass $password \
+  -storepass $password \
+  -keystore $outdir/rootca.jks \
+  -rfc
+}
+
+
+
+function make_customer_keystore {
+# It requires the rootca.jks file to have be created before hand
+if [[ ! -f $outdir/rootca.jks ]]; then
+  echo "ERROR: $outdir/rootca.jks not made yet!"
+  exit -1
+fi
+
+# Create an "imaginary" customer company (e.g. Alice & Bob Limited) with
+#    - a newly generated RSA public/private key pair
+#    - and a newly made, yet-to-be-signed, certificate
+# all bundled within the existing Java keystore file (the one created above
+# which contains the root CA certificate already).
+#
+# This is the customer certificate that needs to be signed by the root
+# certification authority.
+#
+# WARN: this certificate is tied to a specific hostname!
+#
+keytool -genkeypair -v \
+  -alias $hostname \
+  -dname "CN=$hostname, O=Alice & Bob Limited" \
+  -keystore $outdir/$hostname.jks \
+  -keypass $password \
+  -storepass $password \
+  -keyalg RSA \
+  -keysize 2048 \
+  -validity 385
+
+# Create a CSR - Certificate Signing Request for the Alice & Bob Limited
+# certificate. This request needs to be submitted to the root certification
+# authority which will reply with a signature.
+#
+keytool -certreq -v \
+  -alias $hostname \
+  -keypass $password \
+  -storepass $password \
+  -keystore $outdir/$hostname.jks \
+  -file $outdir/$hostname.csr
+
+# Simulate the submission of the above CSR - Certificate Signing Request
+# and simulate the signature as it would be applied by by the root CA
+# Technically, keyUsage should be digitalSignature for DHE or ECDHE,
+# keyEncipherment for RSA.
+# Note that we are giving a value for SAN - Subject Alternate Name
+# Read https://www.ssl.com/faqs/what-is-a-san-certificate/ for further details
+#
+keytool -gencert -v \
+  -alias rootca \
+  -keypass $password \
+  -storepass $password \
+  -keystore $outdir/rootca.jks \
+  -infile $outdir/$hostname.csr \
+  -outfile $outdir/$hostname.crt \
+  -ext KeyUsage:critical="digitalSignature,keyEncipherment" \
+  -ext EKU="serverAuth" \
+  -ext SAN="DNS:$hostname" \
+  -rfc
+
+# Install the signed certificate replied by the root CA into the
+# existing Java keystore file. That's what will finally create the
+# certificate chain.
+#
+echo "yes" | keytool -import -v \
+  -alias rootca \
+  -file $outdir/rootca.crt \
+  -keystore $outdir/$hostname.jks \
+  -storetype JKS \
+  -storepass $password
+
+# Import the signed certificate back into $hostname.jks
+keytool -import -v \
+  -alias $hostname \
+  -file $outdir/$hostname.crt \
+  -keystore $outdir/$hostname.jks \
+  -storetype JKS \
+  -storepass $password
+}
+
+
+
+function make_customer_trustore {
+# (7)
+# Finally creates a new client-side Java truststore file by importing
+# the above root CA certificate into it.
+#
+# Note that, instead of creating a new Java truststore file, we could
+# have appended the above root CA certificate to the existing
+# $JRE_HOME/lib/security/jssecacerts file which is read by default.
+#
+echo "yes" | keytool -import -v \
+  -alias rootca \
+  -file $outdir/rootca.crt \
+  -keypass $password \
+  -storepass $password \
+  -keystore $outdir/truststore.jks
+}
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+parse_args $*
+clean_up
+
+if [[ "$certs" == "rootca" ]]; then
+  make_mobydock_rootca
+elif [[ "$certs" == "host" ]]; then
+  make_customer_keystore
+  make_customer_trustore
+else # all
+  make_mobydock_rootca
+  make_customer_keystore
+  make_customer_trustore
+fi
+
+exit 0

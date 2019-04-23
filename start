@@ -13,10 +13,14 @@ readonly selfname=$(basename "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 readonly cwd="$(pwd)"
 
-readonly registry="registry.alpinedata.tech"
-readonly repository="pangiolet/cloudera"
-authentication="kerberos"
-opts=""
+function print_usage {
+cat <<CAT
+Usage:    $selfname -v <version> [ --kerberos ] [ --sasl ] [ --tls ]
+Versions: 5.16.1, 5.4.2
+CAT
+}
+
+
 
 while [[ $# -gt 0 ]]; do
 key="$1"
@@ -26,14 +30,21 @@ case $key in
         shift
         shift # past value
       ;;
+    -h|--help)
+        print_usage
+        exit 0
+      ;;
     --kerberos)
-        :
+        hadoop_auth="kerberos"
         shift
       ;;
-    --simple)
-        authentication="simple"
-        opts="--scale kdc=0"
-        shift
+    --sasl)
+        sasl_protection="privacy"
+        shift;
+      ;;
+    --sasl)
+        tls_encryption="true"
+        shift;
       ;;
     *)
       shift
@@ -42,27 +53,28 @@ esac
 done
 
 
-if [[ "${version}x" == "x" ]]; then
-  echo "Usage: $selfname --version <version> [ --simple | --kerberos]"
-  exit 1
-fi
+export resources="${resources:-$cwd/.cdh}"
+export version="${version:-5.16.1}"
+export hadoop_auth="${hadoop_auth:-simple}"
+export sasl_protection="${sasl_protection:-authentication}"
+export tls_encryption="${tls_encryption:-false}"
+export registry="registry.alpinedata.tech"
+export repository="pangiolet/cloudera"
 
-
-export resources=${resources:-$cwd/.cdh}
-export authentication
-export registry
-export repository
-export version
 
 cat <<CAT
 -----------------------------------
-Starting Cloudera Hadoop $version
+Starting Cloudera Hadoop with
+  - version          $version
+  - hadoop_auth      $hadoop_auth
+  - sasl_protection  $sasl_protection
+  - tls_encryption   $tls_encryption
 
 CAT
 
 docker-compose \
     --project-name cdh-$version \
     --file $selfdir/docker-compose.yml \
-    up --detach $opts
+    up --detach
 
 exit $?

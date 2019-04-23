@@ -1,20 +1,16 @@
 #!/usr/bin/env bash
 
-# Create an empty Kerberos realm database.
-# The -s option indicates that we'll be using a stash file to store what Kerberos calls the "master key"
-rm -Rf /var/kerberos/krb5kdc/principal*
-rm -Rf /var/kerberos/krb5kdc/.k5.DOCKER.NET
-echo -e "root\nroot" | kdb5_util create -s
-
 
 # See https://www.cloudera.com/documentation/enterprise/5-15-x/topics/cdh_sg_kerberos_prin_keytab_deploy.html#topic_3_4
 # Create Kerberos principals (with random keys) and export them to keytab files
 
-# Add Hadoop principals
-function add {
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add the given Hadoop principal (user/domain@DOCKER.NET)
+# to the Kerberos database
+function kerberos_add {
   user=$1
   domain=$2
-  princs=""
   if [[ "${domain}" == "yes" ]]; then
     kadmin.local -q "addprinc -randkey $user/docker.net"
   else
@@ -22,11 +18,13 @@ function add {
   fi
 }
 
-# Merge secrets in a resulting keytab
-function merge {
-  file=$1
-  users=$2
-  domain=$3
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Merge the given users' secrets in a single resulting keytab file
+function kerbers_merge {
+  users=$1
+  domain=$2
+  file=$3
   princs=""
   for user in $users; do
     if [[ "${domain}" == "yes" ]]; then
@@ -40,21 +38,42 @@ function merge {
 }
 
 
-#     user            domain
-add   'alice'         'no'
-add   'bob'           'no'
-add   'spark'         'yes'
-add   'HTTP'          'yes'
-add   'hdfs'          'yes'
-add   'yarn'          'yes'
-add   'mapred'        'yes'
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Initialize a brand new Kerberos database
+function kerberos_init {
+
+  # Remove the old Kerberso database data/records
+  rm -Rf /var/kerberos/krb5kdc/principal*
+  rm -Rf /var/kerberos/krb5kdc/.k5.DOCKER.NET
+
+  # The -s option indicates that we'll be using a stash file
+  # to store what Kerberos calls the "master key"
+  echo -e "root\nroot" | kdb5_util create -s
+
+  # ----------   user          domain
+  kerberos_add   'alice'       'no'
+  kerberos_add   'bob'         'no'
+  kerberos_add   'spark'       'yes'
+  kerberos_add   'HTTP'        'yes'
+  kerberos_add   'hdfs'        'yes'
+  kerberos_add   'yarn'        'yes'
+  kerberos_add   'mapred'      'yes'
+  kerberos_add   'hive'        'yes'
 
 
-#     file            users         domain
-merge 'alice.keytab'  'alice'       'no'
-merge 'bob.keytab'    'bob'
-merge 'spark.keytab'  'spark'       'yes'
-merge 'HTTP.keytab'   'HTTP'        'yes'
-merge 'hdfs.keytab'   'hdfs HTTP'   'yes'
-merge 'yarn.keytab'   'yarn HTTP'   'yes'
-merge 'mapred.keytab' 'mapred HTTP' 'yes'
+  # -----------  users         domain  file
+  kerbers_merge  'alice'       'no'    'alice.keytab'
+  kerbers_merge  'bob'         'no'    'bob.keytab'
+  kerbers_merge  'spark'       'yes'   'spark.keytab'
+  kerbers_merge  'HTTP'        'yes'   'HTTP.keytab'
+  kerbers_merge  'hdfs HTTP'   'yes'   'hdfs.keytab'
+  kerbers_merge  'yarn HTTP'   'yes'   'yarn.keytab'
+  kerbers_merge  'mapred HTTP' 'yes'   'mapred.keytab'
+  kerbers_merge  'hive'        'yes'   'hive.keytab'
+}
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# MAIN
+kerberos_init

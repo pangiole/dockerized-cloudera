@@ -1,24 +1,21 @@
 #!/usr/bin/env bash
 
-# Cleanup previous configuration
-rm -Rf /conf/*
-
-
+#
+# Setup user accounts with proper bash profiles
+#
 chmod +x /etc/docker/setup
-chmod +x /etc/docker/render
-
-export HADOOP_AUTHENTICATION=${HADOOP_AUTHENTICATION:-'simple'}
 if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then
   #                  user   group   domain
   /etc/docker/setup  alice  hadoop
   /etc/docker/setup  bob    hadoop
-  /etc/docker/setup  spark  hadoop  docker.net
 fi
+
 
 #
 # Render configuration templates by replacing {{ PLACEHOLDER }}
 # with corresponding shell environment variable values
 #
+chmod +x /etc/docker/render
 /etc/docker/render  /etc/hadoop/conf/core-site.xml
 /etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
 /etc/docker/render  /etc/hadoop/conf/mapred-site.xml
@@ -38,6 +35,9 @@ hadoop fs -chmod -R 775 /data
 hadoop fs -copyFromLocal -f /var/data/raw/titanic.csv /data/raw
 EOF
 
+
+# Cleanup previous configuration
+rm -Rf /conf/*
 
 # Publish the Hadoop configuration through the shared /conf directory
 files="core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml"

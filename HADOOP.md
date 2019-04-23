@@ -48,6 +48,7 @@ sudo cat <<CAT >> /etc/hosts
 127.0.0.1    jobhistory.docker.net
 127.0.0.1    resourcemanager.docker.net
 127.0.0.1    nodemanager1.docker.net
+127.0.0.1    hive.docker.net
 CAT
 ```
 

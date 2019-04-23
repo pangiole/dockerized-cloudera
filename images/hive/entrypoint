@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# Setup user accounts with proper bash profiles
+#
 chmod +x /etc/docker/setup
-chmod +x /etc/docker/render
-
-export HADOOP_AUTHENTICATION=${HADOOP_AUTHENTICATION:-'simple'}
 if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then
     #                  user   group    domain
     /etc/docker/setup  hive   hadoop   docker.net
@@ -13,17 +13,27 @@ fi
 #
 # Render configuration templates by replacing {{ PLACEHOLDER }}
 # with corresponding shell environment variable values
-
+chmod +x /etc/docker/render
 /etc/docker/render /etc/hadoop/conf/core-site.xml
 /etc/docker/render /etc/hadoop/conf/hdfs-site.xml
 /etc/docker/render /etc/hadoop/conf/mapred-site.xml
 /etc/docker/render /etc/hadoop/conf/yarn-site.xml
 /etc/docker/render /etc/hive/conf/hive-site.xml
 
+chmod +x /etc/docker/mkcerts
+/etc/docker/mkcerts --outdir $JAVA_HOME/jre/lib/security
+
+# Create warehouse directories
+su - hdfs <<'EOF'
+hadoop fs -mkdir -p /user/hive/warehouse
+hadoop fs -chmod -R 1777 /user/hive/warehouse
+EOF
 
 # Wait until namenode service is available
 while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
 
+# TODO Start the Hive Metastore as separate service
+# See https://www.cloudera.com/documentation/enterprise/5-16-x/topics/cdh_ig_hive_metastore_start.html
 
 # Start Hive server
 service hive-server2 start

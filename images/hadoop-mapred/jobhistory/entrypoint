@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# Setup user accounts with proper bash profiles
+#
 chmod +x /etc/docker/setup
-chmod +x /etc/docker/render
-
-export HADOOP_AUTHENTICATION=${HADOOP_AUTHENTICATION:-'simple'}
 if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then
     #                  user    group   domain
     /etc/docker/setup  mapred  hadoop  docker.net
@@ -12,7 +12,8 @@ fi
 #
 # Render configuration templates by replacing {{ PLACEHOLDER }}
 # with corresponding shell environment variable values
-
+#
+chmod +x /etc/docker/render
 /etc/docker/render  /etc/hadoop/conf/core-site.xml
 /etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
 /etc/docker/render  /etc/hadoop/conf/mapred-site.xml

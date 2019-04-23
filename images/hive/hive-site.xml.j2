@@ -7,10 +7,9 @@
     <!-- users do not have to edit hadoop configuration files (that may be managed as a centralized -->
     <!-- resource).                                                                                 -->
 
-
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <!-- Hive Metastore -->
-
+    <!-- Hive Metastore in Embedded Mode  -->
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <property>
         <name>hive.metastore.warehouse.dir</name>
         <value>/user/hive/warehouse</value>
@@ -20,32 +19,34 @@
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
         <value>jdbc:derby:;databaseName=/var/lib/hive/metastore/metastore_db;create=true</value>
-        <description>JDBC connect string for a JDBC metastore</description>
+        <description>JDBC connect string from a JDBC metastore</description>
     </property>
 
     <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
         <value>org.apache.derby.jdbc.EmbeddedDriver</value>
-        <description>Driver class name for a JDBC metastore</description>
+        <description>Driver class name from a JDBC metastore</description>
     </property>
-
-    
 
 
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <!-- Transactions and Compactor       -->
     <!-- See https://www.cloudera.com/documentation/enterprise/5-15-x/topics/cdh_ig_hiveserver2_configure.html#topic_18_5_1 -->
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <property>
         <name>hive.support.concurrency</name>
-        <value>false</value>        
-        <description>Whether hive supports concurrency or not. A zookeeper instance must be up and running for the default hive lock manager to support read-write locks.</description>
+        <value>false</value>
+        <description>
+          Whether hive supports concurrency or not.
+          A zookeeper instance must be up and running for the default hive
+          lock manager to support read-write locks.
+        </description>
     </property>
-
 
 
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <!-- HiveServer2                      -->
-
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <property>
         <name>hive.server2.thrift.port</name>
         <value>10000</value>
@@ -53,14 +54,62 @@
     </property>
 
 
-
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <!-- Query and DDL Execution          -->
-    
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <property>
         <name>hive.execution.engine</name>
         <value>mr</value>
         <description>Chooses execution engine. Options are: mr (Map Reduce, default), tez (Tez execution, for Hadoop 2 only), or spark (Spark execution, for Hive 1.1.0 onward).</description>
     </property>
-    
+
+
+    {% if TLS_ENCRYPTION == 'true' %}
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- TLS/SSL Encryption               -->
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <property>
+      <name>hive.server2.use.SSL</name>
+      <value>true</value>
+    </property>
+
+    <property>
+      <name>hive.server2.keystore.path</name>
+      <value>${java.home}/lib/security/keystore.jks</value>
+      <!-- NOTE that ${java.home} will be evaluated as "$JAVA_HOME/jre" -->
+    </property>
+
+    <property>
+      <name>hive.server2.keystore.password</name>
+      <value>changeit</value>
+    </property>
+    {% endif %}
+
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- Hadoop Authentication            -->
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- <property>
+        <name>hive.metastore.execute.setugi</name>
+        <value>true</value>
+    </property> -->
+
+    <!-- <property>
+        <name>hive.metastore.kerberos.principal</name>
+        <value>hive/docker.net@DOCKER.NET</value>
+    </property>
+    <property>
+        <name>hive.metastore.kerberos.keytab</name>
+        <value>/secrets/hive.keytab</value>
+    </property> -->
+
+    <!-- <property>
+        <name>hive.server2.authentication.kerberos.principal</name>
+        <value>hive/docker.net@DOCKER.NET</value>
+    </property>
+    <property>
+        <name>hive.server2.authentication.kerberos.keytab</name>
+        <value>/secrets/hive.keytab</value>
+    </property> -->
+
 </configuration>

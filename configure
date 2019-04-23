@@ -26,6 +26,7 @@ for file in $files; do
   expr="s/\/secrets/$base\/tmp\/conf/g"
   sed $expr $HADOOP_CONF_DIR/$file > $HADOOP_CONF_DIR/$file.local
   mv $HADOOP_CONF_DIR/$file.local $HADOOP_CONF_DIR/$file
+  printf "done\n"
 done
 
 
@@ -41,7 +42,9 @@ if [[ -f $resources/secrets/alice.keytab ]]; then
 export KRB5_CONFIG="$KRB5_CONFIG"
 export HADOOP_OPTS="\$HADOOP_OPTS -Djava.security.krb5.conf=\$KRB5_CONFIG"
 CAT
+  printf "done\n"
 
   printf "Acquiring Kerberos TGT for ${principal} ..."
   kinit -k -t ${keytab} ${principal}
+  printf "done\n"
 fi
