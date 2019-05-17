@@ -7,7 +7,7 @@ chmod +x /etc/docker/setup
 if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then
   #                  user   group   domain
   /etc/docker/setup  alice  hadoop
-  /etc/docker/setup  bob    hadoop
+  /etc/docker/setup  david    hadoop
 fi
 
 
@@ -36,17 +36,14 @@ hadoop fs -copyFromLocal -f /var/data/raw/titanic.csv /data/raw
 EOF
 
 
-# Cleanup previous configuration
-rm -Rf /conf/*
-
 # Publish the Hadoop configuration through the shared /conf directory
 files="core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml"
 for file in $files; do
-  cp /etc/hadoop/conf/$file /conf
+  cp /etc/hadoop/conf/$file /shared
 done
 
 # Publish the Kerberos configuration too
-cp /etc/krb5.conf /conf
+cp /etc/krb5.conf /shared
 
 
 # Keep this container running

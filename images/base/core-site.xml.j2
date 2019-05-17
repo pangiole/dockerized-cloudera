@@ -46,5 +46,31 @@
     <value>{{ SASL_PROTECTION | default('authentication') }}</value>
   </property>
 
+
+  <!--
+    Hadoop allows you to configure proxy users to submit jobs or
+    access HDFS on behalf of other users; this is called impersonation.
+    When you enable impersonation, any jobs submitted using a proxy are
+    executed with the impersonated user's existing privilege levels
+    rather than those of a superuser.
+
+    In the following configuration, alice is the impersonator (the real
+    user) whereas charlie and david are the subjects (impersonatee)
+  -->
+  <property>
+     <name>hadoop.proxyuser.alice.hosts</name>
+     <value>*</value>
+  </property>
+
+  <property>
+     <name>hadoop.proxyuser.alice.groups</name>
+     <value>*</value>
+  </property>
+
+  <property>
+     <name>hadoop.proxyuser.alice.users</name>
+     <value>charlie,david</value>
+  </property>
+
   {% endif %}
 </configuration>

@@ -53,7 +53,7 @@ esac
 done
 
 
-export resources="${resources:-$cwd/.cdh}"
+export resources="${resources:-$cwd/.cloudera}"
 export version="${version:-5.16.1}"
 export hadoop_auth="${hadoop_auth:-simple}"
 export sasl_protection="${sasl_protection:-authentication}"

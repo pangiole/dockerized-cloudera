@@ -4,7 +4,7 @@ This project gives you an easy way to build and start a fully functional Clouder
 > WARN  
 > This project is meant to facilitate software development and testing of BigData application.
 >
-> It is **not** meant for production use!
+> It is *not* meant for production use!
 
 
 The Docker images built with this project will provide you with:
@@ -67,6 +67,7 @@ The dockerized Cloudera Hadoop cluster is made of the following containers:
 - jobhistory
 - resourcemanager
 - nodemanager1
+- hive
 - edge
 
 
@@ -90,15 +91,17 @@ If you wish to run Hadoop client programs on host (for example on your macOS lap
 Once the containers cluster is started, it will reveal its configuration by generating the following files to your local working directory:
 
 ```
-├── .cdh
+├── .cloudera
 │   ├── conf
 │   │   ├── core-site.xml
 │   │   ├── hdfs-site.xml
 │   │   ├── mapred-site.xml
+│   │   ├── hive-site.xml
 │   │   └── yarn-site.xml
 │   ├── secrets
 │   │   ├── alice.keytab
 │   │   ├── hdfs.keytab
+│   │   ├── rootca.jks
 │   │   ├── yarn.keytab
 ...
 ```
@@ -115,9 +118,9 @@ dfs.client.use.datanode.hostname="true"
 
 # Additional settings when Kerberos authentication is enabled
 dfs.namenode.kerberos.principal="alice@DOCKER.NET"
-dfs.namenode.keytab.file="/path/to/.cdh/secrets/alice.keytab"
+dfs.namenode.keytab.file="/path/to/.cloudera/shared/alice.keytab"
 yarn.resourcemanager.principal="alice@DOCKER.NET"
-yarn.resourcemanager.keytab="/path/to/.cdh/secrets/alice.keytab"
+yarn.resourcemanager.keytab="/path/to/.cloudera/shared/alice.keytab"
 ```
 
 
@@ -137,6 +140,7 @@ sudo cat <<CAT >> /etc/hosts
 127.0.0.1    jobhistory.docker.net
 127.0.0.1    datanode1.docker.net
 127.0.0.1    nodemanager1.docker.net
+127.0.0.1    hive.docker.net
 CAT
 ```
 
@@ -150,7 +154,8 @@ As preliminary step, you need to build local mirrors of Linux RedHat YUM reposit
 ```bash
 ./yum/build \
   --version 5.16.1 \
-  --jdk /path/to/jdk-8u201-linux-x64.rpm
+  --jdk-8 /path/to/jdk-8u201-linux-x64.rpm
+  --jdk-7 /path/to/jdk-7u80-linux-x64.rpm
 ```
 
 Be patient as building YUM mirrors takes very long time to complete.

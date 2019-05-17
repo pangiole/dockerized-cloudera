@@ -94,7 +94,7 @@
   <!-- NameNode security config -->
   <property>
     <name>dfs.namenode.keytab.file</name>
-    <value>/secrets/hdfs.keytab</value>
+    <value>/shared/hdfs.keytab</value>
   </property>
   <property>
     <name>dfs.namenode.kerberos.principal</name>
@@ -108,7 +108,7 @@
   <!-- DataNode security config -->
   <property>
     <name>dfs.datanode.keytab.file</name>
-    <value>/secrets/hdfs.keytab</value>
+    <value>/shared/hdfs.keytab</value>
   </property>
   <property>
     <name>dfs.datanode.kerberos.principal</name>
@@ -140,7 +140,7 @@
   </property>
 
   <!--
-    This property is UNSPECIFIED by default.
+    This property value is empty string by default.
 
     Setting this property enables SASL for authentication of data transfer protocol.
     If this is enabled, then
@@ -149,14 +149,13 @@
       * and the HADOOP_SECURE_DN_USER  environment variable must be undefined when starting the DataNode process.
 
     Possible values are
-      * authentication : authentication only
-      * integrity : integrity check in addition to authentication
-      * privacy : data encryption in addition to integrity
+      * ''          : (empty string) authentication only!
+      * 'integrity' : integrity check in addition to authentication
+      * 'privacy'   : data encryption in addition to integrity
   -->
   <property>
     <name>dfs.data.transfer.protection</name>
-    <value>{{ SASL_PROTECTION | default('') }}</value>
-    {# <value>privacy</value> #}
+    <value>{% if SASL_PROTECTION == 'authentication' %}{% else %}{{ SASL_PROTECTION }}{% endif %}</value>
   </property>
 
   <!-- TODO Set dfs.encrypt.data.transfer as per hdfs-default.xml documentation -->
@@ -184,7 +183,7 @@
 
   <property>
     <name>dfs.web.authentication.kerberos.keytab</name>
-    <value>/secrets/HTTP.keytab</value>
+    <value>/shared/HTTP.keytab</value>
   </property>
 
   {% else %}

@@ -12,7 +12,7 @@ export PATH
 {% if HADOOP_AUTHENTICATION == 'kerberos' %}
 # Set Kerberos authentication variables
 export KERBEROS_PRINCIPAL="{{ comp1 }}{% if comp2 %}/{{ comp2 }}{% endif %}"
-export KERBEROS_KEYTAB="/secrets/{{ comp1 }}.keytab"
+export KERBEROS_KEYTAB="/shared/{{ comp1 }}.keytab"
 
 # Acquire Kerberos TGT
 kinit -k -t $KERBEROS_KEYTAB $KERBEROS_PRINCIPAL
@@ -37,18 +37,8 @@ Welcome to edge node!
 This is where you can execute client programs such as Hadoop, Beeline,
 Spark and others.
 
-  Hadoop
-  --------
     $ hadoop fs -ls /data
-
-
-  Hive
-  --------
     $ beeline -u \$HIVE_JDBC_URL -n \$USER -p password
-
-
-  Spark
-  --------
     $ spark-shell
 
 CAT

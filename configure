@@ -16,23 +16,23 @@ if [[ "${HADOOP_CONF_DIR}x" == "x" ]]; then
 fi
 
 echo "Setting up HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
-resources=${resources:-$cwd/.cdh}
+resources=${resources:-$cwd/.cloudera}
 files="core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml"
 for file in $files; do
   printf "Overwriting %-24s ... " "$file"
   rm -Rf $HADOOP_CONF_DIR/$file
-  cp $resources/conf/$file $HADOOP_CONF_DIR/$file
+  cp $resources/shared/$file $HADOOP_CONF_DIR/$file
   base=$(echo "$cwd" | sed 's/\//\\\//g')
-  expr="s/\/secrets/$base\/tmp\/conf/g"
+  expr="s/\/shared/$base\/tmp\/shared/g"
   sed $expr $HADOOP_CONF_DIR/$file > $HADOOP_CONF_DIR/$file.local
   mv $HADOOP_CONF_DIR/$file.local $HADOOP_CONF_DIR/$file
   printf "done\n"
 done
 
 
-if [[ -f $resources/secrets/alice.keytab ]]; then
-  export KRB5_CONFIG="${resources}/conf/krb5.conf"
-  keytab="${resources}/secrets/alice.keytab"
+if [[ -f $resources/shared/alice.keytab ]]; then
+  export KRB5_CONFIG="${resources}/shared/krb5.conf"
+  keytab="${resources}/shared/alice.keytab"
   principal="alice@DOCKER.NET"
 
   file="$HADOOP_CONF_DIR/hadoop-krb5.sh"

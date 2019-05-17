@@ -2,7 +2,7 @@ ARG repository
 ARG version
 FROM $repository/base:$version
 
-LABEL maintainer="pangiolet@tibco.com"
+LABEL maintainer="pangiole@tibco.com"
 LABEL description="This image provides Cloudera Hadoop DFS NameNode, JobHistory and YARN ResourceManager $version"
 
 

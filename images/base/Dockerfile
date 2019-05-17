@@ -1,6 +1,6 @@
 FROM centos:6.10
 
-LABEL maintainer="pangiolet@tibco.com"
+LABEL maintainer="pangiole@tibco.com"
 LABEL description="This image provides the base software for Cloudera Hadoop"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -44,15 +44,12 @@ RUN  yum install -y \
 # Oracle JDK setup
 #
 ENV JAVA_HOME="/usr/java/jdk1.8.0_201-amd64"
-ENV JRE_SECURITY="/usr/java/jdk1.8.0_201-amd64/jre/lib/security"
 
-RUN yum install -y http://repos/oracle/jdk.rpm \
+RUN yum install -y \
+        http://repos/oracle/jdk-8.rpm \
 &&  echo "crypto.policy=unlimited" >> $JAVA_HOME/jre/lib/security/java.security \
 &&  cp $JAVA_HOME/jre/lib/security/cacerts $JAVA_HOME/jre/lib/security/jssecacerts
 
-# &&  echo export JAVA_HOME="$(dirname $(dirname $(dirname $(readlink -f $(which java)))))" > /etc/profile.d/javaenv.sh \
-# &&  chmod 0755 /etc/profile.d/javaenv.sh \
-# &&  source /etc/profile.d/javaenv.sh \
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # TLS/SSL setup
@@ -72,7 +69,7 @@ COPY cdh-${version}.repo  /etc/yum.repos.d/cdh-${version}.repo
 
 RUN  yum update -y \
 &&   yum install -y hadoop-client \
-&&   for user in alice bob; do useradd --create-home --gid hadoop $user; echo -e "$user" | passwd $user --stdin; done \
+&&   for user in alice charlie david; do useradd --create-home --gid hadoop $user; echo -e "$user" | passwd $user --stdin; done \
 &&   cp -rp /etc/hadoop/conf.empty /etc/hadoop/conf.dockerized \
 &&   alternatives --install /etc/hadoop/conf hadoop-conf /etc/hadoop/conf.dockerized 50 \
 &&   alternatives --set hadoop-conf /etc/hadoop/conf.dockerized

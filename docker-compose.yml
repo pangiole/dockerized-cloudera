@@ -21,7 +21,7 @@ services:
       - "88:88"
       - "88:88/udp"
     volumes:
-      - "$resources/secrets:/secrets"
+      - "$resources/shared:/shared"
 
 
   namenode:
@@ -40,8 +40,7 @@ services:
       - "5051:5051"   # jvm-debug
     volumes:
       - "$resources/data/1/hdfs/nn:/data/1/hdfs/nn"
-      - "$resources/conf:/conf"
-      - "$resources/secrets:/secrets"
+      - "$resources/shared:/shared"
     depends_on:
       - kdc
 
@@ -69,8 +68,7 @@ services:
       - "5052:5052"   # jvm-debug
     volumes:
       - "$resources/data/1/hdfs/dn:/data/1/hdfs/dn"
-      - "$resources/conf:/conf"
-      - "$resources/secrets:/secrets"
+      - "$resources/shared:/shared"
     depends_on:
       - namenode
 
@@ -90,8 +88,7 @@ services:
       - "10020:10020" # protobuf
       - "5053:5053"   # jvm-debug
     volumes:
-      - "$resources/conf:/conf"
-      - "$resources/secrets:/secrets"
+      - "$resources/shared:/shared"
     depends_on:
       - namenode
 
@@ -112,8 +109,7 @@ services:
       - "8030:8030"   # protobuf
       - "5054:5054"   # jvm-debug
     volumes:
-      - "$resources/conf:/conf"
-      - "$resources/secrets:/secrets"
+      - "$resources/shared:/shared"
     depends_on:
       - namenode
       - jobhistory
@@ -134,8 +130,7 @@ services:
       # "0:0"         # protobuf (random)
       - "5055:5055"   # jvm-debug
     volumes:
-      - "$resources/conf:/conf"
-      - "$resources/secrets:/secrets"
+      - "$resources/shared:/shared"
     depends_on:
       - namenode
       - jobhistory
@@ -156,8 +151,7 @@ services:
       - "10000:10000" # jdbc
       - "5056:5056"   # jvm-debug
     volumes:
-      - "$resources/conf:/conf"
-      - "$resources/secrets:/secrets"
+      - "$resources/shared:/shared"
     depends_on:
       - namenode
       - resourcemanager
@@ -174,13 +168,10 @@ services:
     networks:
       - docker-net
     ports:
-       - "4040:4040"   # http (spark-shell)
-    #  - "9090:9090"   # http
-    #  - "5057:5057"   # jvm-debug
-    #  - "5058:5058"   # jvm-debug
+      - "4040:4040"    # http (spark-shell)
+      - "5057:5057"    # jvm-debug
     volumes:
-      - "$resources/conf:/conf"
-      - "$resources/secrets:/secrets"
+      - "$resources/shared:/shared"
     depends_on:
       - namenode
       - resourcemanager

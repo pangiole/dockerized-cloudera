@@ -33,8 +33,8 @@ function kerbers_merge {
       princs="$princs $user"
     fi
   done
-  kadmin.local -q "ktadd -norandkey -k /secrets/$file $princs"
-  chmod 644 /secrets/$file
+  kadmin.local -q "ktadd -norandkey -k /shared/$file $princs"
+  chmod 644 /shared/$file
 }
 
 
@@ -52,7 +52,8 @@ function kerberos_init {
 
   # ----------   user          domain
   kerberos_add   'alice'       'no'
-  kerberos_add   'bob'         'no'
+  kerberos_add   'charlie'     'no'
+  kerberos_add   'david'       'no'
   kerberos_add   'spark'       'yes'
   kerberos_add   'HTTP'        'yes'
   kerberos_add   'hdfs'        'yes'
@@ -63,7 +64,8 @@ function kerberos_init {
 
   # -----------  users         domain  file
   kerbers_merge  'alice'       'no'    'alice.keytab'
-  kerbers_merge  'bob'         'no'    'bob.keytab'
+  kerbers_merge  'charlie'     'no'    'charlie.keytab'
+  kerbers_merge  'david'       'no'    'david.keytab'
   kerbers_merge  'spark'       'yes'   'spark.keytab'
   kerbers_merge  'HTTP'        'yes'   'HTTP.keytab'
   kerbers_merge  'hdfs HTTP'   'yes'   'hdfs.keytab'

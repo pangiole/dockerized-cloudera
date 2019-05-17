@@ -24,7 +24,7 @@
 # implement an equivalent script using OpenSSL or the more advanced
 # Cloudflare's PKI and TLS toolkit
 #
-# @author Paolo Angioletti <pangiolet@tibco.com>
+# @author Paolo Angioletti <pangiole@tibco.com>
 #
 
 # Set default argument values

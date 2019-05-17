@@ -17,8 +17,13 @@ function check_args {
           shift
           shift # past value
         ;;
-      --jdk)
-          oracle_jdk="$2"
+      --jdk-8)
+          oracle_jdk_8="$2"
+          shift
+          shift # past value
+        ;;
+      --jdk-7)
+          oracle_jdk_7="$2"
           shift
           shift # past value
         ;;
@@ -40,9 +45,9 @@ CAT
   exit -1
   fi
 
-  if [[ "${oracle_jdk}x" == "x" || ! -e ${oracle_jdk} ]]; then cat <<CAT
+  if [[ "${oracle_jdk_8}x" == "x" || "${oracle_jdk_7}x" == "x" ]]; then cat <<CAT
 
-${red}Error: missing --jdk argument${reset}
+${red}Error: missing --jdk-8 and --jdk-7 arguments${reset}
 
   You are required to download the 64bit RPM package of the
   Oracle JDK - Java Development Toolkit from the official
@@ -88,12 +93,17 @@ CAT
 }
 
 
-function copy_jdk {
-  dest="${selfdir}/repos/oracle"
+function copy_jdks {
+  dest="$selfdir/repos/oracle"
   mkdir -p $dest
-  echo "Copying $(basename $oracle_jdk)"
-  yes | cp -rf $oracle_jdk ${selfdir}/repos/oracle
-  ln -snf $(basename $oracle_jdk) ${selfdir}/repos/oracle/jdk.rpm
+
+  echo "Copying $(basename $oracle_jdk_8)"
+  yes | cp -rf $oracle_jdk_8 $dest
+  ln -snf $(basename $oracle_jdk_8) $dest/jdk-8.rpm
+
+  echo "Copying $(basename $oracle_jdk_7)"
+  yes | cp -rf $oracle_jdk_7 $dest
+  ln -snf $(basename $oracle_jdk_7) $dest/jdk-7.rpm
 }
 
 
@@ -137,7 +147,7 @@ function download_spark {
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 check_args $*
-copy_jdk
+copy_jdks
 download_hadoop
 download_spark
 build_yum_image
