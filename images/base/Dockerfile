@@ -21,6 +21,7 @@ RUN  rm -f /etc/yum.repos.d/CentOS-* \
          ntp \
          python-jinja2 \
          vim  \
+         unzip \
          zip \
 &&   chkconfig iptables off \
 &&   echo -e "root" | passwd root --stdin
