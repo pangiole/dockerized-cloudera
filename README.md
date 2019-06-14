@@ -141,6 +141,7 @@ sudo cat <<CAT >> /etc/hosts
 127.0.0.1    datanode1.docker.net
 127.0.0.1    nodemanager1.docker.net
 127.0.0.1    hive.docker.net
+127.0.0.1    edge.docker.net
 CAT
 ```
 

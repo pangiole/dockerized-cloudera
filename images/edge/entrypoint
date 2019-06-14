@@ -46,5 +46,8 @@ done
 cp /etc/krb5.conf /shared
 
 
+# Start the SSH deamon service
+service sshd start
+
 # Keep this container running
 /etc/docker/idle

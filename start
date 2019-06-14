@@ -20,8 +20,6 @@ Versions: 5.16.1, 5.4.2
 CAT
 }
 
-
-
 while [[ $# -gt 0 ]]; do
 key="$1"
 case $key in

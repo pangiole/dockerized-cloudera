@@ -169,6 +169,7 @@ services:
     networks:
       - docker-net
     ports:
+      - "2222:22"      # ssh        (sshd)
       - "4042:4040"    # http       (spark-ui)
       - "5057:5057"    # jvm-debug
     volumes:

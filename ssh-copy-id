@@ -1,0 +1,8 @@
+#!/usr/bin/expect -f
+
+spawn ssh-copy-id -p 2222 $argv
+expect "yesno:"
+send "yes\n"
+expect "password:"
+send "alice\n"
+expect eof

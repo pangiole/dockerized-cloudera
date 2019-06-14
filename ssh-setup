@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+echo "Please wait ..."
+ssh-keygen -R [edge.docker.net]:2222 > /dev/null
+./ssh-copy-id "alice@edge.docker.net" > /dev/null
+ssh -p 2222 alice@edge.docker.net
