@@ -20,6 +20,24 @@ Versions: 5.16.1, 5.4.2
 CAT
 }
 
+
+if ! [ -x "$(command -v sshpass)" ]; then
+cat <<CAT
+FATAL!
+sshpass not found!
+You can install the missing tool as follows.
+
+- macos
+    brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
+
+- linux
+    yum install sshpass
+    apt-get install sshpass
+CAT
+exit 1
+fi
+
+
 while [[ $# -gt 0 ]]; do
 key="$1"
 case $key in
@@ -75,4 +93,9 @@ docker-compose \
     --file $selfdir/docker-compose.yml \
     up --detach
 
-exit $?
+echo "Configuring SSH  ... "
+sleep 16
+ssh-keygen -R [edge.docker.net]:2222
+ssh-keyscan -p 2222 edge.docker.net >> ~/.ssh/known_hosts
+sshpass -p "alice" ssh-copy-id -f -p 2222 "alice@edge.docker.net"
+

@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-
-echo "Please wait ..."
-ssh-keygen -R [edge.docker.net]:2222 > /dev/null
-$selfdir/ssh-copy-id "alice@edge.docker.net" > /dev/null
-ssh -p 2222 alice@edge.docker.net
