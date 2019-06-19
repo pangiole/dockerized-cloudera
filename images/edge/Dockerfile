@@ -6,8 +6,8 @@ LABEL maintainer="pangiole@tibco.com"
 LABEL description="This image provides an egde node for Cloudera Hadoop $version"
 
 # TODO add more Spark versions here ...
-ENV SPARK_VERSIONS="2.1.2"
-ENV HADOOP_VERSIONS="2.6"
+ENV SPARK_VERSIONS="2.4.3"
+ENV HADOOP_VERSIONS="2.7"
 
 RUN yum update -y \
 &&  yum install -y \

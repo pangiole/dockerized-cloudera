@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# This script installs and configure Hadoop 2.6 binaries onto your macoOS laptop
+# This script installs and configure Hadoop binaries onto your macOS laptop
 #
 # author: Paolo Angioletti <pangiole@tibco.com>
 #
@@ -9,32 +9,32 @@
 readonly selfname=$(dirname "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-mkdir -p $selfdir/tmp
+mkdir -p ${selfdir}/tmp
 
-version="2.6.0"
+version="3.2.0"
 tarball="$selfdir/tmp/hadoop-${version}.tar.gz"
-if [[ ! -f $tarball ]]; then
+if [[ ! -f ${tarball} ]]; then
   echo "Downloading hadoop-${version}.tar.gz"
   curl -l \
-    -o $tarball \
+    -o ${tarball} \
     https://archive.apache.org/dist/hadoop/core/hadoop-${version}/hadoop-${version}.tar.gz
 fi
 
 HADOOP_HOME=$HOME/Applications/hadoop-${version}
 echo "#"
 echo "# Extracting to HADOOP_HOME=$HADOOP_HOME"
-rm -Rf $HADOOP_HOME
-mkdir -p $(dirname $HADOOP_HOME)
-tar xfz $tarball -C $(dirname $HADOOP_HOME)
+rm -Rf ${HADOOP_HOME}
+mkdir -p $(dirname ${HADOOP_HOME})
+tar xfz ${tarball} -C $(dirname ${HADOOP_HOME})
 
 
-HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
 echo "#"
 echo "# Configuring HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
-mv $HADOOP_CONF_DIR $(dirname $HADOOP_CONF_DIR)/hadoop.default
-cp -rp $(dirname $HADOOP_CONF_DIR)/hadoop.default $(dirname $HADOOP_CONF_DIR)/hadoop.docker.net
-ln -snf $(dirname $HADOOP_CONF_DIR)/hadoop.docker.net $HADOOP_CONF_DIR
-cat <<CAT >> $HADOOP_CONF_DIR/hadoop-env.sh
+mv ${HADOOP_CONF_DIR} $(dirname ${HADOOP_CONF_DIR})/hadoop.default
+cp -rp $(dirname ${HADOOP_CONF_DIR})/hadoop.default $(dirname ${HADOOP_CONF_DIR})/hadoop.docker.net
+ln -snf $(dirname ${HADOOP_CONF_DIR})/hadoop.docker.net ${HADOOP_CONF_DIR}
+cat <<CAT >> ${HADOOP_CONF_DIR}/hadoop-env.sh
 # Add Kerberos settings
 [[ -f \$HADOOP_CONF_DIR/hadoop-krb5.sh ]] && source \$HADOOP_CONF_DIR/hadoop-krb5.sh
 CAT
@@ -44,6 +44,6 @@ cat <<CAT
 #
 # Please add the following settings to your environment shell
 #
-export HADOOP_HOME=$HADOOP_HOME
-export HADOOP_CONF_DIR=$HADOOP_CONF_DIR
+export HADOOP_HOME=${HADOOP_HOME}
+export HADOOP_CONF_DIR=${HADOOP_CONF_DIR}
 CAT
