@@ -1,5 +1,9 @@
 # .bash_profile
 
+readonly red="$(tput setaf 1)"
+readonly green="$(tput setaf 2)"
+readonly reset="$(tput setaf 7)"
+
 # Get the aliases and functions
 if [ -f ~/.bashrc ]; then
 	. ~/.bashrc
@@ -33,8 +37,8 @@ export HIVE_JDBC_URL="$HIVE_JDBC_URL;ssl=true;sslTrustStore=hive.docker.net;trus
 
 cat <<CAT
 
-Welcome to edge node!
-This is where you can execute client programs such as Hadoop, Beeline,
+${red}Welcome to the edge node!${reset}
+This is where you can execute client tools such as Hadoop, Beeline,
 Spark and others.
 
     $ hadoop fs -ls /data

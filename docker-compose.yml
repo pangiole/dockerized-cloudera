@@ -138,24 +138,24 @@ services:
       - resourcemanager
 
 
-#  hive:
-#    image: "$registry/$repository/hive:$version"
-#    hostname: "hive.docker.net"
-#    container_name: "hive"
-#    environment:
-#      HADOOP_AUTHENTICATION: "$hadoop_auth"
-#      SASL_PROTECTION: "$sasl_protection"
-#      TLS_ENCRYPTION: "$tls_encryption"
-#    networks:
-#      - docker-net
-#    ports:
-#      - "10000:10000" # jdbc
-#      - "5056:5056"   # jvm-debug
-#    volumes:
-#      - "$resources/shared:/shared"
-#    depends_on:
-#      - namenode
-#      - resourcemanager
+  hive:
+    image: "$registry/$repository/hive:$version"
+    hostname: "hive.docker.net"
+    container_name: "hive"
+    environment:
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
+    networks:
+      - docker-net
+    ports:
+      - "10000:10000" # jdbc
+      - "5056:5056"   # jvm-debug
+    volumes:
+      - "$resources/shared:/shared"
+    depends_on:
+      - namenode
+      - resourcemanager
 
 
   edge:

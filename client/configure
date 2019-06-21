@@ -18,9 +18,9 @@ fi
 echo "Setting up HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
 resources=${resources:-$cwd/.cloudera}
 files="core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml"
-for file in $files; do
+for file in ${files}; do
   printf "Overwriting %-24s ... " "$file"
-  rm -Rf $HADOOP_CONF_DIR/$file
+  rm -Rf ${HADOOP_CONF_DIR}/$file
   cp $resources/shared/$file $HADOOP_CONF_DIR/$file
   base=$(echo "$cwd" | sed 's/\//\\\//g')
   expr="s/\/shared/$base\/tmp\/shared/g"

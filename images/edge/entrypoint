@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
 #
-# Setup user accounts with proper bash profiles
+# Setup user accounts with proper ~/.bash_profile
 #
 chmod +x /etc/docker/setup
-if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then
-  #                  user   group   domain
-  /etc/docker/setup  alice  hadoop
-  /etc/docker/setup  david    hadoop
-fi
+# --------------   user   group   domain
+/etc/docker/setup  alice  hadoop
+/etc/docker/setup  david  hadoop
+
 
 
 #

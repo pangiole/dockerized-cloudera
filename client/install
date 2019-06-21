@@ -11,7 +11,7 @@ readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 mkdir -p ${selfdir}/tmp
 
-version="3.2.0"
+version="${1:-3.2.0}"
 tarball="$selfdir/tmp/hadoop-${version}.tar.gz"
 if [[ ! -f ${tarball} ]]; then
   echo "Downloading hadoop-${version}.tar.gz"
@@ -20,17 +20,15 @@ if [[ ! -f ${tarball} ]]; then
     https://archive.apache.org/dist/hadoop/core/hadoop-${version}/hadoop-${version}.tar.gz
 fi
 
-HADOOP_HOME=$HOME/Applications/hadoop-${version}
-echo "#"
-echo "# Extracting to HADOOP_HOME=$HADOOP_HOME"
+HADOOP_HOME=$HOME/hadoop-${version}
+echo "Extracting to HADOOP_HOME=$HADOOP_HOME"
 rm -Rf ${HADOOP_HOME}
 mkdir -p $(dirname ${HADOOP_HOME})
 tar xfz ${tarball} -C $(dirname ${HADOOP_HOME})
 
 
 HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
-echo "#"
-echo "# Configuring HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
+echo "Configuring HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
 mv ${HADOOP_CONF_DIR} $(dirname ${HADOOP_CONF_DIR})/hadoop.default
 cp -rp $(dirname ${HADOOP_CONF_DIR})/hadoop.default $(dirname ${HADOOP_CONF_DIR})/hadoop.docker.net
 ln -snf $(dirname ${HADOOP_CONF_DIR})/hadoop.docker.net ${HADOOP_CONF_DIR}
@@ -41,9 +39,10 @@ CAT
 
 
 cat <<CAT
-#
-# Please add the following settings to your environment shell
-#
-export HADOOP_HOME=${HADOOP_HOME}
-export HADOOP_CONF_DIR=${HADOOP_CONF_DIR}
+Please add the following settings to your environment shell
+--------------------
+
+export HADOOP_HOME=\$HOME/hadoop-${version}
+export HADOOP_CONF_DIR=\${HADOOP_HOME}/etc/hadoop
+-------------------
 CAT

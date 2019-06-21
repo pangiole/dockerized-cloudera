@@ -1,5 +1,5 @@
-# Dockerized Cloudera Hadoop
-This project gives you an easy way to build and start a fully functional Cloudera Hadoop cluster of Docker containers on your local machine.
+# Cloudera Docker 
+This project gives you an easy way to build and start a local Cloudera Hadoop cluster whose services are running within Docker containers on the same host.
 
 > WARN  
 > This project is meant to facilitate software development and testing of BigData application.
@@ -82,9 +82,9 @@ The ``edge`` container is special: it mimics operations from a typical _"edge no
 
 
 ## Clients
-The containers cluster supports any client written with matching Hadoop libraries. Examples are: the command line `hadoop` tool, the Hive `beeline` tool, the Apache SparkSubmit tool and the Alpine/Chorus Datasources.
+This Cloudera Docker cluster supports any client program built with Hadoop libraries matching the server-side ones. Examples are: the command line `hadoop` tool, the Hive `beeline` tool, the Apache `spark-submit` tool and the Alpine/Chorus systems.
 
-If you wish to run Hadoop client programs on host (for example on your macOS laptop), such as the `hadoop` command line tool, then read the [HADOOP.md](HADOOP.md) file for further information.
+If you wish to run Hadoop client tools on host (for example on your macOS laptop) then read the [HADOOP_CLIENT.md](HADOOP_CLIENT.md) file for further information.
 
 
 ### Resources
@@ -129,10 +129,8 @@ All of the containers belonging to the Clouder Hadoop cluster will join the same
 
 Docker port forwarding will allow applications/services running on your Docker host to communicate with the dockerized services running in the cluster as long as you update your `/etc/hosts` file as follows
 
-```bash
-sudo cat <<CAT >> /etc/hosts
-
-# Dockerized Cloudera Hadoop cluster
+```
+# Cloudera Docker
 #
 127.0.0.1    kdc.docker.net
 127.0.0.1    namenode.docker.net
@@ -142,7 +140,6 @@ sudo cat <<CAT >> /etc/hosts
 127.0.0.1    nodemanager1.docker.net
 127.0.0.1    hive.docker.net
 127.0.0.1    edge.docker.net
-CAT
 ```
 
 
