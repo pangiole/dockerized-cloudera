@@ -7,14 +7,15 @@ Execute the `install` script to automatically download and extract the desired H
 
 1. Download and extract Hadoop client binaries
     ```
-    $ ./client/install 2.6.0
+    $ ./client/install 3.2.0
     ```
     
 2. Update your local `~/.bash_profile`
     ```
     $ cat <<CAT >> ~/.bash_profile
-    export HADOOP_HOME=$HOME/hadoop-2.6.0
-    export HADOOP_CONF_DIR=$HOME/hadoop-2.6.0/etc/hadoop
+    export HADOOP_HOME=$HOME/hadoop-3.2.0
+    export HADOOP_CONF_DIR=$HOME/hadoop-3.2.0/etc/hadoop
+    export HADOOP_OPTIONAL_TOOLS=hadoop-azure
 
     CAT
     ```
@@ -98,7 +99,7 @@ $ brew link --force openssl
 ```
 
 
-### Hadoop 2.6.0
+### Hadoop (latest!)
 Git clone the [apache/hadoop](https://github.com/apache/hadoop) source code repository, checkout the right release branch and apply a small patch:
 
 ```bash
@@ -106,16 +107,7 @@ $ mkdir tmp && cd $_
 $ git clone https://github.com/apache/hadoop.git
 $ cd hadoop
 
-$ git checkout branch-2.6.0
-$ git apply ../../hadoop-2.6.0.patch
-```
-
-Make sure that, from the [Oracle website](https://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html), you got a Java SDK 1.7.0 installed and configured as follows:
-
-```bash
-$ export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home"
-$ sudo ln -snf lib $JAVA_HOME/Classes
-$ sudo ln -snf tools.jar $JAVA_HOME/Classes/classes.jar
+$ git checkout trunk
 ```
 
 
@@ -133,36 +125,7 @@ Copy the native libraries over:
 
 ```bash
 $ cp -rp \
-      ./hadoop-dist/target/hadoop-2.6.0/lib/native \
+      ./hadoop-dist/target/hadoop-???/lib/native \
       $HADOOP_HOME/lib
 ```
 
-
-### Hadoop 3.2.0
-
-Git clone the [apache/hadoop](https://github.com/apache/hadoop) source code repository, checkout the right release:
-
-```
-$ mkdir tmp && cd $_
-$ git clone https://github.com/apache/hadoop.git
-$ cd hadoop
-
-$ git checkout branch-3.2.0
-```
-
-Then kick-off the Maven build as follows:
-
-```bash
-$ mvn clean package \
-      -Pdist,native -Dtar \
-      -DskipTests -Dmaven.javadoc.skip=true \
-      -Dhttps.protocols=TLSv1.2
-```
-
-Copy the native libraries over:
-
-```bash
-$ cp -rp \
-      ./hadoop-dist/target/hadoop-3.2.0/lib/native \
-      $HADOOP_HOME/lib
-```
