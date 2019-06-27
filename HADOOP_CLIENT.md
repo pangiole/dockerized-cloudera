@@ -125,7 +125,9 @@ Copy the native libraries over:
 
 ```bash
 $ cp -rp \
-      ./hadoop-dist/target/hadoop-???/lib/native \
+      ./hadoop-dist/target/hadoop-3.3.0-SNAPSHOT/lib/native \
       $HADOOP_HOME/lib
+      
+$ hadoop checknative      
 ```
 
