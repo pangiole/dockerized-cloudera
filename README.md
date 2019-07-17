@@ -31,8 +31,8 @@ The provided `./start` script will make your Docker host pull the new images fro
 ```bash
 docker login \
   registry.alpinedata.tech \
-  -u <username> \
-  -t <token>
+  --username <username> \
+  --password-stdin
 ```
 
 More information are given in the official [GitLab documentation](https://docs.gitlab.com/ee/user/project/container_registry.html)
