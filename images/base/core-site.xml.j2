@@ -48,6 +48,19 @@
 
 
   <!--
+    The mapping from Kerberos principals to short names
+  -->
+  <property>
+    <name>hadoop.security.auth_to_local</name>
+    <value>
+      RULE:[1:$1](.*)s/(.*)/$1/g
+      RULE:[2:$1](.*)s/(.*)/$1/g
+      DEFAULT
+    </value>
+  </property>
+
+
+  <!--
     Hadoop allows you to configure proxy users to submit jobs or
     access HDFS on behalf of other users; this is called impersonation.
     When you enable impersonation, any jobs submitted using a proxy are

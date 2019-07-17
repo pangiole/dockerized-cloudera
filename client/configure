@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# This script configures you local Hadoop 2.6 binaries
+# This script configures you local Hadoop client binaries
 #
 # author: Paolo Angioletti <pangiole@tibco.com>
 #

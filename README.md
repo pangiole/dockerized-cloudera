@@ -1,4 +1,4 @@
-# Cloudera Docker 
+# Cloudera Docker
 This project gives you an easy way to build and start a local Cloudera Hadoop cluster whose services are running within Docker containers on the same host.
 
 > WARN  
@@ -84,7 +84,7 @@ The ``edge`` container is special: it mimics operations from a typical _"edge no
 ## Clients
 This Cloudera Docker cluster supports any client program built with Hadoop libraries matching the server-side ones. Examples are: the command line `hadoop` tool, the Hive `beeline` tool, the Apache `spark-submit` tool and the Alpine/Chorus systems.
 
-If you wish to run Hadoop client tools on host (for example on your macOS laptop) then read the [HADOOP_CLIENT.md](HADOOP_CLIENT.md) file for further information.
+If you wish to run Hadoop client tools on host (for example on your macOS laptop) then read the [client/HADOOP.md](./client/HADOOP.md) file for further information.
 
 
 ### Resources
