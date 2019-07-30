@@ -11,6 +11,7 @@
 
 readonly selfname=$(basename "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+readonly workingdir="$(pwd)"
 readonly green="\033[32m"
 readonly reset="\033[0m"
 
@@ -24,3 +25,4 @@ for container in datanode1 nodemanager1 resourcemanager namenode jobhistory hive
 done
 
 docker container prune --force
+rm -Rf $workingdir/.cloudera

@@ -67,22 +67,37 @@
     executed with the impersonated user's existing privilege levels
     rather than those of a superuser.
 
-    In the following configuration, alice is the impersonator (the real
-    user) whereas charlie and david are the subjects (impersonatee)
+    In the following configuration, alice is the impersonator (the real user)
+    whereas charlie and david are the subjects (the impersonatees)
   -->
   <property>
      <name>hadoop.proxyuser.alice.hosts</name>
      <value>*</value>
   </property>
-
   <property>
      <name>hadoop.proxyuser.alice.groups</name>
      <value>*</value>
   </property>
-
   <property>
      <name>hadoop.proxyuser.alice.users</name>
      <value>charlie,david</value>
+  </property>
+
+  <!--
+    And, in the following configuration, hive is the impersonator (the real user)
+    whereas alice, charlie and david are the subjects (the impersonatees)
+  -->
+  <property>
+    <name>hadoop.proxyuser.hive.hosts</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.hive.groups</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.hive.users</name>
+    <value>alice,charlie,david</value>
   </property>
 
   {% endif %}

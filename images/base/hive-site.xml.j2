@@ -1,12 +1,6 @@
 <configuration>
     <!-- see https://cwiki.apache.org/confluence/display/Hive/Configuration+Properties -->
 
-    <!-- Hive Configuration can either be stored in this file or in the hadoop configuration files  -->
-    <!-- that are implied by Hadoop setup variables.                                                -->
-    <!-- Aside from Hadoop setup variables - this file is provided as a convenience so that Hive    -->
-    <!-- users do not have to edit hadoop configuration files (that may be managed as a centralized -->
-    <!-- resource).                                                                                 -->
-
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <!-- Hive Metastore in Embedded Mode  -->
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
@@ -33,35 +27,43 @@
     <!-- Transactions and Compactor       -->
     <!-- See https://www.cloudera.com/documentation/enterprise/5-15-x/topics/cdh_ig_hiveserver2_configure.html#topic_18_5_1 -->
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--
+      Whether hive supports concurrency or not.
+      A zookeeper instance must be up and running for the
+      default hive lock manager to support read-write locks.
+    -->
     <property>
         <name>hive.support.concurrency</name>
         <value>false</value>
-        <description>
-          Whether hive supports concurrency or not.
-          A zookeeper instance must be up and running for the default hive
-          lock manager to support read-write locks.
-        </description>
     </property>
 
 
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <!-- HiveServer2                      -->
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--
+      TCP port number to listen on, default 10000
+    -->
     <property>
         <name>hive.server2.thrift.port</name>
         <value>10000</value>
-        <description>TCP port number to listen on, default 10000</description>
     </property>
 
 
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <!-- Query and DDL Execution          -->
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--
+      Chooses data processing engine. Options are:
+        * mr (Map Reduce, default),
+        * tez (Tez execution, for Hadoop 2 only),
+        * spark (Spark execution, for Hive 1.1.0 onward)
+    -->
     <property>
         <name>hive.execution.engine</name>
         <value>mr</value>
-        <description>Chooses data processing engine. Options are: mr (Map Reduce, default), tez (Tez execution, for Hadoop 2 only), or spark (Spark execution, for Hive 1.1.0 onward).</description>
     </property>
+
 
 
     {% if TLS_ENCRYPTION == 'true' %}
@@ -86,30 +88,48 @@
     {% endif %}
 
 
+    {% if HADOOP_AUTHENTICATION == 'kerberos' %}
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <!-- Hadoop Authentication            -->
+    <!-- Kerberos Authentication          -->
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <!-- <property>
-        <name>hive.metastore.execute.setugi</name>
-        <value>true</value>
-    </property> -->
+    <!--
+      It is a client-facing property that controls the type of authentication
+      HiveServer2 uses for connections to clients. In this case, HiveServer2
+      uses Kerberos to authenticate incoming clients.
+    -->
+    <property>
+      <name>hive.server2.authentication</name>
+      <value>KERBEROS</value>
+    </property>
 
-    <!-- <property>
-        <name>hive.metastore.kerberos.principal</name>
-        <value>hive/docker.net@DOCKER.NET</value>
+    <!--
+      It is the Kerberos principal for the host where HiveServer2 is running.
+    -->
+    <property>
+      <name>hive.server2.authentication.kerberos.principal</name>
+      <value>hive/docker.net@DOCKER.NET</value>
+    </property>
+
+    <!--
+      It is the keytab file for that principal.
+    -->
+    <property>
+      <name>hive.server2.authentication.kerberos.keytab</name>
+      <value>/shared/hive.keytab</value>
+    </property>
+
+    <!--
+      Enable user impersonation for HiveServer2 to let users execute queries
+      and access HDFS files as the connected user rather than as the hive user.
+    -->
+    <property>
+      <name>hive.server2.enable.impersonation</name>
+      <value>true</value>
     </property>
     <property>
-        <name>hive.metastore.kerberos.keytab</name>
-        <value>/shared/hive.keytab</value>
-    </property> -->
-
-    <!-- <property>
-        <name>hive.server2.authentication.kerberos.principal</name>
-        <value>hive/docker.net@DOCKER.NET</value>
+      <name>hive.server2.enable.doAs</name>
+      <value>true</value>
     </property>
-    <property>
-        <name>hive.server2.authentication.kerberos.keytab</name>
-        <value>/shared/hive.keytab</value>
-    </property> -->
+    {% endif %}
 
 </configuration>

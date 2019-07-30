@@ -32,7 +32,6 @@ chmod 755 /var/log/hadoop-yarn
 while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
 
 
-
 # YARN requires a staging directory for temporary files created by running jobs.
 # By default it creates /tmp/hadoop-yarn/staging with restrictive permissions
 # that may prevent your users from running jobs. To forestall this, you should

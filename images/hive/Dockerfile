@@ -11,7 +11,6 @@ RUN yum update -y \
 &&  yum clean all
 
 
-COPY hive-site.xml.j2  /etc/hive/conf/hive-site.xml.j2
 COPY entrypoint        /etc/docker/entrypoint
 
 

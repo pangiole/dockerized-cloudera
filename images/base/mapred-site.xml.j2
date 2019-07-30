@@ -35,6 +35,60 @@
     <value>/user</value>
   </property>
 
+  <!--
+    Range of ports that the MapReduce AM can use when binding.
+    Leave blank if you want all possible ports.
+    For example 50000-50050,50100-50200
+  -->
+  <property>
+    <name>yarn.app.mapreduce.am.job.client.port-range</name>
+    <value>8043-8043</value>
+  </property>
+
+  <!--
+    The maximum size of user-logs of each task in KB.
+    0 disables the cap.
+  -->
+  <property>
+    <name>mapreduce.task.userlog.limit.kb</name>
+    <value>512</value>
+  </property>
+
+  <!--
+    The maximum size of the MRAppMaster attempt container logs in KB.
+    0 disables the cap.
+  -->
+  <property>
+    <name>yarn.app.mapreduce.am.container.log.limit.kb</name>
+    <value>512</value>
+  </property>
+
+  <!--
+    Number of backup files for the ApplicationMaster logs when using
+    ContainerRollingLogAppender (CRLA).
+    See org.apache.log4j.RollingFileAppender.maxBackupIndex. By default,
+    ContainerLogAppender (CLA) is used, and container logs are not rolled.
+    CRLA is enabled for the ApplicationMaster when both
+    mapreduce.task.userlog.limit.kb and
+    yarn.app.mapreduce.am.container.log.backups are greater than zero.
+  -->
+  <property>
+    <name>yarn.app.mapreduce.am.container.log.backups</name>
+    <value>4</value>
+  </property>
+
+  <!--
+    Number of backup files for task logs when using ContainerRollingLogAppender (CRLA).
+    See org.apache.log4j.RollingFileAppender.maxBackupIndex. By default,
+    ContainerLogAppender (CLA) is used, and container logs are not rolled.
+    CRLA is enabled for tasks when both mapreduce.task.userlog.limit.kb and
+    yarn.app.mapreduce.task.container.log.backups are greater than zero.
+  -->
+  <property>
+    <name>yarn.app.mapreduce.task.container.log.backups</name>
+    <value>4</value>
+  </property>
+
 
 
   {# ========================================================================= #}

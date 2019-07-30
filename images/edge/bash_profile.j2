@@ -13,26 +13,32 @@ fi
 PATH="$PATH:$HOME/bin"
 export PATH
 
+# Configure Hadoop
+export HADOOP_CONF_DIR="/etc/hadoop/conf"
+export YARN_CONF_DIR="/etc/hadoop/conf"
+
+# Configure Hive2
+export HIVE2_URL="jdbc:hive2://hive.docker.net:10000/default"
+{% if HADOOP_AUTHENTICATION == 'kerberos' %}
+export HIVE2_URL="$HIVE2_URL;principal=hive/docker.net@DOCKER.NET"
+{% endif %}
+{% if TLS_ENCRYPTION == 'true' %}
+export HIVE2_URL="$HIVE2_URL;ssl=true;sslTrustStore=hive.docker.net;trustStorePassword=changeit"
+{% endif %}
+
 {% if HADOOP_AUTHENTICATION == 'kerberos' %}
 # Set Kerberos authentication variables
 export KERBEROS_PRINCIPAL="{{ comp1 }}{% if comp2 %}/{{ comp2 }}{% endif %}"
 export KERBEROS_KEYTAB="/shared/{{ comp1 }}.keytab"
-
 # Acquire Kerberos TGT
 kinit -k -t $KERBEROS_KEYTAB $KERBEROS_PRINCIPAL
 {% endif %}
 
+{#
 # Configure Apache Spark
 export SPARK_HOME="/opt/spark"
-export HADOOP_CONF_DIR="/etc/hadoop/conf"
-export YARN_CONF_DIR="/etc/hadoop/conf"
 export PATH="$PATH:$SPARK_HOME/bin"
-
-# Configure Beeline
-export HIVE_JDBC_URL="jdbc:hive2://hive.docker.net:10000/default"
-{% if TLS_ENCRYPTION == 'true' %}
-export HIVE_JDBC_URL="$HIVE_JDBC_URL;ssl=true;sslTrustStore=hive.docker.net;trustStorePassword=changeit"
-{% endif %}
+#}
 
 
 cat <<CAT
@@ -42,7 +48,7 @@ This is where you can execute client tools such as Hadoop, Beeline,
 Spark and others.
 
     $ hadoop fs -ls /data
-    $ beeline -u \$HIVE_JDBC_URL -n \$USER -p password
+    $ beeline -u \$HIVE2_URL -n \$USER -p bogus
     $ spark-shell
 
 CAT

@@ -28,10 +28,24 @@ while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
 # TODO careful with port number 1004
 
 
+# Create data files and sleep
 su - alice <<'EOF'
-hadoop fs -mkdir -p /data/raw
+hadoop fs -mkdir -p /data/titanic
+hadoop fs -mkdir -p /data/biostats
 hadoop fs -chmod -R 775 /data
-hadoop fs -copyFromLocal -f /var/data/raw/titanic.csv /data/raw
+hadoop fs -copyFromLocal -f /etc/docker/titanic.csv  /data/titanic
+hadoop fs -copyFromLocal -f /etc/docker/biostats.csv /data/biostats
+sleep 8
+EOF
+
+
+# Create Hive tables and sleep
+su - alice <<'EOF'
+beeline \
+  -u $HIVE2_URL \
+  -n alice -p bogus \
+  -f /etc/docker/create.hql
+sleep 4  
 EOF
 
 
@@ -43,7 +57,6 @@ done
 
 # Publish the Kerberos configuration too
 cp /etc/krb5.conf /shared
-
 
 # Start the SSH deamon service
 service sshd start

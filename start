@@ -11,7 +11,7 @@
 
 readonly selfname=$(basename "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-readonly cwd="$(pwd)"
+readonly workingdir="$(pwd)"
 
 function print_usage {
 cat <<CAT
@@ -67,7 +67,7 @@ esac
 done
 
 
-export resources="${resources:-$cwd/.cloudera}"
+export resources="${resources:-$workingdir/.cloudera}"
 export version="${version:-5.16.1}"
 export hadoop_auth="${hadoop_auth:-simple}"
 export sasl_protection="${sasl_protection:-authentication}"
@@ -91,9 +91,15 @@ docker-compose \
     --file $selfdir/docker-compose.yml \
     up --detach
 
+
 echo "Configuring SSH  ... "
 sleep 32
 ssh-keygen -R [edge.docker.net]:2222
 ssh-keyscan -p 2222 edge.docker.net >> ~/.ssh/known_hosts
 sshpass -p "alice" ssh-copy-id -f -p 2222 "alice@edge.docker.net"
 
+
+echo "Configuring Hadoop client ... "
+sleep 32
+$selfdir/client/configure
+exit 0

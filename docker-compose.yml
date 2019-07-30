@@ -126,8 +126,9 @@ services:
     networks:
       - docker-net
     ports:
-      # "0:0"         # protobuf
+      - "8041:8041"   # protobuf
       - "8042:8042"   # http     (yarn-ui)
+      - "8043:8043"   # protobuf (map-reduce-AM)
       - "4041:4040"   # http     (spark-ui)
       - "5055:5055"   # jvm-debug
     volumes:

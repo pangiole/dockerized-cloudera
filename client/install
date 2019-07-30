@@ -9,18 +9,42 @@
 readonly selfname=$(dirname "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+
 mkdir -p ${selfdir}/tmp
 
-version="${1:-3.2.0}"
-tarball="$selfdir/tmp/hadoop-${version}.tar.gz"
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function install_hive {
+# hive_version="${1:-3.1.1}"
+hive_version="${1:-1.1.0}"
+tarball="$selfdir/tmp/apache-hive-${hive_version}-bin.tar.gz"
 if [[ ! -f ${tarball} ]]; then
-  echo "Downloading hadoop-${version}.tar.gz"
+  echo "Downloading apache-hive-${hive_version}-bin.tar.gz"
   curl -l \
     -o ${tarball} \
-    https://archive.apache.org/dist/hadoop/core/hadoop-${version}/hadoop-${version}.tar.gz
+    https://archive.apache.org/dist/hive/hive-${hive_version}/apache-hive-${hive_version}-bin.tar.gz
 fi
 
-HADOOP_HOME=$HOME/hadoop-${version}
+HIVE_HOME=$HOME/apache-hive-${hive_version}-bin
+echo "Extracting to HIVE_HOME=$HIVE_HOME"
+rm -Rf ${HIVE_HOME}
+mkdir -p $(dirname ${HIVE_HOME})
+tar xfz ${tarball} -C $(dirname ${HIVE_HOME})
+}
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function install_hadoop {
+# hadoop_version="${1:-3.2.0}"
+hadoop_version="${1:-2.6.0}"
+tarball="$selfdir/tmp/hadoop-${hadoop_version}.tar.gz"
+if [[ ! -f ${tarball} ]]; then
+  echo "Downloading hadoop-${hadoop_version}.tar.gz"
+  curl -l \
+    -o ${tarball} \
+    https://archive.apache.org/dist/hadoop/core/hadoop-${hadoop_version}/hadoop-${hadoop_version}.tar.gz
+fi
+
+HADOOP_HOME=$HOME/hadoop-${hadoop_version}
 echo "Extracting to HADOOP_HOME=$HADOOP_HOME"
 rm -Rf ${HADOOP_HOME}
 mkdir -p $(dirname ${HADOOP_HOME})
@@ -36,13 +60,20 @@ cat <<CAT >> ${HADOOP_CONF_DIR}/hadoop-env.sh
 # Add Kerberos settings
 [[ -f \$HADOOP_CONF_DIR/hadoop-krb5.sh ]] && source \$HADOOP_CONF_DIR/hadoop-krb5.sh
 CAT
+}
 
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+install_hadoop
+install_hive
 
 cat <<CAT
 Please add the following settings to your environment shell
 --------------------
 
-export HADOOP_HOME=\${HOME}/hadoop-${version}
+export HADOOP_HOME=\${HOME}/$(basename $HADOOP_HOME)
+export HIVE_HOME=\${HOME}/$(basename $HIVE_HOME)
 export HADOOP_CONF_DIR=\${HADOOP_HOME}/etc/hadoop
+export HADOOP_USER_CLASSPATH_FIRST=true
 -------------------
 CAT

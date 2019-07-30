@@ -12,7 +12,7 @@ readonly cwd=$(pwd)
 
 if [[ "${HADOOP_CONF_DIR}x" == "x" ]]; then
   echo "warning: HADOOP_CONF_DIR is undefined!"
-  exit 0
+  exit 1
 fi
 
 echo "Setting up HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
@@ -48,3 +48,5 @@ CAT
   kinit -k -t ${keytab} ${principal}
   printf "done\n"
 fi
+
+exit 0

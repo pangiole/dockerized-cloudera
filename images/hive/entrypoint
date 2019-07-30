@@ -5,9 +5,7 @@
 #
 chmod +x /etc/docker/setup
 # --------------   user   group   domain
-/etc/docker/setup  hive   hadoop  docker.net
-
-
+/etc/docker/setup  hdfs   hadoop  docker.net
 
 #
 # Render configuration templates by replacing {{ PLACEHOLDER }}
@@ -19,17 +17,22 @@ chmod +x /etc/docker/render
 /etc/docker/render /etc/hadoop/conf/yarn-site.xml
 /etc/docker/render /etc/hive/conf/hive-site.xml
 
+# Make TLS/SSL Certificates
 chmod +x /etc/docker/mkcerts
 /etc/docker/mkcerts --outdir $JAVA_HOME/jre/lib/security
 
-# Create warehouse directories
-su - hdfs <<'EOF'
-hadoop fs -mkdir -p /user/hive/warehouse
-hadoop fs -chmod -R 1777 /user/hive/warehouse
-EOF
 
 # Wait until namenode service is available
 while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
+
+
+# Create warehouse directories and sleep
+su - hdfs <<'EOF'
+hadoop fs -mkdir -p /user/hive/warehouse
+hadoop fs -chmod -R 1777 /user/hive/warehouse
+sleep 4
+EOF
+
 
 # TODO Start the Hive Metastore as separate service
 # See https://www.cloudera.com/documentation/enterprise/5-16-x/topics/cdh_ig_hive_metastore_start.html

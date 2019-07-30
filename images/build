@@ -32,6 +32,16 @@ function run_repo_server {
   fi
 }
 
+function destroy {
+  local image="${1}"
+  local version="${cloudera_version}"
+
+  echo "Removing Docker image ${repository}/${image}:${version}"
+  docker image rm --force ${registry}/${repository}/${image}:${version} > /dev/null 2>&1
+  docker image rm --force ${repository}/${image}:${version} > /dev/null 2>&1
+  docker image prune --force
+}
+
 
 function build {
   local image="${1}"
@@ -50,9 +60,6 @@ CAT
   echo "========================================================="
   echo "Rebuilding Docker image ${repository}/${image}:${version}"
   echo " "
-  docker image rm --force ${registry}/${repository}/${image}:${version} > /dev/null 2>&1
-  docker image rm --force ${repository}/${image}:${version} > /dev/null 2>&1
-  docker image prune --force
 
   docker image build \
     --network ${network}  \
@@ -88,6 +95,7 @@ function tear_down {
 check_args $*
 create_network
 run_repo_server
+perform destroy
 perform build
 tear_down
 
