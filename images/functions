@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-# readonly network="build.net"
-# readonly registry="registry.alpinedata.tech"
-# readonly repository="pangiolet/cloudera"
-
-
 readonly red="$(tput setaf 1)"
 readonly green="$(tput setaf 2)"
 readonly reset="$(tput setaf 7)"
@@ -17,8 +11,7 @@ function check_args {
   case $key in
       -v|--version)
           cloudera_version="$2"
-          shift
-          shift # past value
+          shift; shift # past value
         ;;
       *)
         shift
@@ -27,13 +20,12 @@ function check_args {
   done
 
   if [[ "${cloudera_version}x" == "x" ]]; then cat <<CAT
-
-${red}Error: missing --version argument${reset}
-
-  You're required to pass a specific Cloudera Hadoop version to build.
-  Try with one of the following
-    - ${green}5.4.2${reset}
-    - ${green}5.16.1${reset}
+${red}Error${reset}: missing --version argument
+You're required to pass a specific Cloudera Hadoop version.
+Try with one of the followings:
+  - ${green}5.4.2${reset}
+  - ${green}5.16.1${reset}
+  - ${green}6.0.1${reset}
 CAT
   exit -1
   fi
@@ -50,7 +42,5 @@ function perform {
   ${action}   hadoop-yarn/resourcemanager
   ${action}   hadoop-yarn/nodemanager
   ${action}   hive
-  # ${action}   master
-  # ${action}   worker
   ${action}   edge
 }

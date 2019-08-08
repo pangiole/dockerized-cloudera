@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # Cleanup previous secrets
-rm -Rf /shared/*
+mkdir -p /shared/secrets
+rm -Rf /shared/secrets/*
 
 
 # Initialize the Kerberos realm database

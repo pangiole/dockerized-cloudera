@@ -5,7 +5,7 @@ readonly provider=$1
 readonly repoid=$2
 
 rpm --import https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
-rpm --import https://archive.cloudera.com/cm5/redhat/6/x86_64/cm/RPM-GPG-KEY-cloudera
+rpm --import https://archive.cloudera.com/cdh6/6.0.1/redhat6/yum//RPM-GPG-KEY-cloudera
 
 [[ "$provider/$repoid" == "centos-6.10/base" ]] && opts="-g comps.xml"
 

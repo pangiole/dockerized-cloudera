@@ -19,7 +19,7 @@ chmod +x /etc/docker/render
 /etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
 /etc/docker/render  /etc/hadoop/conf/mapred-site.xml
 /etc/docker/render  /etc/hadoop/conf/yarn-site.xml
-# TODO /etc/docker/render  /etc/hadoop/conf/hive-site.xml
+/etc/docker/render  /etc/hive/conf/hive-site.xml
 
 
 # Wait until both namenode and datanode services are available
@@ -30,14 +30,17 @@ while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
 
 # Create data files and sleep
 su - alice <<'EOF'
-hadoop fs -mkdir -p /data/titanic
 hadoop fs -mkdir -p /data/biostats
 hadoop fs -chmod -R 775 /data
-hadoop fs -copyFromLocal -f /etc/docker/titanic.csv  /data/titanic
+
+hadoop fs -copyFromLocal -f /etc/docker/titanic.csv  /data
+hadoop fs -chmod -R 664 /data/titanic.csv
+
 hadoop fs -copyFromLocal -f /etc/docker/biostats.csv /data/biostats
-sleep 8
+hadoop fs -chmod -R 664 /data/biostats/biostats.csv
 EOF
 
+sleep 8
 
 # Create Hive tables and sleep
 su - alice <<'EOF'
@@ -45,21 +48,25 @@ beeline \
   -u $HIVE2_URL \
   -n alice -p bogus \
   -f /etc/docker/create.hql
-sleep 4  
 EOF
 
 
-# Publish the Hadoop configuration through the shared /conf directory
-files="core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml"
-for file in $files; do
-  cp /etc/hadoop/conf/$file /shared
-done
+# Publish the Hadoop configuration through the /shared/conf directory
+mkdir -p /shared/conf
+rm -Rf /shared/conf/*
+cp /etc/hadoop/conf/core-site.xml /shared/conf
+cp /etc/hadoop/conf/hdfs-site.xml /shared/conf
+cp /etc/hadoop/conf/mapred-site.xml /shared/conf
+cp /etc/hadoop/conf/yarn-site.xml /shared/conf
+cp /etc/hive/conf/hive-site.xml /shared/conf
 
 # Publish the Kerberos configuration too
-cp /etc/krb5.conf /shared
+cp /etc/krb5.conf /shared/conf
+
 
 # Start the SSH deamon service
 service sshd start
+
 
 # Keep this container running
 /etc/docker/idle

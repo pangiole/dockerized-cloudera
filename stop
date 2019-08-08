@@ -1,28 +1,18 @@
 #!/usr/bin/env bash
 
-#v
-# This shell script is meant for software developers who wish to up a
-# "dockerized" Cloudera CDH5 cluster  for development and testing purposes only.
 #
-# DO NOT use it in production systems!
-#
-# author: Paolo Angioletti <pangiole@tibco.com>
+# This script stops the Cloudera Hadoop cluster
 #
 
+# Compute the path to directory that contains this script
 readonly selfname=$(basename "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-readonly workingdir="$(pwd)"
-readonly green="\033[32m"
-readonly reset="\033[0m"
 
-export RESOURCES_DIR=${RESOURCES_DIR:-$selfdir}
-export HADOOP_AUTHENTICATION="kerberos"
-
+printf "%-24s ... " "Stopping Cloudera Hadoop"
 for container in datanode1 nodemanager1 resourcemanager namenode jobhistory hive edge kdc; do
-  printf "%-24s ... " "Stopping $container"
   docker container stop ${container} > /dev/null 2>&1
-  printf "${green}done${reset}\n"
 done
+docker container prune --force  > /dev/null 2>&1
 
-docker container prune --force
-rm -Rf $workingdir/.cloudera
+printf "done\n"
+echo "-----------------------------------"

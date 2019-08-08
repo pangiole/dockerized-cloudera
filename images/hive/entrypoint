@@ -19,7 +19,7 @@ chmod +x /etc/docker/render
 
 # Make TLS/SSL Certificates
 chmod +x /etc/docker/mkcerts
-/etc/docker/mkcerts --outdir $JAVA_HOME/jre/lib/security
+# TODO /etc/docker/mkcerts --outdir $JAVA_HOME/jre/lib/security
 
 
 # Wait until namenode service is available

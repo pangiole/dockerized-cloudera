@@ -64,7 +64,7 @@ RUN  chmod +x /etc/docker/mkcerts \
 # Cludera Hadoop setup
 #
 ARG  version
-ENV  CDH_VERSION=${version}
+ENV  CLOUDERA_VERSION=${version}
 
 COPY cdh-${version}.repo  /etc/yum.repos.d/cdh-${version}.repo
 

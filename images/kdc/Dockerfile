@@ -20,8 +20,8 @@ COPY init        /etc/docker/init
 COPY entrypoint  /etc/docker/entrypoint
 
 
-EXPOSE 88/tcp
-EXPOSE 88/udp
+EXPOSE 4088/tcp
+EXPOSE 4088/udp
 
 
 ENTRYPOINT ["/etc/docker/entrypoint"]

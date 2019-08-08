@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 #
-# This script configures you local Hadoop client binaries
+# This script configures Hadoop client binaries
+# onto your macOS laptop
 #
-# author: Paolo Angioletti <pangiole@tibco.com>
 #
 
+# Compute the path to directory that contains this script
 readonly selfname=$(dirname "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 readonly cwd=$(pwd)
@@ -15,24 +16,48 @@ if [[ "${HADOOP_CONF_DIR}x" == "x" ]]; then
   exit 1
 fi
 
+while [[ $# -gt 0 ]]; do
+key="$1"
+case $key in
+    --kerberos)
+        hadoop_auth="kerberos"
+        shift
+    ;;
+    --target)
+        target="$2"
+        case $target in
+          /*) target=$target;;
+           *) target=$PWD/$target;;
+        esac
+        shift; shift
+      ;;
+    *)
+        shift
+      ;;
+esac
+done
+
+export target="${target:-$(pwd)/target}/cloudera"
+export hadoop_auth="${hadoop_auth:-simple}"
+
+
 echo "Setting up HADOOP_CONF_DIR=$HADOOP_CONF_DIR"
-resources=${resources:-$cwd/.cloudera}
 files="core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml"
 for file in ${files}; do
   printf "Overwriting %-24s ... " "$file"
   rm -Rf ${HADOOP_CONF_DIR}/$file
-  cp $resources/shared/$file $HADOOP_CONF_DIR/$file
+  cp $target/conf/$file $HADOOP_CONF_DIR/$file
   base=$(echo "$cwd" | sed 's/\//\\\//g')
-  expr="s/\/shared/$base\/tmp\/shared/g"
+  expr="s/\/shared\/conf/$base\/tmp\/shared\/conf/g"
   sed $expr $HADOOP_CONF_DIR/$file > $HADOOP_CONF_DIR/$file.local
   mv $HADOOP_CONF_DIR/$file.local $HADOOP_CONF_DIR/$file
   printf "done\n"
 done
 
-
-if [[ -f $resources/shared/alice.keytab ]]; then
-  export KRB5_CONFIG="${resources}/shared/krb5.conf"
-  keytab="${resources}/shared/alice.keytab"
+if [[ "${hadoop_auth}" == "kerberos" ]]; then
+if [[ -f $target/secrets/alice.keytab ]]; then
+  export KRB5_CONFIG="${target}/conf/krb5.conf"
+  keytab="${target}/secrets/alice.keytab"
   principal="alice@DOCKER.NET"
 
   file="$HADOOP_CONF_DIR/hadoop-krb5.sh"
@@ -47,6 +72,7 @@ CAT
   printf "Acquiring Kerberos TGT for ${principal} ..."
   kinit -k -t ${keytab} ${principal}
   printf "done\n"
+fi
 fi
 
 exit 0

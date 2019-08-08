@@ -7,37 +7,50 @@ Execute the `install` script to automatically download and extract the desired H
 
 1. Download and extract Hadoop client binaries
     ```
-    $ ./client/install 2.6.0
+    $ ./client/install \
+        --version 2.6.0
     ```
 
-2. Update your local `~/.bash_profile`
+2. Update your local shell profile with the following lines
+
     ```
-    $ cat <<CAT >> ~/.bash_profile
+    # file: ~/.bash_profile
+    # ...
+
     export HADOOP_HOME=$HOME/hadoop-2.6.0
-    export HADOOP_CONF_DIR=$HOME/hadoop-2.6.0/etc/hadoop
-
-    CAT
+    export HADOOP_CONF_DIR=$HOME/hadoop-2.6.0/etc/
     ```
 
 ## Configure
 Right after you started the dockerized Cloudera cluster, you can configure your local Hadoop Client 2.6 software in few simple steps:
 
-1. Start the Docker Cloudera cluster
-    ```
-    $ ./start
-    ```
-    It takes a few seconds for the cluster to reach the ready state and finally generate the `.cloudera` directory. That's where the whole configuration is exposed.
-
-2. Configure your Hadoop client binaries
-    ```
-    $ ./client/configure /path/to/.cloudera
-    ```
-
-3.  Update your Kerberos configuration
+1. Tips when **macOS**  
+   If you're on macOS, backup your local Kerberos configuration and disable your local KDC daemon.
+   
     ```
     $ sudo mv /Library/Preferences/edu.mit.Kerberos /Library/Preferences/edu.mit.Kerberos.backup
     $ sudo mv /etc/krb5.conf /etc/krb5.conf.backup
+    
+    $ sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.Kerberos.kdc.plist
     ```
+    
+2. Start the Cloudera Hadoop cluster
+    ```
+    $ ./start \
+        --version 5.16.1 \
+        --target /path/to/target \
+        --kerberos
+    ```
+    It takes a few seconds for the cluster to reach the ready state and finally generate the `$target/cloudera` directory. That's where the whole configuration and secrets are targeted.
+
+
+3. Configure your local Hadoop client binaries
+    ```
+    $ ./client/configure \
+        --from /path/to/target \
+        --kerberos
+    ```
+
 
 4. Update your `/etc/hosts` file (if not done yet)
     ```

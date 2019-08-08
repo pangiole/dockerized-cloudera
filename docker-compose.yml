@@ -1,7 +1,7 @@
 ---
 
-# This is the composition of few Docker containers running the bare minimum
-# of Cloudera CDH 5 fundamental services such as Hadoop HDFS and YARN.
+# This is the composition of a few Docker containers running the bare minimum
+# of Cloudera Hadoop fundamental services such as Hadoop HDFS and YARN.
 #
 
 version: "3.7"
@@ -18,10 +18,10 @@ services:
     networks:
       - docker-net
     ports:
-      - "88:88"
-      - "88:88/udp"
+      - "4088:4088"
+      - "4088:4088/udp"
     volumes:
-      - "$resources/shared:/shared"
+      - "$target/secrets:/shared/secrets"
 
 
   namenode:
@@ -37,10 +37,9 @@ services:
     ports:
       - "50070:50070" # http
       - "8020:8020"   # protobuf
-      - "5051:5051"   # jvm-debug
+      #- "5051:5051"  # jvm-debug
     volumes:
-      - "$resources/data/1/hdfs/nn:/data/1/hdfs/nn"
-      - "$resources/shared:/shared"
+      - "$target/secrets:/shared/secrets"
     depends_on:
       - kdc
 
@@ -65,10 +64,9 @@ services:
       - "1004:1004"   # protbuf (data transfer)
       - "50075:50075" # http
       - "1006:1006"   # http
-      - "5052:5052"   # jvm-debug
+      #- "5052:5052"  # jvm-debug
     volumes:
-      - "$resources/data/1/hdfs/dn:/data/1/hdfs/dn"
-      - "$resources/shared:/shared"
+      - "$target/secrets:/shared/secrets"
     depends_on:
       - namenode
 
@@ -86,9 +84,9 @@ services:
     ports:
       - "19888:19888" # http      (yarn-ui)
       - "10020:10020" # protobuf
-      - "5053:5053"   # jvm-debug
+      #- "5053:5053"  # jvm-debug
     volumes:
-      - "$resources/shared:/shared"
+      - "$target/secrets:/shared/secrets"
     depends_on:
       - namenode
 
@@ -107,9 +105,9 @@ services:
       - "8088:8088"   # http      (yarn-ui)
       - "8032:8032"   # protobuf
       - "8030:8030"   # protobuf
-      - "5054:5054"   # jvm-debug
+      #- "5054:5054"  # jvm-debug
     volumes:
-      - "$resources/shared:/shared"
+      - "$target/secrets:/shared/secrets"
     depends_on:
       - namenode
       - jobhistory
@@ -130,9 +128,9 @@ services:
       - "8042:8042"   # http     (yarn-ui)
       - "8043:8043"   # protobuf (map-reduce-AM)
       - "4041:4040"   # http     (spark-ui)
-      - "5055:5055"   # jvm-debug
+      #- "5055:5055"  # jvm-debug
     volumes:
-      - "$resources/shared:/shared"
+      - "$target/secrets:/shared/secrets"
     depends_on:
       - namenode
       - jobhistory
@@ -151,9 +149,9 @@ services:
       - docker-net
     ports:
       - "10000:10000" # jdbc
-      - "5056:5056"   # jvm-debug
+      #- "5056:5056"  # jvm-debug
     volumes:
-      - "$resources/shared:/shared"
+      - "$target/secrets:/shared/secrets"
     depends_on:
       - namenode
       - resourcemanager
@@ -172,9 +170,12 @@ services:
     ports:
       - "2222:22"      # ssh        (sshd)
       - "4042:4040"    # http       (spark-ui)
-      - "5057:5057"    # jvm-debug
+      #- "5057:5057"   # jvm-debug
     volumes:
-      - "$resources/shared:/shared"
+      - "$target/secrets:/shared/secrets"
+      - "$target/conf:/shared/conf"
+      - "$target/data:/shared/data"
     depends_on:
       - namenode
       - resourcemanager
+      - hive

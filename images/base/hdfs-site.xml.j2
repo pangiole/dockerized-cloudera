@@ -94,7 +94,7 @@
   <!-- NameNode security config -->
   <property>
     <name>dfs.namenode.keytab.file</name>
-    <value>/shared/hdfs.keytab</value>
+    <value>/shared/secrets/hdfs.keytab</value>
   </property>
   <property>
     <name>dfs.namenode.kerberos.principal</name>
@@ -108,7 +108,7 @@
   <!-- DataNode security config -->
   <property>
     <name>dfs.datanode.keytab.file</name>
-    <value>/shared/hdfs.keytab</value>
+    <value>/shared/secrets/hdfs.keytab</value>
   </property>
   <property>
     <name>dfs.datanode.kerberos.principal</name>
@@ -183,7 +183,7 @@
 
   <property>
     <name>dfs.web.authentication.kerberos.keytab</name>
-    <value>/shared/HTTP.keytab</value>
+    <value>/shared/secrets/HTTP.keytab</value>
   </property>
 
   {% else %}

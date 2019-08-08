@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 #
-# This script installs and configure Hadoop binaries onto your macOS laptop
+# This script installs Hadoop client binaries
+# onto your macOS laptop
 #
-# author: Paolo Angioletti <pangiole@tibco.com>
 #
 
+# Compute the path to directory that contains this script
 readonly selfname=$(dirname "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
@@ -57,6 +58,7 @@ mv ${HADOOP_CONF_DIR} $(dirname ${HADOOP_CONF_DIR})/hadoop.default
 cp -rp $(dirname ${HADOOP_CONF_DIR})/hadoop.default $(dirname ${HADOOP_CONF_DIR})/hadoop.docker.net
 ln -snf $(dirname ${HADOOP_CONF_DIR})/hadoop.docker.net ${HADOOP_CONF_DIR}
 cat <<CAT >> ${HADOOP_CONF_DIR}/hadoop-env.sh
+
 # Add Kerberos settings
 [[ -f \$HADOOP_CONF_DIR/hadoop-krb5.sh ]] && source \$HADOOP_CONF_DIR/hadoop-krb5.sh
 CAT

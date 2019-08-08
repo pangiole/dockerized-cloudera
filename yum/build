@@ -13,19 +13,12 @@ function check_args {
   key="$1"
   case $key in
       --version)
-          cloudera_version="$2"
-          shift
-          shift # past value
+          version="$2"
+          shift; shift
         ;;
-      --jdk-8)
-          oracle_jdk_8="$2"
-          shift
-          shift # past value
-        ;;
-      --jdk-7)
-          oracle_jdk_7="$2"
-          shift
-          shift # past value
+      --jdk)
+          jdk="$2"
+          shift; shift
         ;;
       *)
         shift
@@ -33,25 +26,24 @@ function check_args {
   esac
   done
 
-  if [[ "${cloudera_version}x" == "x" ]]; then cat <<CAT
+  if [[ "${version}x" == "x" ]]; then cat <<CAT
 
-${red}Error: missing --version argument${reset}
-
-  You're required to pass a specific Cloudera Hadoop version to build.
-  Try with one of the following
-    - ${green}5.4.2${reset}
-    - ${green}5.16.1${reset}
+${red}Error${reset}: missing --version argument
+You're required to pass a specific Cloudera Hadoop version.
+Try with one of the followings:
+  - ${green}5.4.2${reset}
+  - ${green}5.16.1${reset}
+  - ${green}6.0.1${reset}
 CAT
   exit -1
   fi
 
-  if [[ "${oracle_jdk_8}x" == "x" || "${oracle_jdk_7}x" == "x" ]]; then cat <<CAT
+  if [[ "${jdk}x" == "x" ]]; then cat <<CAT
 
-${red}Error: missing --jdk-8 and --jdk-7 arguments${reset}
-
-  You are required to download the 64bit RPM package of the
-  Oracle JDK - Java Development Toolkit from the official
-  website under the Oracle license terms.
+${red}Error${reset}: missing --jdk
+You are required to download the jdk-8u201-linux-x64.rpm
+package from official Oracle website and to accept the
+Oracle license terms.
 CAT
     exit -1
   fi
@@ -74,13 +66,23 @@ function build_repo {
   dest="${selfdir}/repos/${provider}"
   mkdir -p $dest
 
-  if [[ "${provider}" == "cloudera" ]]; then cat <<CAT > $dest/$repoid.repo
+  if [[ "${provider}" == "cloudera" ]]; then
+    if [[ $repoid == cdh-5* ]]; then cat <<CAT > $dest/$repoid.repo
 [$repoid]
-name=Cloudera's Distribution for Hadoop
-baseurl=https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/${cloudera_version}
+name=Cloudera Hadoop $version
+baseurl=https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/$version
 gpgkey=https://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera
 gpgcheck=1
 CAT
+
+    elif [[ $repoid == cdh-6* ]]; then cat <<CAT > $dest/$repoid.repo
+[$repoid]
+name=Cloudera Hadoop $version
+baseurl=https://archive.cloudera.com/cdh6/$version/redhat6/yum/
+gpgkey=https://archive.cloudera.com/cdh6/$version/redhat6/yum/RPM-GPG-KEY-cloudera
+gpgcheck=1
+CAT
+    fi
     opts="--volume $dest/$repoid.repo:/etc/yum.repos.d/${provider}-$repoid.repo"
   fi
 
@@ -93,35 +95,15 @@ CAT
 }
 
 
-function copy_jdks {
+function copy_jdk {
   dest="$selfdir/repos/oracle"
-  mkdir -p $dest
+  mkdir -p ${dest}
 
-  echo "Copying $(basename $oracle_jdk_8)"
-  yes | cp -rf $oracle_jdk_8 $dest
-  ln -snf $(basename $oracle_jdk_8) $dest/jdk-8.rpm
-
-  echo "Copying $(basename $oracle_jdk_7)"
-  yes | cp -rf $oracle_jdk_7 $dest
-  ln -snf $(basename $oracle_jdk_7) $dest/jdk-7.rpm
+  echo "Copying $(basename $jdk)"
+  yes | cp -rf ${jdk} ${dest}
+  ln -snf $(basename ${jdk}) ${dest}/jdk-8.rpm
 }
 
-
-function download_hadoop {
-  dest="${selfdir}/repos/hadoop"
-  mkdir -p $dest
-  for hadoop_version in "2.6.0"; do
-    file="hadoop-${hadoop_version}.tar.gz"
-    if [[ -f $dest/$file ]]; then
-      echo "Skipping $file"
-    else
-      echo "Downloading $file"
-      curl -L \
-        -o $dest/$file \
-        https://archive.apache.org/dist/hadoop/common/hadoop-${hadoop_version}/$file
-    fi
-  done
-}
 
 
 function download_spark {
@@ -147,16 +129,16 @@ function download_spark {
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 check_args $*
-copy_jdks
+copy_jdk
 download_hadoop
 download_spark
 build_yum_image
 
-#            provider      repoid
+           provider      repoid
 build_repo   centos-6.10   base
 build_repo   centos-6.10   centosplus
 build_repo   centos-6.10   extras
 build_repo   centos-6.10   updates
-build_repo   cloudera      cdh-${cloudera_version}
+build_repo   cloudera      cdh-${version}
 
 exit 0

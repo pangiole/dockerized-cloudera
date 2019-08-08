@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
+# Compute the path to directory that contains this script
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+source $selfdir/functions
+
 readonly network="build.net"
 readonly registry="registry.alpinedata.tech"
 readonly repository="pangiolet/cloudera"
 
-source $selfdir/funcs
+
 
 function rm {
   local image="$1"

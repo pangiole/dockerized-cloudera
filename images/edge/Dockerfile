@@ -15,7 +15,7 @@ RUN yum update -y \
         openssh-server \
         openssh-clients \
 &&  mkdir -p /opt && cd $_
-# &&  for hadoop_version in ${HADOOP_VERSIONS}; do for spark_version in $SPARK_VERSIONS; do curl -s -L http://repos/spark/spark-${spark_version}-bin-hadoop${hadoop_version}.tgz | tar xvfz - ; ln -snf spark-${spark_version}-bin-hadoop${hadoop_version} spark ; done ; done
+# TODO &&  for hadoop_version in ${HADOOP_VERSIONS}; do for spark_version in $SPARK_VERSIONS; do curl -s -L http://repos/spark/spark-${spark_version}-bin-hadoop${hadoop_version}.tgz | tar xvfz - ; ln -snf spark-${spark_version}-bin-hadoop${hadoop_version} spark ; done ; done
 
 
 COPY titanic.csv       /etc/docker/titanic.csv

@@ -29,7 +29,7 @@ export HIVE2_URL="$HIVE2_URL;ssl=true;sslTrustStore=hive.docker.net;trustStorePa
 {% if HADOOP_AUTHENTICATION == 'kerberos' %}
 # Set Kerberos authentication variables
 export KERBEROS_PRINCIPAL="{{ comp1 }}{% if comp2 %}/{{ comp2 }}{% endif %}"
-export KERBEROS_KEYTAB="/shared/{{ comp1 }}.keytab"
+export KERBEROS_KEYTAB="/shared/secrets/{{ comp1 }}.keytab"
 # Acquire Kerberos TGT
 kinit -k -t $KERBEROS_KEYTAB $KERBEROS_PRINCIPAL
 {% endif %}
