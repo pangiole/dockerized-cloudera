@@ -40,7 +40,9 @@ case $key in
         exit 0
     ;;
     --version)
-        version="$2"
+        # Append the version tag (e.g. 'alpha' or '1.0') of the Docker images
+        cloudera_version="$2"
+        image_version="$cloudera_version-$(git describe)"
         shift; shift
       ;;
     --target)
@@ -70,7 +72,7 @@ esac
 done
 
 
-case ${version} in
+case ${cloudera_version} in
 '5.4.2'|'5.16.1'|'6.0.1')
 ;;
 *)
@@ -102,8 +104,8 @@ esac
 
 
 export registry="registry.alpinedata.tech"
-export repository="pangiolet/cloudera"
-export version="${version}"
+export repository="red/cloudera"
+export image_version="${image_version}"
 export hadoop_auth="${auth}"
 export target="${target:-$(pwd)/target}/cloudera"
 export sasl_protection="${sasl_protection:-authentication}"
@@ -113,7 +115,8 @@ export tls_encryption="${tls_encryption:-false}"
 cat <<CAT
 -----------------------------------
 Starting Cloudera Hadoop with
-  - version          $version
+  - cloudera_version $cloudera_version
+  - image_version    $image_version
   - hadoop_auth      $hadoop_auth
   - sasl_protection  $sasl_protection
   - tls_encryption   $tls_encryption
@@ -122,7 +125,7 @@ Starting Cloudera Hadoop with
 CAT
 
 docker-compose \
-    --project-name cdh-$version \
+    --project-name cloudera-${cloudera_version} \
     --file $selfdir/docker-compose.yml \
     up --detach #> /dev/null 2>&1
 

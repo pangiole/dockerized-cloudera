@@ -56,7 +56,7 @@ The `start` script does no more than invoking `docker-compose` with the followin
 
 ```
 export registry="registry.alpinedata.tech"
-export repository="pangiolet/cloudera"
+export repository="red/cloudera"
 export version="5.16.1"
 export target="/path/to/target/cloudera"
 export hadoop_auth="kerberos"

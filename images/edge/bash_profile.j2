@@ -40,15 +40,3 @@ export SPARK_HOME="/opt/spark"
 export PATH="$PATH:$SPARK_HOME/bin"
 #}
 
-
-cat <<CAT
-
-${red}Welcome to the edge node!${reset}
-This is where you can execute client tools such as Hadoop, Beeline,
-Spark and others.
-
-    $ hadoop fs -ls /data
-    $ beeline -u \$HIVE2_URL -n \$USER -p bogus
-    $ spark-shell
-
-CAT

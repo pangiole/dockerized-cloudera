@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
 
+#
+# This script pushes the Docker images
+# for the containerized Cloudera Hadoop cluster
+# up to our GitLab image registry
+#
+
 # Compute the path to directory that contains this script
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source $selfdir/functions
 
-readonly registry="registry.alpinedata.tech"
-readonly repository="pangiolet/cloudera"
-
-
-
 
 function push {
   local image="$1"
-  local version="${cloudera_version}"
+
+  # Append the version tag (e.g. 'alpha1' or '1.0') of the Docker images
+  local image_classifier="$(git describe)"
+  local version="$cloudera_version-$image_classifier"
+
   docker image push ${registry}/${repository}/${image}:${version}
 }
+
 
 check_args $*
 perform push

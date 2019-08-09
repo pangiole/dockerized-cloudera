@@ -4,6 +4,10 @@ readonly red="$(tput setaf 1)"
 readonly green="$(tput setaf 2)"
 readonly reset="$(tput setaf 7)"
 
+readonly registry="registry.alpinedata.tech"
+readonly repository="red/cloudera"
+readonly network="build.net"
+
 
 function check_args {
   while [[ $# -gt 0 ]]; do

@@ -4,6 +4,8 @@
 # This script executes the Hadoop client
 # inside the edge container
 #
-#
 
-docker container exec --user alice edge hadoop $*
+docker container exec \
+    --user alice \
+    edge \
+        bash -l -c "hadoop $*"

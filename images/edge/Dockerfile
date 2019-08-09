@@ -1,9 +1,9 @@
 ARG repository
-ARG version
-FROM $repository/base:$version
+ARG image_version
+FROM $repository/base:$image_version
 
 LABEL maintainer="pangiole@tibco.com"
-LABEL description="This image provides an egde node for Cloudera Hadoop $version"
+LABEL description="This image provides an egde node for Cloudera Hadoop $image_version"
 
 # TODO add more Spark versions here ...
 # ENV SPARK_VERSIONS="2.4.3"
