@@ -39,10 +39,12 @@ case $key in
         print_usage
         exit 0
     ;;
+    --classifier)
+        image_classifier="$2"
+        shift; shift
+      ;;
     --version)
-        # Append the version tag (e.g. 'alpha' or '1.0') of the Docker images
         cloudera_version="$2"
-        image_version="$cloudera_version-$(git describe)"
         shift; shift
       ;;
     --mount)
@@ -101,9 +103,13 @@ exit -1
 esac
 
 
+# Define the default classifier
+[[ "${image_classifier}x" == "x" ]] && image_classifier="$(git describe)"
+
+
 export registry="registry.alpinedata.tech"
 export repository="red/cloudera"
-export image_version="${image_version}"
+export image_version="$cloudera_version-$image_classifier"
 export hadoop_auth="${auth}"
 export mount="${mount:-$(pwd)/mount}"
 export sasl_protection="${sasl_protection:-authentication}"

@@ -17,6 +17,10 @@ function check_args {
           cloudera_version="$2"
           shift; shift # past value
         ;;
+      -c|--classifier)
+          image_classifier="$2"
+          shift; shift # past value
+        ;;
       *)
         shift
       ;;
@@ -27,13 +31,16 @@ function check_args {
 ${red}Error${reset}: missing --version argument
 You're required to pass a specific Cloudera Hadoop version.
 Try with one of the followings:
-  - ${green}5.4.2${reset}
-  - ${green}5.16.1${reset}
-  - ${green}6.0.1${reset}
+  --version ${green}5.4.2${reset}
+  --version ${green}5.16.1${reset}
+  --version ${green}6.0.1${reset}
 CAT
   exit -1
   fi
 }
+
+
+image_classifier=${image_classifier:-$(git describe)}
 
 
 function perform {
