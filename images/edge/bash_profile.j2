@@ -1,9 +1,5 @@
 # .bash_profile
 
-readonly red="$(tput setaf 1)"
-readonly green="$(tput setaf 2)"
-readonly reset="$(tput setaf 7)"
-
 # Get the aliases and functions
 if [ -f ~/.bashrc ]; then
 	. ~/.bashrc
@@ -29,7 +25,7 @@ export HIVE2_URL="$HIVE2_URL;ssl=true;sslTrustStore=hive.docker.net;trustStorePa
 {% if HADOOP_AUTHENTICATION == 'kerberos' %}
 # Set Kerberos authentication variables
 export KERBEROS_PRINCIPAL="{{ comp1 }}{% if comp2 %}/{{ comp2 }}{% endif %}"
-export KERBEROS_KEYTAB="/shared/secrets/{{ comp1 }}.keytab"
+export KERBEROS_KEYTAB="/mount/secrets/{{ comp1 }}.keytab"
 # Acquire Kerberos TGT
 kinit -k -t $KERBEROS_KEYTAB $KERBEROS_PRINCIPAL
 {% endif %}

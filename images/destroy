@@ -13,7 +13,7 @@ source $selfdir/functions
 function destroy {
   local image="$1"
 
-  # Append the version tag (e.g. 'alpha1' or '1.0') of the Docker images
+  # Append the version tag (e.g. 'alpha2' or '1.0') of the Docker images
   local image_classifier="$(git describe)"
   local version="$cloudera_version-$image_classifier"
 

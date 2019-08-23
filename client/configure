@@ -23,11 +23,11 @@ case $key in
         hadoop_auth="kerberos"
         shift
     ;;
-    --target)
-        target="$2"
-        case $target in
-          /*) target=$target;;
-           *) target=$PWD/$target;;
+    --mount)
+        mount="$2"
+        case $mount in
+          /*) mount=$mount;;
+           *) mount=$PWD/$mount;;
         esac
         shift; shift
       ;;
@@ -37,7 +37,7 @@ case $key in
 esac
 done
 
-export target="${target:-$(pwd)/target}/cloudera"
+export mount="${mount:-$(pwd)/mount}"
 export hadoop_auth="${hadoop_auth:-simple}"
 
 
@@ -46,18 +46,18 @@ files="core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml"
 for file in ${files}; do
   printf "Overwriting %-24s ... " "$file"
   rm -Rf ${HADOOP_CONF_DIR}/$file
-  cp $target/conf/$file $HADOOP_CONF_DIR/$file
+  cp $mount/conf/$file $HADOOP_CONF_DIR/$file
   base=$(echo "$cwd" | sed 's/\//\\\//g')
-  expr="s/\/shared\/conf/$base\/tmp\/shared\/conf/g"
+  expr="s/\/mount\/conf/$base\/tmp\/mount\/conf/g"
   sed $expr $HADOOP_CONF_DIR/$file > $HADOOP_CONF_DIR/$file.local
   mv $HADOOP_CONF_DIR/$file.local $HADOOP_CONF_DIR/$file
   printf "done\n"
 done
 
 if [[ "${hadoop_auth}" == "kerberos" ]]; then
-if [[ -f $target/secrets/alice.keytab ]]; then
-  export KRB5_CONFIG="${target}/conf/krb5.conf"
-  keytab="${target}/secrets/alice.keytab"
+if [[ -f $mount/secrets/alice.keytab ]]; then
+  export KRB5_CONFIG="${mount}/conf/krb5.conf"
+  keytab="${mount}/secrets/alice.keytab"
   principal="alice@DOCKER.NET"
 
   file="$HADOOP_CONF_DIR/hadoop-krb5.sh"

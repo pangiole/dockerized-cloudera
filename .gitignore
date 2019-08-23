@@ -2,5 +2,5 @@
 tmp/
 yum/repos/
 tmp/
-target/
+mount/
 .idea/

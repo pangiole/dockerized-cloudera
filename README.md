@@ -36,12 +36,12 @@ $ docker login \
 More information are given in the official [GitLab documentation](https://docs.gitlab.com/ee/user/project/container_registry.html)
 
 ## Start
-You can start the Cloudera Hadoop cluster for a given version and target directory, either with `simple` authentication (default) or with `kerberos`.
+You can start the Cloudera Hadoop cluster for a given version and mount directory, either with `simple` authentication (default) or with `kerberos`.
 
 ```bash
 $ ./start \
   --version 5.16.1 \
-  --target /path/to/target \
+  --mount /path/to/mount \
   --kerberos
 ```
 
@@ -50,7 +50,7 @@ The only versions available so far are:
 - 5.4.2
 - 5.16.1
 
-The target directory is where shared secrets (such as keytab files) and configuration files (such as `core-site.xml`) will be targeted to.
+The mount directory is where mount secrets (such as keytab files) and configuration files (such as `core-site.xml`) will be targeted to.
 
 The `start` script does no more than invoking `docker-compose` with the following environment variables.
 
@@ -58,7 +58,7 @@ The `start` script does no more than invoking `docker-compose` with the followin
 export registry="registry.alpinedata.tech"
 export repository="red/cloudera"
 export version="5.16.1"
-export target="/path/to/target/cloudera"
+export mount="/path/to/mount/cloudera"
 export hadoop_auth="kerberos"
 export sasl_protection="authentication"
 export tls_encryption="false"
@@ -108,7 +108,7 @@ You can execute `bash` within any of the above containers:
 Once the containers cluster is started, it will reveal its configuration by generating the following files to your local working directory:
 
 ```
-├── $target/cloudera
+├── $mount/cloudera
 │   ├── conf
 │   │   ├── core-site.xml
 │   │   ├── hdfs-site.xml

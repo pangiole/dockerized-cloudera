@@ -33,8 +33,8 @@ function kerbers_merge {
       princs="$princs $user"
     fi
   done
-  kadmin.local -q "ktadd -norandkey -k /shared/secrets/$file $princs"
-  chmod 644 /shared/secrets/$file
+  kadmin.local -q "ktadd -norandkey -k /mount/secrets/$file $princs"
+  chmod 644 /mount/secrets/$file
 }
 
 
@@ -50,8 +50,8 @@ function kerberos_init {
   # to store what Kerberos calls the "master key"
   echo -e "root\nroot" | kdb5_util create -s
 
-  # Make the directory where secrets are shared across the cluster
-  mkdir -p /shared/secrets
+  # Make the directory where secrets are mount across the cluster
+  mkdir -p /mount/secrets
 
   # ----------   user          domain
   kerberos_add   'alice'       'no'

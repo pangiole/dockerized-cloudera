@@ -38,16 +38,16 @@ Right after you started the dockerized Cloudera cluster, you can configure your 
     ```
     $ ./start \
         --version 5.16.1 \
-        --target /path/to/target \
+        --mount /path/to/mount \
         --kerberos
     ```
-    It takes a few seconds for the cluster to reach the ready state and finally generate the `$target/cloudera` directory. That's where the whole configuration and secrets are targeted.
+    It takes a few seconds for the cluster to reach the ready state and finally generate the `$mount/cloudera` directory. That's where the whole configuration and secrets are targeted.
 
 
 3. Configure your local Hadoop client binaries
     ```
     $ ./client/configure \
-        --from /path/to/target \
+        --from /path/to/mount \
         --kerberos
     ```
 
@@ -175,7 +175,7 @@ Copy the native libraries over:
 
 ```
 $ cp -rp \
-      ./hadoop-dist/target/hadoop-2.6.0/lib/native \
+      ./hadoop-dist/mount/hadoop-2.6.0/lib/native \
       $HADOOP_HOME/lib
 ```
 
@@ -208,6 +208,6 @@ Copy the native libraries over:
 
 ```
 $ cp -rp \
-      ./hadoop-dist/target/hadoop-3.3.0-SNAPSHOT/lib/native \
+      ./hadoop-dist/mount/hadoop-3.3.0-SNAPSHOT/lib/native \
       $HADOOP_HOME/lib
 ```

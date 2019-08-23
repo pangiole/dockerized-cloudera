@@ -12,7 +12,7 @@ readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 function print_usage {
 cat <<CAT
-Usage:    $selfname --version <version> [--target <target> ] [ --auth <auth>] [ --sasl ] [ --tls ]
+Usage:    $selfname --version <version> [--mount <mount> ] [ --auth <auth>] [ --sasl ] [ --tls ]
 CAT
 }
 
@@ -45,11 +45,11 @@ case $key in
         image_version="$cloudera_version-$(git describe)"
         shift; shift
       ;;
-    --target)
-        target="$2"
-        case $target in
-          /*) target=$target;;
-           *) target=$PWD/$target;;
+    --mount)
+        mount="$2"
+        case $mount in
+          /*) mount=$mount;;
+           *) mount=$PWD/$mount;;
         esac
         shift; shift
       ;;
@@ -78,10 +78,9 @@ case ${cloudera_version} in
 *)
 cat <<CAT
 Error: missing or unsupported --version argument
-You're required to pass one of the following:
-  - 5.4.2
-  - 5.16.1
-  - 6.0.1
+       --version 5.4.2
+       --version 5.16.1
+       --version 6.0.1
 CAT
 exit -1
 ;;
@@ -94,9 +93,8 @@ case ${auth} in
 *)
 cat <<CAT
 Error: missing or unsupported --auth argument
-You're required to pass one of the following:
-  - simple
-  - kerberos
+       --auth simple
+       --auth kerberos
 CAT
 exit -1
 ;;
@@ -107,7 +105,7 @@ export registry="registry.alpinedata.tech"
 export repository="red/cloudera"
 export image_version="${image_version}"
 export hadoop_auth="${auth}"
-export target="${target:-$(pwd)/target}/cloudera"
+export mount="${mount:-$(pwd)/mount}"
 export sasl_protection="${sasl_protection:-authentication}"
 export tls_encryption="${tls_encryption:-false}"
 
@@ -120,7 +118,7 @@ Starting Cloudera Hadoop with
   - hadoop_auth      $hadoop_auth
   - sasl_protection  $sasl_protection
   - tls_encryption   $tls_encryption
-  - target           $target
+  - mount            $mount
 
 CAT
 
@@ -139,5 +137,5 @@ docker-compose \
 #
 #echo "Configuring Hadoop client ... "
 #sleep 32
-#$selfdir/client/configure --target $target
+#$selfdir/client/configure --mount $mount
 #exit 0

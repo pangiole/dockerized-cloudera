@@ -37,7 +37,7 @@ function run_repo_server {
 function destroy {
   local image="${1}"
 
-  # Append the version tag (e.g. 'alpha1' or '1.0') of the Docker images
+  # Append the version tag (e.g. 'alpha2' or '1.0') of the Docker images
   local image_classifier="$(git describe)"
   local image_version="$cloudera_version-$image_classifier"
 
@@ -51,7 +51,7 @@ function destroy {
 function build {
   local image="${1}"
 
-  # Append the version tag (e.g. 'alpha1' or '1.0') of the Docker images
+  # Append the version tag (e.g. 'alpha2' or '1.0') of the Docker images
   local image_classifier="$(git describe)"
   local image_version="$cloudera_version-$image_classifier"
 
