@@ -75,7 +75,7 @@ done
 
 
 case ${cloudera_version} in
-'5.4.2'|'5.16.1'|'6.0.1')
+'5.4.2'|'5.16.1')
 ;;
 *)
 cat <<CAT
@@ -110,7 +110,7 @@ esac
 export registry="registry.alpinedata.tech"
 export repository="red/cloudera"
 export image_version="$cloudera_version-$image_classifier"
-export hadoop_auth="${auth}"
+export auth="${auth}"
 export mount="${mount:-$(pwd)/mount}"
 export sasl_protection="${sasl_protection:-authentication}"
 export tls_encryption="${tls_encryption:-false}"
@@ -121,7 +121,7 @@ cat <<CAT
 Starting Cloudera Hadoop with
   - cloudera_version $cloudera_version
   - image_version    $image_version
-  - hadoop_auth      $hadoop_auth
+  - hadoop_auth      $auth
   - sasl_protection  $sasl_protection
   - tls_encryption   $tls_encryption
   - mount            $mount
@@ -143,5 +143,16 @@ docker-compose \
 #
 #echo "Configuring Hadoop client ... "
 #sleep 32
-#$selfdir/client/configure --mount $mount
+#$selfdir/client/configure --mount $mount --auth $auth
 #exit 0
+
+
+if [[ "$auth" == "kerberos" ]]; then
+cat << CAT
+WARNING:
+    To make sure any Java client hosted by this machine can resolve
+    the Kerberos KDC services, export the following environment variable
+
+    JAVA_OPTS="$JAVA_OPTS -Djava.security.krb5.conf=${mount}/conf/krb5.conf"
+CAT
+fi

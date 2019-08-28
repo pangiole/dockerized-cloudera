@@ -45,7 +45,7 @@ $ ./start \
   --kerberos
 ```
 
-The only versions available so far are:
+The only versions available are:
 
 - 5.4.2
 - 5.16.1
