@@ -1,17 +1,15 @@
 # Cloudera Hadoop
-This project gives you an easy way to build and start a local Cloudera Hadoop cluster whose services are running within Docker containers on localhost.
+A "dockerized" Cloudera Hadoop 5.x cluster to ease development and test of BigData applications
 
 > WARN  
-> This project is meant to facilitate software development and testing of BigData application.
+> This project is *not* meant for production use!
 >
-> It is *not* meant for production use!
-
 
 The Docker images built with this project will provide you with:
 
 - Linux CentOS 6.10
   - MIT Kerberos 5-1.10.3
-  - Cloudera Hadoop
+  - Cloudera Hadoop 5.x
       * HDFS NameNode
       * HDFS DataNode
       * MapRed JobHistory

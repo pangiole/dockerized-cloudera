@@ -15,7 +15,7 @@ function pull {
   local image="$1"
 
   # Append the version tag (e.g. 'alpha2' or '1.0') of the Docker images
-  local version="$cloudera_version-$image_classifier"
+  local version="${cdh5_version}-${image_classifier}"
 
   docker image pull ${registry}/${repository}/${image}:${version}
 }

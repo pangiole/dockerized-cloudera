@@ -44,7 +44,7 @@ case $key in
         shift; shift
       ;;
     --version)
-        cloudera_version="$2"
+        cdh5_version="$2"
         shift; shift
       ;;
     --mount)
@@ -74,7 +74,7 @@ esac
 done
 
 
-case ${cloudera_version} in
+case ${cdh5_version} in
 '5.4.2'|'5.16.1')
 ;;
 *)
@@ -108,9 +108,9 @@ esac
 
 
 export registry="registry.alpinedata.tech"
-export repository="red/cloudera"
-export image_version="$cloudera_version-$image_classifier"
-export auth="${auth}"
+export repository="red/cdh5"
+export image_version="${cdh5_version}-${image_classifier}"
+export hadoop_auth="${auth}"
 export mount="${mount:-$(pwd)/mount}"
 export sasl_protection="${sasl_protection:-authentication}"
 export tls_encryption="${tls_encryption:-false}"
@@ -119,7 +119,7 @@ export tls_encryption="${tls_encryption:-false}"
 cat <<CAT
 -----------------------------------
 Starting Cloudera Hadoop with
-  - cloudera_version $cloudera_version
+  - cdh5_version     $cdh5_version
   - image_version    $image_version
   - hadoop_auth      $auth
   - sasl_protection  $sasl_protection
@@ -129,8 +129,8 @@ Starting Cloudera Hadoop with
 CAT
 
 docker-compose \
-    --project-name cloudera-${cloudera_version} \
-    --file $selfdir/docker-compose.yml \
+    --project-name cdh${cdh5_version} \
+    --file ${selfdir}/docker-compose.yml \
     up --detach #> /dev/null 2>&1
 
 
