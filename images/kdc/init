@@ -55,6 +55,7 @@ function kerberos_init {
 
   # ----------   user          domain
   kerberos_add   'alice'       'no'
+  kerberos_add   'bob'         'no'
   kerberos_add   'charlie'     'no'
   kerberos_add   'david'       'no'
   kerberos_add   'spark'       'yes'
@@ -67,6 +68,7 @@ function kerberos_init {
 
   # -----------  users         domain  file
   kerbers_merge  'alice'       'no'    'alice.keytab'
+  kerbers_merge  'bob'         'no'    'bob.keytab'
   kerbers_merge  'charlie'     'no'    'charlie.keytab'
   kerbers_merge  'david'       'no'    'david.keytab'
   kerbers_merge  'spark'       'yes'   'spark.keytab'

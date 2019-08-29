@@ -70,7 +70,7 @@ COPY cdh-${cdh5_version}.repo  /etc/yum.repos.d/cdh-${cdh5_version}.repo
 
 RUN  yum update -y \
 &&   yum install -y hadoop-client \
-&&   for user in alice charlie david; do useradd --create-home --gid hadoop $user; echo -e "$user" | passwd $user --stdin; done \
+&&   for user in alice bob charlie david; do useradd --create-home --gid hadoop $user; echo -e "$user" | passwd $user --stdin; done \
 &&   cp -rp /etc/hadoop/conf.empty /etc/hadoop/conf.dockerized \
 &&   alternatives --install /etc/hadoop/conf hadoop-conf /etc/hadoop/conf.dockerized 50 \
 &&   alternatives --set hadoop-conf /etc/hadoop/conf.dockerized
