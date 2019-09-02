@@ -16,37 +16,21 @@ Usage:    $selfname --version <version> [--mount <mount> ] [ --auth <auth>] [ --
 CAT
 }
 
-
-if ! [ -x "$(command -v sshpass)" ]; then
-cat <<CAT
-FATAL: sshpass not found!
-
-You can install the missing tool as follows.
-- macos
-    brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
-- linux
-    yum install sshpass
-    apt-get install sshpass
-CAT
-exit 1
-fi
-
-
 while [[ $# -gt 0 ]]; do
 key="$1"
 case $key in
     --help)
         print_usage
         exit 0
-    ;;
+        ;;
     --classifier)
         image_classifier="$2"
         shift; shift
-      ;;
+        ;;
     --version)
         cdh5_version="$2"
         shift; shift
-      ;;
+        ;;
     --mount)
         mount="$2"
         case $mount in
@@ -54,51 +38,45 @@ case $key in
            *) mount=$PWD/$mount;;
         esac
         shift; shift
-      ;;
+        ;;
     --auth)
-        auth="$2"
+        hadoop_auth="$2"
         shift; shift
-      ;;
+        ;;
     --sasl)
         sasl_protection="privacy"
         shift
-      ;;
+        ;;
     --tls)
         tls_encryption="true"
         shift
-      ;;
+        ;;
     *)
         shift
-      ;;
+        ;;
 esac
 done
 
 
 case ${cdh5_version} in
-'5.4.2'|'5.16.1')
-;;
-*)
-cat <<CAT
+    '5.4.2'|'5.16.1')
+        ;;
+    *)
+        cat <<CAT
 Error: missing or unsupported --version argument
        --version 5.4.2
        --version 5.16.1
 CAT
-exit -1
-;;
+        exit -1
+        ;;
 esac
 
 
-case ${auth} in
-'simple'|'kerberos')
-;;
-*)
-cat <<CAT
-Error: missing or unsupported --auth argument
-       --auth simple
-       --auth kerberos
-CAT
-exit -1
-;;
+case ${hadoop_auth} in
+    'simple'|'kerberos')
+        ;;
+    *)
+        ;;
 esac
 
 
@@ -109,18 +87,17 @@ esac
 export registry="registry.alpinedata.tech"
 export repository="red/cdh5"
 export image_version="${cdh5_version}-${image_classifier}"
-export hadoop_auth="${auth}"
+export hadoop_auth="${hadoop_auth:-simple}"
 export mount="${mount:-$(pwd)/mount}"
 export sasl_protection="${sasl_protection:-authentication}"
 export tls_encryption="${tls_encryption:-false}"
 
 
 cat <<CAT
------------------------------------
-Starting Cloudera Hadoop with
+Starting Cloudera CDH5 with
   - cdh5_version     $cdh5_version
   - image_version    $image_version
-  - hadoop_auth      $auth
+  - hadoop_auth      $hadoop_auth
   - sasl_protection  $sasl_protection
   - tls_encryption   $tls_encryption
   - mount            $mount
@@ -128,30 +105,6 @@ Starting Cloudera Hadoop with
 CAT
 
 docker-compose \
-    --project-name cdh${cdh5_version} \
+    --project-name cdh5_${cdh5_version}_${hadoop_auth}_${tls_encryption} \
     --file ${selfdir}/docker-compose.yml \
-    up --detach #> /dev/null 2>&1
-
-
-#echo "Configuring SSH  ... "
-#sleep 32
-#ssh-keygen -R [edge.docker.net]:2222
-#ssh-keyscan -p 2222 edge.docker.net >> ~/.ssh/known_hosts
-#sshpass -p "alice" ssh-copy-id -f -p 2222 "alice@edge.docker.net"
-#
-#
-#echo "Configuring Hadoop client ... "
-#sleep 32
-#$selfdir/client/configure --mount $mount --auth $auth
-#exit 0
-
-
-if [[ "$auth" == "kerberos" ]]; then
-cat << CAT
-WARNING:
-    To make sure any Java client hosted by this machine can resolve
-    the Kerberos KDC services, export the following environment variable
-
-    JAVA_OPTS="$JAVA_OPTS -Djava.security.krb5.conf=${mount}/conf/krb5.conf"
-CAT
-fi
+    up --detach

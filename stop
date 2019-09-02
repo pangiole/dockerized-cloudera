@@ -1,18 +1,14 @@
 #!/usr/bin/env bash
 
 #
-# This script stops the Cloudera Hadoop cluster
+# This script stops the Cloudera CDH5 cluster
 #
 
-# Compute the path to directory that contains this script
 readonly selfname=$(basename "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-printf "%-24s ... " "Stopping Cloudera Hadoop"
+printf "Stopping Cloudera CDH5"
 for container in datanode1 nodemanager1 resourcemanager namenode jobhistory hive edge kdc; do
-  docker container stop ${container} > /dev/null 2>&1
+  docker container stop $container
 done
-docker container prune --force  > /dev/null 2>&1
-
-printf "done\n"
-echo "-----------------------------------"
+docker container prune --force

@@ -15,6 +15,21 @@
     <value>hdfs://namenode.docker.net:8020</value>
   </property>
 
+  <!--
+      Class for user to group mapping (get groups for a given user) for ACL.
+      The default implementation, JniBasedUnixGroupsMappingWithFallback, will
+      determine if the Java Native Interface (JNI) is available. If JNI is
+      available the implementation will use the API within hadoop to resolve
+      a list of groups for a user. If JNI is not available then the shell
+      implementation, ShellBasedUnixGroupsMapping, is used. This implementation
+      shells out to the Linux/Unix environment with the bash -c groups command
+      to resolve a list of groups for a user.
+  -->
+  <property>
+    <name>hadoop.security.group.mapping</name>
+    <value>org.apache.hadoop.security.JniBasedUnixGroupsMappingWithFallback</value>
+  </property>
+
 
   {% if HADOOP_AUTHENTICATION == 'kerberos' %}
   <!-- See https://www.cloudera.com/documentation/enterprise/5-15-x/topics/cdh_sg_hadoop_security_enable.html -->
@@ -68,7 +83,7 @@
     rather than those of a superuser.
 
     In the following configuration, alice is the impersonator (the real user)
-    whereas charlie and david are the subjects (the impersonatees)
+    whereas bob, charlie and david are the subjects (the impersonatees)
   -->
   <property>
      <name>hadoop.proxyuser.alice.hosts</name>
@@ -80,12 +95,12 @@
   </property>
   <property>
      <name>hadoop.proxyuser.alice.users</name>
-     <value>charlie,david</value>
+     <value>bob,charlie,david</value>
   </property>
 
   <!--
     And, in the following configuration, hive is the impersonator (the real user)
-    whereas alice, charlie and david are the subjects (the impersonatees)
+    whereas alice, bob, charlie and david are the subjects (the impersonatees)
   -->
   <property>
     <name>hadoop.proxyuser.hive.hosts</name>
@@ -97,7 +112,7 @@
   </property>
   <property>
     <name>hadoop.proxyuser.hive.users</name>
-    <value>alice,charlie,david</value>
+    <value>alice,bob,charlie,david</value>
   </property>
 
   {% endif %}
