@@ -31,8 +31,9 @@ function check_args {
 ${red}Error${reset}: missing --version argument
 You're required to pass a specific Cloudera Hadoop version.
 Try with one of the followings:
-  - ${green}5.4.2${reset}
-  - ${green}5.16.1${reset}
+  --version ${green}5.4.2${reset}
+  --version ${green}5.16.1${reset}
+  --version ${green}6.0.1${reset} 
 CAT
   exit -1
   fi
@@ -94,7 +95,7 @@ CAT
 }
 
 
-function copy_jdk {
+function copy_oracle_jdk {
   dest="$selfdir/repos/oracle"
   mkdir -p ${dest}
 
@@ -105,35 +106,14 @@ function copy_jdk {
 
 
 
-function download_spark {
-  dest="${selfdir}/repos/spark"
-  mkdir -p $dest
-  for spark_version in "2.1.2"; do
-  for hadoop_version in "2.6"; do
-  file="spark-${spark_version}-bin-hadoop${hadoop_version}.tgz"
-    if [[ -f $dest/$file ]]; then
-      echo "Skipping $file"
-    else
-      echo "Downloading $file"
-      curl -L \
-        -o $dest/$file \
-        https://archive.apache.org/dist/spark/spark-${spark_version}/$file
-    fi
-  done
-  done
-}
-
-
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 check_args $*
-copy_jdk
-download_hadoop
-download_spark
+copy_oracle_jdk
 build_yum_image
 
-           provider      repoid
+#            provider      repoid
 build_repo   centos-6.10   base
 build_repo   centos-6.10   centosplus
 build_repo   centos-6.10   extras

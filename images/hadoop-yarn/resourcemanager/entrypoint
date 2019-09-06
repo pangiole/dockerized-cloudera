@@ -32,15 +32,19 @@ chmod 755 /var/log/hadoop-yarn
 while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
 
 
+# IMPORTANT
+# ---------
 # YARN requires a staging directory for temporary files created by running jobs.
 # By default it creates /tmp/hadoop-yarn/staging with restrictive permissions
 # that may prevent your users from running jobs. To forestall this, you should
 # configure and create the staging directory yourself.
 #
+# See the yarn.app.mapreduce.am.staging-dir property as set in mapred-site.xml
+#
 su - yarn <<'EOF'
-hadoop fs -mkdir -p /user/history
-hadoop fs -chown mapred:hadoop /user/history
-hadoop fs -chmod -R 1777 /user/history
+hadoop fs -mkdir -p /tmp/hadoop-yarn/staging
+hadoop fs -chown yarn:hadoop /tmp/hadoop-yarn/staging
+hadoop fs -chmod -R 1777 /tmp/hadoop-yarn/staging
 EOF
 
 

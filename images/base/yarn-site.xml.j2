@@ -1,14 +1,14 @@
 <configuration>
   <!-- https://hadoop.apache.org/docs/r2.6.0/hadoop-yarn/hadoop-yarn-common/yarn-default.xml -->
 
-  <!-- Classpath for typical applications -->
+  <!--
+    The CLASSPATH for any kind of YARN applications
+  -->
   <property>
     <name>yarn.application.classpath</name>
     <value>
-      $HADOOP_CONF_DIR,
-      $HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,
+      $HADOOP_CONF_DIR,$HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,
       $HADOOP_HDFS_HOME/*,$HADOOP_HDFS_HOME/lib/*,
-      $HADOOP_MAPRED_HOME/*,$HADOOP_MAPRED_HOME/lib/*,
       $HADOOP_YARN_HOME/*,$HADOOP_YARN_HOME/lib/*
     </value>
   </property>
@@ -91,7 +91,19 @@
   <!--
     List of directories to store localized files in.
     An application's localized file directory will be found in:
-        ${yarn.nodemanager.local-dirs}/usercache/${user}/appcache/application_${appid}
+
+        ${yarn.nodemanager.local-dirs}/
+        ├── filechache/
+        ├── nmPrivate/
+        ├── usercache/
+        .   ├──${user}/
+            .  ├──appcache/
+               │  ├──application_${appid}/
+               │  │  ├──container_${containerid}
+               │  │  │  ├── launch_container.sh
+               │  │  │  ├── job.jar
+               │  .  .
+               ├──filecache/
 
     Individual containers' work directories, called container_${contid}, will be subdirectories of this.
   -->
