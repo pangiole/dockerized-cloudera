@@ -17,6 +17,11 @@ chmod +x /etc/docker/render
 /etc/docker/render  /etc/hadoop/conf/mapred-site.xml
 /etc/docker/render  /etc/hadoop/conf/yarn-site.xml
 
+# Publish the Hadoop configuration through the /mount/conf directory
+if [[ -d /mount/conf ]]; then
+  cp /etc/hadoop/conf/yarn-site.xml /mount/conf
+fi
+
 
 #
 # Make local log directories

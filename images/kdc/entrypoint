@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-# Cleanup previous secrets
-mkdir -p /mount/secrets
-rm -Rf /mount/secrets/*
+# Publish the Kerberos krb5.conf through the /mount/conf directory
+if [[ -d /mount/conf ]]; then
+  cp /etc/krb5.conf /mount/conf/krb5.conf
+fi
 
 
 # Initialize the Kerberos realm database

@@ -20,6 +20,13 @@ chmod +x /etc/docker/render
 /etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
 
 
+# Publish the Hadoop configuration through the /mount/conf directory
+if [[ -d /mount/conf ]]; then
+  cp /etc/hadoop/conf/core-site.xml /mount/conf
+  cp /etc/hadoop/conf/hdfs-site.xml /mount/conf
+fi
+
+
 #
 # Make log directories
 #

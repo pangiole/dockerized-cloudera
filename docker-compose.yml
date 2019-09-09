@@ -2,6 +2,7 @@
 
 # This is the composition of a few Docker containers running the bare minimum
 # of Cloudera Hadoop fundamental services such as Hadoop HDFS and YARN.
+# There's also a Kerberos KDC - Key Distribution Centre in the mix.
 #
 
 version: "3.7"
@@ -21,6 +22,7 @@ services:
       - "4088:4088"
       - "4088:4088/udp"
     volumes:
+      - "$mount/conf:/mount/conf"
       - "$mount/secrets:/mount/secrets"
 
 
@@ -39,7 +41,8 @@ services:
       - "8020:8020"   # protobuf
       #- "5051:5051"  # jvm-debug
     volumes:
-      - "$mount/secrets:/mount/secrets"
+      - "$mount/conf:/mount/secrets"
+      - "$mount/conf:/mount/conf"
     depends_on:
       - kdc
 
@@ -52,9 +55,6 @@ services:
       HADOOP_AUTHENTICATION: "$hadoop_auth"
       SASL_PROTECTION: "$sasl_protection"
       TLS_ENCRYPTION: "$tls_encryption"
-    # cap_add:
-    #   # Add Linux Kernel Capabilities (see http://man7.org/linux/man-pages/man7/capabilities.7.html)
-    #   - NET_BIND_SERVICE
     privileged: true
     networks:
       - docker-net
@@ -86,7 +86,8 @@ services:
       - "10020:10020" # protobuf
       #- "5053:5053"  # jvm-debug
     volumes:
-      - "$mount/secrets:/mount/secrets"
+      - "$mount/conf:/mount/secrets"
+      - "$mount/conf:/mount/conf"
     depends_on:
       - namenode
 
@@ -107,7 +108,8 @@ services:
       - "8030:8030"   # protobuf
       #- "5054:5054"  # jvm-debug
     volumes:
-      - "$mount/secrets:/mount/secrets"
+      - "$mount/conf:/mount/secrets"
+      - "$mount/conf:/mount/conf"
     depends_on:
       - namenode
       - jobhistory
@@ -155,27 +157,3 @@ services:
     depends_on:
       - namenode
       - resourcemanager
-
-
-  edge:
-    image: "$registry/$repository/edge:$image_version"
-    hostname: "edge.docker.net"
-    container_name: "edge"
-    environment:
-      HADOOP_AUTHENTICATION: "$hadoop_auth"
-      SASL_PROTECTION: "$sasl_protection"
-      TLS_ENCRYPTION: "$tls_encryption"
-    networks:
-      - docker-net
-    ports:
-      - "2222:22"      # ssh        (sshd)
-      - "4042:4040"    # http       (spark-ui)
-      #- "5057:5057"   # jvm-debug
-    volumes:
-      - "$mount/secrets:/mount/secrets"
-      - "$mount/conf:/mount/conf"
-      - "$mount/data:/mount/data"
-    depends_on:
-      - namenode
-      - resourcemanager
-      - hive

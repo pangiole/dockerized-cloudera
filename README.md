@@ -21,18 +21,6 @@ The Docker images built with this project will provide you with:
 ## Requirements
 All you is need Docker Desktop to be installed as per [official documentation](https://www.docker.com/products/docker-desktop).
 
-## Login
-The provided `./start` script will make your Docker host pull down images from our private GitLab Docker Registry. Make sure you can login as follows:
-
-```bash
-$ docker login \
-    registry.alpinedata.tech \
-    --username <username> \
-    --password-stdin
-```
-
-More information are given in the official [GitLab documentation](https://docs.gitlab.com/ee/user/project/container_registry.html)
-
 ## Start
 You can start the Cloudera Hadoop cluster for a given version and mount directory, either with `simple` authentication (default) or with `kerberos`.
 
@@ -90,9 +78,6 @@ The dockerized Cloudera Hadoop cluster is composed of the following containers:
 - **hive**  
   It hosts the Apache Hive2 server running in embedded mode.
 
-- **edge**  
-  It does NOT host any server process but it does provide Hadoop, Hive and Spark command line clients (such as `spark-shell`, `beeline`, etc.)
-
 
 ### Login
 You can execute `bash` within any of the above containers:
@@ -144,7 +129,6 @@ Docker port forwarding will allow applications/services running on your Docker h
 127.0.0.1    datanode1.docker.net
 127.0.0.1    nodemanager1.docker.net
 127.0.0.1    hive.docker.net
-127.0.0.1    edge.docker.net
 ```
 
 

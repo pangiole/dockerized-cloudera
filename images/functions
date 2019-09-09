@@ -52,5 +52,4 @@ function perform {
   ${action}   hadoop-yarn/resourcemanager
   ${action}   hadoop-yarn/nodemanager
   ${action}   hive
-  ${action}   edge
 }

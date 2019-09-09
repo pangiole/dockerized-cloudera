@@ -10,9 +10,10 @@ readonly selfname=$(basename "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 
+# TODO Add options relevant to encryption (for example --enable-rpc-privacy and --enable-tls-encyption)
 function print_usage {
 cat <<CAT
-Usage:    $selfname --version <version> [--mount <mount> ] [ --auth <auth>] [ --sasl ] [ --tls ]
+Usage:    $selfname --version <version> --patch <number> [ --compose-file <filepath> ] [ --mount <dirpath> ] [ --auth <auth> ]
 CAT
 }
 
@@ -23,12 +24,16 @@ case $key in
         print_usage
         exit 0
         ;;
-    --classifier)
-        image_classifier="$2"
-        shift; shift
-        ;;
     --version)
         cdh5_version="$2"
+        shift; shift
+        ;;
+    --patch)
+        image_patch="$2"
+        shift; shift
+        ;;
+    --compose)
+        compose_file="$2"
         shift; shift
         ;;
     --mount)
@@ -43,14 +48,14 @@ case $key in
         hadoop_auth="$2"
         shift; shift
         ;;
-    --sasl)
-        sasl_protection="privacy"
-        shift
-        ;;
-    --tls)
-        tls_encryption="true"
-        shift
-        ;;
+    # --enable-rpc-privacy)
+    #     sasl_protection="privacy"
+    #     shift
+    #     ;;
+    # --enable-tls-encyption)
+    #     tls_encryption="true"
+    #     shift
+    #    ;;
     *)
         shift
         ;;
@@ -73,20 +78,22 @@ esac
 
 
 case ${hadoop_auth} in
-    'simple'|'kerberos')
+    'kerberos'|'simple')
         ;;
     *)
         ;;
 esac
 
 
-# Define the default classifier
-[[ "${image_classifier}x" == "x" ]] && image_classifier="$(git describe)"
+# Define the default patch
+[[ "${image_patch}x" == "x" ]] && image_patch="$(git describe)"
 
 
+export compose_file="${compose_file:-$selfdir/docker-compose.yml}"
 export registry="registry.alpinedata.tech"
 export repository="red/cdh5"
-export image_version="${cdh5_version}-${image_classifier}"
+export image_version="${cdh5_version}-${image_patch}"
+
 export hadoop_auth="${hadoop_auth:-simple}"
 export mount="${mount:-$(pwd)/mount}"
 export sasl_protection="${sasl_protection:-authentication}"
@@ -105,6 +112,6 @@ Starting Cloudera CDH5 with
 CAT
 
 docker-compose \
-    --project-name cdh5_${cdh5_version}_${hadoop_auth}_${tls_encryption} \
-    --file ${selfdir}/docker-compose.yml \
+    --project-name ${cdh5_version}_${hadoop_auth}_clear \
+    --file ${compose_file} \
     up --detach

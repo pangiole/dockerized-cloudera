@@ -53,6 +53,10 @@ function kerberos_init {
   # Make the directory where secrets are mount across the cluster
   mkdir -p /mount/secrets
 
+  # Cleanup previous secrets (if any existed)
+  rm -Rf /mount/secrets/*
+
+
   # ----------   user          domain
   kerberos_add   'alice'       'no'
   kerberos_add   'bob'         'no'

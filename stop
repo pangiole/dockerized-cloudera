@@ -4,11 +4,13 @@
 # This script stops the Cloudera CDH5 cluster
 #
 
-readonly selfname=$(basename "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-printf "Stopping Cloudera CDH5"
-for container in datanode1 nodemanager1 resourcemanager namenode jobhistory hive edge kdc; do
-  docker container stop $container
-done
+services="$*"
+if [[ "${services}x" == "x" ]]; then
+    services="hive nodemanager1 resourcemanager jobhistory datanode1 namenode kdc"
+fi
+
+echo "Stopping Cloudera CDH5"
+for container in $services; do docker container stop $container; done
 docker container prune --force
