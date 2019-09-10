@@ -17,8 +17,8 @@ function check_args {
           cdh5_version="$2"
           shift; shift # past value
         ;;
-      -c|--classifier)
-          image_classifier="$2"
+      -p|--patch)
+          image_patch="$2"
           shift; shift # past value
         ;;
       *)
@@ -39,7 +39,7 @@ CAT
 }
 
 
-image_classifier=${image_classifier:-$(git describe)}
+image_patch=${image_patch:-$(git describe)}
 
 
 function perform {
