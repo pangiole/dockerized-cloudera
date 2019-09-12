@@ -68,6 +68,9 @@ hadoop fs -chmod 755 /
 
 hadoop fs -mkdir -p /tmp
 hadoop fs -chmod -R 1777 /tmp
+
+hadoop fs -mkdir -p /data
+hadoop fs -chmod -R 1777 /data
 EOF
 
 

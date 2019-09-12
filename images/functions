@@ -39,7 +39,7 @@ CAT
 }
 
 
-image_patch=${image_patch:-$(git describe)}
+image_patch=${image_patch:-$(git describe --dirty)}
 
 
 function perform {

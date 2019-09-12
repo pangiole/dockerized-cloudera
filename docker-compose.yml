@@ -41,8 +41,8 @@ services:
       - "8020:8020"   # protobuf
       #- "5051:5051"  # jvm-debug
     volumes:
-      - "$mount/conf:/mount/secrets"
       - "$mount/conf:/mount/conf"
+      - "$mount/secrets:/mount/secrets"
     depends_on:
       - kdc
 
@@ -86,8 +86,8 @@ services:
       - "10020:10020" # protobuf
       #- "5053:5053"  # jvm-debug
     volumes:
-      - "$mount/conf:/mount/secrets"
       - "$mount/conf:/mount/conf"
+      - "$mount/secrets:/mount/secrets"
     depends_on:
       - namenode
 
@@ -108,8 +108,8 @@ services:
       - "8030:8030"   # protobuf
       #- "5054:5054"  # jvm-debug
     volumes:
-      - "$mount/conf:/mount/secrets"
       - "$mount/conf:/mount/conf"
+      - "$mount/secrets:/mount/secrets"
     depends_on:
       - namenode
       - jobhistory
@@ -153,6 +153,7 @@ services:
       - "10000:10000" # jdbc
       #- "5056:5056"  # jvm-debug
     volumes:
+      - "$mount/conf:/mount/conf"
       - "$mount/secrets:/mount/secrets"
     depends_on:
       - namenode
