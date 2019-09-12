@@ -16,6 +16,16 @@ chmod +x /etc/docker/render
 /etc/docker/render /etc/hadoop/conf/mapred-site.xml
 /etc/docker/render /etc/hadoop/conf/yarn-site.xml
 /etc/docker/render /etc/hive/conf/hive-site.xml
+/etc/docker/render /etc/hive/conf/beeline-site.xml
+/etc/docker/render /etc/hive/conf/beeline-site.env
+
+# Publish the Hadoop configuration through the /mount/conf directory
+if [[ -d /mount/conf ]]; then
+  cp /etc/hive/conf/hive-site.xml /mount/conf
+  cp /etc/hive/conf/beeline-site.xml /mount/conf
+  cp /etc/hive/conf/beeline-site.env /mount/conf
+fi
+
 
 # Make TLS/SSL Certificates
 chmod +x /etc/docker/mkcerts

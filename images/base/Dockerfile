@@ -76,10 +76,12 @@ RUN  yum update -y \
 &&   alternatives --install /etc/hadoop/conf hadoop-conf /etc/hadoop/conf.dockerized 50 \
 &&   alternatives --set hadoop-conf /etc/hadoop/conf.dockerized
 
-COPY core-site.xml.j2   /etc/hadoop/conf/core-site.xml.j2
-COPY hdfs-site.xml.j2   /etc/hadoop/conf/hdfs-site.xml.j2
-COPY yarn-site.xml.j2   /etc/hadoop/conf/yarn-site.xml.j2
-COPY mapred-site.xml.j2 /etc/hadoop/conf/mapred-site.xml.j2
-COPY hive-site.xml.j2   /etc/hive/conf/hive-site.xml.j2
+COPY core-site.xml.j2    /etc/hadoop/conf/core-site.xml.j2
+COPY hdfs-site.xml.j2    /etc/hadoop/conf/hdfs-site.xml.j2
+COPY yarn-site.xml.j2    /etc/hadoop/conf/yarn-site.xml.j2
+COPY mapred-site.xml.j2  /etc/hadoop/conf/mapred-site.xml.j2
+COPY hive-site.xml.j2    /etc/hive/conf/hive-site.xml.j2
+COPY beeline-site.xml.j2 /etc/hive/conf/beeline-site.xml.j2
+COPY beeline-site.env.j2 /etc/hive/conf/beeline-site.env.j2
 
 RUN  yum clean all
