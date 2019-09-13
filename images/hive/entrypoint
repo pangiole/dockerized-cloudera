@@ -19,11 +19,11 @@ chmod +x /etc/docker/render
 /etc/docker/render /etc/hive/conf/beeline-site.xml
 /etc/docker/render /etc/hive/conf/beeline-site.env
 
-# Publish the Hadoop configuration through the /mount/conf directory
-if [[ -d /mount/conf ]]; then
-  cp /etc/hive/conf/hive-site.xml /mount/conf
-  cp /etc/hive/conf/beeline-site.xml /mount/conf
-  cp /etc/hive/conf/beeline-site.env /mount/conf
+# Publish the Hadoop configuration through the /shared/conf directory
+if [[ -d /shared/conf ]]; then
+  cp /etc/hive/conf/hive-site.xml /shared/conf
+  cp /etc/hive/conf/beeline-site.xml /shared/conf
+  cp /etc/hive/conf/beeline-site.env /shared/conf
 fi
 
 

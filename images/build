@@ -38,7 +38,7 @@ function destroy {
   local image="${1}"
 
   # Append the version tag (e.g. 'alpha2' or '1.0') of the Docker images
-  local image_version="$cdh5_version-$image_patch"
+  local image_version="$cdh_version-$image_patch"
 
   echo "Removing Docker image ${repository}/${image}:${image_version}"
   docker image rm --force ${registry}/${repository}/${image}:${image_version} > /dev/null 2>&1
@@ -51,12 +51,12 @@ function build {
   local image="${1}"
 
   # Append the version tag (e.g. 'alpha2' or '1.0') of the Docker images
-  local image_version="$cdh5_version-$image_patch"
+  local image_version="$cdh_version-$image_patch"
 
-  if [[ "${image}" == "base" ]]; then cat <<CAT > ${selfdir}/base/cdh-${cdh5_version}.repo
-[cdh-${cdh5_version}]
+  if [[ "${image}" == "base" ]]; then cat <<CAT > ${selfdir}/base/cdh-${cdh_version}.repo
+[cdh-${cdh_version}]
 name=Cloudera's Distribution for Hadoop
-baseurl=http://repos/cloudera/cdh-${cdh5_version}
+baseurl=http://repos/cloudera/cdh-${cdh_version}
 gpgcheck=0
 enabled=1
 CAT
@@ -70,7 +70,7 @@ CAT
   docker image build \
     --network ${network}  \
     --build-arg repository=${repository} \
-    --build-arg cdh5_version=${cdh5_version} \
+    --build-arg cdh_version=${cdh_version} \
     --build-arg image_version=${image_version} \
     --file ${selfdir}/${image}/Dockerfile \
     --tag ${repository}/${image}:${image_version} \

@@ -175,7 +175,7 @@ Copy the native libraries over:
 
 ```
 $ cp -rp \
-      ./hadoop-dist/mount/hadoop-2.6.0/lib/native \
+      ./hadoop-dist/shared/hadoop-2.6.0/lib/native \
       $HADOOP_HOME/lib
 ```
 
@@ -208,6 +208,6 @@ Copy the native libraries over:
 
 ```
 $ cp -rp \
-      ./hadoop-dist/mount/hadoop-3.3.0-SNAPSHOT/lib/native \
+      ./hadoop-dist/shared/hadoop-3.3.0-SNAPSHOT/lib/native \
       $HADOOP_HOME/lib
 ```

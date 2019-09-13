@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+function print_usage {
+  cat <<CAT
+Usage:    $selfname --version <version> --patch <number> [ --compose <filepath> ] [ --project <name> ] [ --auth <auth> ]
+CAT
+}
+
+function parse_args {
+  # TODO Add options relevant to encryption (for example --enable-rpc-privacy and --enable-tls-encyption)
+  while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+      --help)
+          print_usage
+          exit 0
+          ;;
+      --project)
+          project_name="$2"
+          shift; shift
+          ;;
+      --version)
+          cdh_version="$2"
+          shift; shift
+          ;;
+      --patch)
+          image_patch="$2"
+          shift; shift
+          ;;
+      --compose)
+          compose_file="$2"
+          shift; shift
+          ;;
+      --auth)
+          hadoop_auth="$2"
+          shift; shift
+          ;;
+      # --enable-rpc-privacy)
+      #     sasl_protection="privacy"
+      #     shift
+      #     ;;
+      # --enable-tls-encyption)
+      #     tls_encryption="true"
+      #     shift
+      #    ;;
+      *)
+          shift
+          ;;
+  esac
+  done
+
+  case ${cdh_version} in
+      '5.4.2'|'5.16.1')
+          ;;
+      *)
+          cat <<CAT
+Error: missing or unsupported --version argument
+       --version 5.4.2
+       --version 5.16.1
+CAT
+          exit -1
+          ;;
+  esac
+
+
+  case ${hadoop_auth} in
+      'kerberos'|'simple')
+          ;;
+      *)
+          ;;
+  esac
+
+
+  # Define the default patch
+  [[ "${image_patch}x" == "x" ]] && image_patch="$(git describe --dirty)"
+
+
+  export compose_file="${compose_file:-$selfdir/docker-compose.yml}"
+  export registry="registry.alpinedata.tech"
+  export repository="red/cdh"
+  export image_version="${cdh_version}-${image_patch}"
+
+  export project_name="${project_name:-cdh}"
+  export hadoop_auth="${hadoop_auth:-simple}"
+  export sasl_protection="${sasl_protection:-authentication}"
+  export tls_encryption="${tls_encryption:-false}"
+
+  cat <<CAT
+${selfname} Cloudera Hadoop cluster with:
+  - cdh_version      $cdh_version
+  - image_version    $image_version
+  - project_name     $project_name
+  - hadoop_auth      $hadoop_auth
+  - sasl_protection  $sasl_protection
+  - tls_encryption   $tls_encryption
+
+CAT
+}

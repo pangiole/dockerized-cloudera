@@ -4,114 +4,15 @@
 # This script starts the Cloudera Hadoop cluster
 #
 
-
-# Compute the path to directory that contains this script
 readonly selfname=$(basename "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-
-# TODO Add options relevant to encryption (for example --enable-rpc-privacy and --enable-tls-encyption)
-function print_usage {
-cat <<CAT
-Usage:    $selfname --version <version> --patch <number> [ --compose-file <filepath> ] [ --mount <dirpath> ] [ --auth <auth> ]
-CAT
-}
-
-while [[ $# -gt 0 ]]; do
-key="$1"
-case $key in
-    --help)
-        print_usage
-        exit 0
-        ;;
-    --version)
-        cdh5_version="$2"
-        shift; shift
-        ;;
-    --patch)
-        image_patch="$2"
-        shift; shift
-        ;;
-    --compose)
-        compose_file="$2"
-        shift; shift
-        ;;
-    --mount)
-        mount="$2"
-        case $mount in
-          /*) mount=$mount;;
-           *) mount=$PWD/$mount;;
-        esac
-        shift; shift
-        ;;
-    --auth)
-        hadoop_auth="$2"
-        shift; shift
-        ;;
-    # --enable-rpc-privacy)
-    #     sasl_protection="privacy"
-    #     shift
-    #     ;;
-    # --enable-tls-encyption)
-    #     tls_encryption="true"
-    #     shift
-    #    ;;
-    *)
-        shift
-        ;;
-esac
-done
+source $selfdir/functions
+parse_args $*
 
 
-case ${cdh5_version} in
-    '5.4.2'|'5.16.1')
-        ;;
-    *)
-        cat <<CAT
-Error: missing or unsupported --version argument
-       --version 5.4.2
-       --version 5.16.1
-CAT
-        exit -1
-        ;;
-esac
-
-
-case ${hadoop_auth} in
-    'kerberos'|'simple')
-        ;;
-    *)
-        ;;
-esac
-
-
-# Define the default patch
-[[ "${image_patch}x" == "x" ]] && image_patch="$(git describe)"
-
-
-export compose_file="${compose_file:-$selfdir/docker-compose.yml}"
-export registry="registry.alpinedata.tech"
-export repository="red/cdh5"
-export image_version="${cdh5_version}-${image_patch}"
-
-export hadoop_auth="${hadoop_auth:-simple}"
-export mount="${mount:-$(pwd)/mount}"
-export sasl_protection="${sasl_protection:-authentication}"
-export tls_encryption="${tls_encryption:-false}"
-
-
-cat <<CAT
-Starting Cloudera CDH5 with
-  - cdh5_version     $cdh5_version
-  - image_version    $image_version
-  - hadoop_auth      $hadoop_auth
-  - sasl_protection  $sasl_protection
-  - tls_encryption   $tls_encryption
-  - mount            $mount
-
-CAT
-
+# Compose the cluster of services
 docker-compose \
-    --project-name ${cdh5_version}_${hadoop_auth}_clear \
-    --file ${compose_file} \
+    --project-name $project_name \
+    --file $compose_file \
     up --detach

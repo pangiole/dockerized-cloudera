@@ -48,7 +48,7 @@ for file in ${files}; do
   rm -Rf ${HADOOP_CONF_DIR}/$file
   cp $mount/conf/$file $HADOOP_CONF_DIR/$file
   base=$(echo "$mount" | sed 's/\//\\\//g')
-  expr="s/\/mount/$base/g"
+  expr="s/\/shared/$base/g"
   sed $expr $HADOOP_CONF_DIR/$file > $HADOOP_CONF_DIR/$file.local
   mv $HADOOP_CONF_DIR/$file.local $HADOOP_CONF_DIR/$file
   printf "done\n"

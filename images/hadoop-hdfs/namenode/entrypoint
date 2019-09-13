@@ -20,10 +20,10 @@ chmod +x /etc/docker/render
 /etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
 
 
-# Publish the Hadoop configuration through the /mount/conf directory
-if [[ -d /mount/conf ]]; then
-  cp /etc/hadoop/conf/core-site.xml /mount/conf
-  cp /etc/hadoop/conf/hdfs-site.xml /mount/conf
+# Publish the Hadoop configuration through the /shared/conf directory
+if [[ -d /shared/conf ]]; then
+  cp /etc/hadoop/conf/core-site.xml /shared/conf
+  cp /etc/hadoop/conf/hdfs-site.xml /shared/conf
 fi
 
 

@@ -4,13 +4,14 @@
 # This script stops the Cloudera CDH5 cluster
 #
 
+readonly selfname=$(basename "$0")
 readonly selfdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-services="$*"
-if [[ "${services}x" == "x" ]]; then
-    services="hive nodemanager1 resourcemanager jobhistory datanode1 namenode kdc"
-fi
+source $selfdir/functions
+parse_args $*
 
-echo "Stopping Cloudera CDH5"
-for container in $services; do docker container stop $container; done
-docker container prune --force
+# Bring the cluster of services up
+docker-compose \
+    --project-name $project_name \
+    --file $compose_file \
+    down
