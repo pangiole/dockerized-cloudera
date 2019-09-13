@@ -33,7 +33,8 @@ You're required to pass a specific Cloudera Hadoop version.
 Try with one of the followings:
   --version ${green}5.4.2${reset}
   --version ${green}5.16.1${reset}
-  --version ${green}6.0.1${reset} 
+  --version ${green}6.0.1${reset}
+  --version ${green}6.2.0${reset} 
 CAT
   exit -1
   fi

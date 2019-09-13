@@ -1,5 +1,5 @@
 # Cloudera Hadoop
-A "dockerized" Cloudera Hadoop 5.x cluster to ease development and test of BigData applications
+A "dockerized" Cloudera Hadoop cluster to ease development and test of BigData applications
 
 > WARN  
 > This project is *not* meant for production use!
@@ -35,6 +35,7 @@ The only versions available are:
 
 - 5.4.2
 - 5.16.1
+- 6.2.0
 
 The mount directory is where mount secrets (such as keytab files) and configuration files (such as `core-site.xml`) will be targeted to.
 
@@ -42,9 +43,9 @@ The `start` script does no more than invoking `docker-compose` with the followin
 
 ```
 export registry="registry.alpinedata.tech"
-export repository="red/cloudera"
+export repository="red/cdh5"
 export version="5.16.1"
-export mount="/path/to/mount/cloudera"
+export mount="/path/to/mount"
 export hadoop_auth="kerberos"
 export sasl_protection="authentication"
 export tls_encryption="false"
@@ -79,20 +80,13 @@ The dockerized Cloudera Hadoop cluster is composed of the following containers:
   It hosts the Apache Hive2 server running in embedded mode.
 
 
-### Login
-You can execute `bash` within any of the above containers:
-
-```
-./login <container>
-```
-
-
 ### Resources
 Once the containers cluster is started, it will reveal its configuration by generating the following files to your local working directory:
 
 ```
 ├── $mount/cloudera
 │   ├── conf
+│   │   ├── beeline-site.xml
 │   │   ├── core-site.xml
 │   │   ├── hdfs-site.xml
 │   │   ├── mapred-site.xml
@@ -111,13 +105,17 @@ Those XML configuration and Kerberos keytab files will make you able to configur
 ## Clients
 This Cloudera Docker cluster supports any client program built with Hadoop libraries matching the server-side ones. Examples are: the command line `hadoop` tool, the Hive `beeline` tool, the Apache `spark-submit` tool and the Alpine/Chorus systems.
 
-If you wish to run Hadoop client tools on host (for example on your macOS laptop) then read the [client/HADOOP.md](./client/HADOOP.md) file for further information.
+### in containers
+If you wish to run Hadoop client binaries inside a Docker container the refer to the [red/hadoop-client](https://gitlab.alpinedata.tech/red/hadoop-client) project.
+
+### on host
+If you wish to run Hadoop client binaries on host (for example on your macOS laptop) then read the [client/HADOOP.md](./client/HADOOP.md) file for further information.
 
 
 ### Networking
 All of the containers belonging to the Cloudera Hadoop cluster will join the same Docker network named `docker.net`
 
-Docker port forwarding will allow applications/services running on your Docker host to communicate with the dockerized services running in the cluster as long as you update your `/etc/hosts` file as follows
+Docker port forwarding will allow applications/services running on host to communicate with the dockerized services running in the cluster as long as you update your `/etc/hosts` file as follows
 
 ```
 # Cloudera Docker
@@ -157,11 +155,11 @@ After you got the YUM repositories, you can finally build the new Docker images 
 Once done, double check that all images have been built correctly by listing and inspecting them.
 
 ```bash
-docker image ls | grep cloudera
-docker image inspect cloudera/base:5.16.1
+docker image ls | grep cdh5
+docker image inspect red/cdh5/base:5.16.1
 ```
 
-You can even destroy what you built:
+You can even destroy what you just built:
 
 ```bash
 ./images/destroy \
