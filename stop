@@ -15,3 +15,5 @@ docker-compose \
     --project-name $project_name \
     --file $compose_file \
     down
+
+docker volume rm -f ${project_name}_shared

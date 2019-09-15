@@ -48,8 +48,8 @@ function perform {
   ${action}   kdc
   ${action}   hadoop-hdfs/namenode
   ${action}   hadoop-hdfs/datanode
-  # ${action}   hadoop-mapred/jobhistory
-  # ${action}   hadoop-yarn/resourcemanager
-  # ${action}   hadoop-yarn/nodemanager
-  # ${action}   hive
+  ${action}   hadoop-mapred/jobhistory
+  ${action}   hadoop-yarn/resourcemanager
+  ${action}   hadoop-yarn/nodemanager
+  ${action}   hive
 }
