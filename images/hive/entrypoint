@@ -19,12 +19,13 @@ chmod +x /etc/docker/render
 /etc/docker/render /etc/hive/conf/beeline-site.xml
 /etc/docker/render /etc/hive/conf/beeline-site.env
 
-# Publish the Hadoop configuration through the /mount/conf directory
-if [[ -d /mount/conf ]]; then
-  cp /etc/hive/conf/hive-site.xml /mount/conf
-  cp /etc/hive/conf/beeline-site.xml /mount/conf
-  cp /etc/hive/conf/beeline-site.env /mount/conf
-fi
+# Publish the Hadoop configuration through the /shared/conf directory
+mkdir -p /shared/conf
+rm -f  /shared/conf/hive-site.xml /shared/conf/beeline-site.xml /shared/conf/beeline-site.env
+
+cp /etc/hive/conf/hive-site.xml /shared/conf
+cp /etc/hive/conf/beeline-site.xml /shared/conf
+cp /etc/hive/conf/beeline-site.env /shared/conf
 
 
 # Make TLS/SSL Certificates

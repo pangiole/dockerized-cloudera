@@ -5,7 +5,7 @@ readonly green="$(tput setaf 2)"
 readonly reset="$(tput setaf 7)"
 
 readonly registry="registry.alpinedata.tech"
-readonly repository="red/cdh5"
+readonly repository="red/cdh"
 readonly network="build.net"
 
 
@@ -14,7 +14,7 @@ function check_args {
   key="$1"
   case $key in
       -v|--version)
-          cdh5_version="$2"
+          cdh_version="$2"
           shift; shift # past value
         ;;
       -p|--patch)
@@ -27,7 +27,7 @@ function check_args {
   esac
   done
 
-  if [[ "${cdh5_version}x" == "x" ]]; then cat <<CAT
+  if [[ "${cdh_version}x" == "x" ]]; then cat <<CAT
 ${red}Error${reset}: missing --version argument
 You're required to pass a specific Cloudera Hadoop version.
 Try with one of the followings:

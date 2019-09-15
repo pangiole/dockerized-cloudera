@@ -63,10 +63,10 @@ RUN  chmod +x /etc/docker/mkcerts \
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Cludera Hadoop setup
 #
-ARG  cdh5_version
-ENV  CDH5_VERSION=${cdh5_version}
+ARG  cdh_version
+ENV  cdh_version=${cdh_version}
 
-COPY cdh-${cdh5_version}.repo  /etc/yum.repos.d/cdh-${cdh5_version}.repo
+COPY cdh-${cdh_version}.repo  /etc/yum.repos.d/cdh-${cdh_version}.repo
 
 RUN  yum update -y \
 &&   yum install -y hadoop-client \

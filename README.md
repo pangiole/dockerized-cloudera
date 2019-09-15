@@ -9,7 +9,7 @@ The Docker images built with this project will provide you with:
 
 - Linux CentOS 6.10
   - MIT Kerberos 5-1.10.3
-  - Cloudera Hadoop 5.x
+  - Cloudera Hadoop
       * HDFS NameNode
       * HDFS DataNode
       * MapRed JobHistory
@@ -22,34 +22,20 @@ The Docker images built with this project will provide you with:
 All you is need Docker Desktop to be installed as per [official documentation](https://www.docker.com/products/docker-desktop).
 
 ## Start
-You can start the Cloudera Hadoop cluster for a given version and mount directory, either with `simple` authentication (default) or with `kerberos`.
+You can start the Cloudera Hadoop cluster either with `simple` authentication (default) or with `kerberos`.
 
 ```bash
 $ ./start \
   --version 5.16.1 \
-  --mount /path/to/mount \
   --kerberos
 ```
 
-The only versions available are:
+The only versions available so far are:
 
 - 5.4.2
 - 5.16.1
 - 6.2.0
 
-The mount directory is where mount secrets (such as keytab files) and configuration files (such as `core-site.xml`) will be targeted to.
-
-The `start` script does no more than invoking `docker-compose` with the following environment variables.
-
-```
-export registry="registry.alpinedata.tech"
-export repository="red/cdh5"
-export version="5.16.1"
-export mount="/path/to/mount"
-export hadoop_auth="kerberos"
-export sasl_protection="authentication"
-export tls_encryption="false"
-```
 
 ### Stop
 You can stop the whole Cloudera Hadoop cluster as follows:
@@ -80,26 +66,27 @@ The dockerized Cloudera Hadoop cluster is composed of the following containers:
   It hosts the Apache Hive2 server running in embedded mode.
 
 
-### Resources
-Once the containers cluster is started, it will reveal its configuration by generating the following files to your local working directory:
+### Shared resources
+Services of this cluster are sharing both the Hadoop configuration and the Kerberos secrets via a named Docker volume. The `shared` volume is mounted within each of the containers at the `/shared` mount point.
 
 ```
-├── $mount/cloudera
-│   ├── conf
+/
+├── shared/
+│   ├── conf/
 │   │   ├── beeline-site.xml
 │   │   ├── core-site.xml
 │   │   ├── hdfs-site.xml
-│   │   ├── mapred-site.xml
 │   │   ├── hive-site.xml
+│   │   ├── mapred-site.xml
 │   │   └── yarn-site.xml
-│   ├── secrets
+│   ├── secrets/
 │   │   ├── alice.keytab
+│   │   ├── charlie.keytab
 │   │   ├── hdfs.keytab
 │   │   ├── rootca.jks
 │   │   ├── yarn.keytab
 ...
 ```
-Those XML configuration and Kerberos keytab files will make you able to configure your client applications correctly.
 
 
 ## Clients

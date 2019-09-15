@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-# Publish the Kerberos krb5.conf through the /mount/conf directory
-if [[ -d /mount/conf ]]; then
-  cp /etc/krb5.conf /mount/conf/krb5.conf
-fi
-
-
 # Initialize the Kerberos realm database
 chmod +x /etc/docker/init
 /etc/docker/init
