@@ -21,10 +21,11 @@ chmod +x /etc/docker/render
 
 
 # Publish the Hadoop configuration through the /shared/conf directory
-if [[ -d /shared/conf ]]; then
-  cp /etc/hadoop/conf/core-site.xml /shared/conf
-  cp /etc/hadoop/conf/hdfs-site.xml /shared/conf
-fi
+mkdir -p /shared/conf
+rm -f  /shared/conf/core-site.xml /shared/conf//hdfs-site.xml
+
+cp /etc/hadoop/conf/core-site.xml /shared/conf
+cp /etc/hadoop/conf/hdfs-site.xml /shared/conf
 
 
 #

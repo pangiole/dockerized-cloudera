@@ -19,9 +19,10 @@ chmod +x /etc/docker/render
 
 
 # Publish the Hadoop configuration through the /shared/conf directory
-if [[ -d /shared/conf ]]; then
-  cp /etc/hadoop/conf/mapred-site.xml /shared/conf
-fi
+mkdir -p /shared/conf
+rm -f  /shared/conf/mapred-site.xml
+
+cp /etc/hadoop/conf/mapred-site.xml /shared/conf
 
 
 #

@@ -18,9 +18,10 @@ chmod +x /etc/docker/render
 /etc/docker/render  /etc/hadoop/conf/yarn-site.xml
 
 # Publish the Hadoop configuration through the /shared/conf directory
-if [[ -d /shared/conf ]]; then
-  cp /etc/hadoop/conf/yarn-site.xml /shared/conf
-fi
+mkdir -p /shared/conf
+rm -f  /shared/conf/yarn-site.xml
+
+cp /etc/hadoop/conf/yarn-site.xml /shared/conf
 
 
 #
