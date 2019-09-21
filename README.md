@@ -73,10 +73,10 @@ Services of this cluster are sharing both the Hadoop configuration and the Kerbe
 /
 ├── shared/
 │   ├── conf/
-│   │   ├── beeline-site.xml
+│   │   ├── beeline-site.env
 │   │   ├── core-site.xml
 │   │   ├── hdfs-site.xml
-│   │   ├── hive-site.xml
+│   │   ├── hiveserver2-site.xml
 │   │   ├── mapred-site.xml
 │   │   └── yarn-site.xml
 │   ├── secrets/

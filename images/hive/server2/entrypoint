@@ -14,16 +14,14 @@
 /etc/docker/render /etc/hadoop/conf/mapred-site.xml
 /etc/docker/render /etc/hadoop/conf/yarn-site.xml
 /etc/docker/render /etc/hive/conf/hiveserver2-site.xml
-/etc/docker/render /etc/hive/conf/beeline-site.xml
 /etc/docker/render /etc/hive/conf/beeline-site.env
 
 
 # Publish the Hadoop configuration through the /shared/conf directory
 mkdir -p /shared/conf
-rm -f  /shared/conf/hive-site.xml /shared/conf/beeline-site.xml /shared/conf/beeline-site.env
+rm -f  /shared/conf/hive-site.xml /shared/conf/beeline-site.env
 
 cp /etc/hive/conf/hive-site.xml /shared/conf
-cp /etc/hive/conf/beeline-site.xml /shared/conf
 cp /etc/hive/conf/beeline-site.env /shared/conf
 
 

@@ -11,7 +11,6 @@ RUN yum update -y \
 &&  yum clean all
 
 COPY hiveserver2-site.xml.j2    /etc/hive/conf/hiveserver2-site.xml.j2
-COPY beeline-site.xml.j2        /etc/hive/conf/beeline-site.xml.j2
 COPY beeline-site.env.j2        /etc/hive/conf/beeline-site.env.j2
 COPY entrypoint                 /etc/docker/entrypoint
 
