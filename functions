@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+readonly red="$(tput setaf 1)"
+readonly green="$(tput setaf 2)"
+readonly reset="$(tput setaf 7)"
+
 function print_usage {
   cat <<CAT
 Usage:    $selfname --version <version> --patch <number> [ --compose <filepath> ] [ --project <name> ] [ --auth <auth> ]
@@ -50,13 +54,19 @@ function parse_args {
   done
 
   case ${cdh_version} in
-      '5.4.2'|'5.16.1')
+      '5.4.2'|'5.16.1'|'6.2.0')
           ;;
       *)
           cat <<CAT
-Error: missing or unsupported --version argument
-       --version 5.4.2
-       --version 5.16.1
+You're required to pass a specific Cloudera Hadoop version.
+Try with one of the followings:
+
+            | Cloudera | Hadoop | Hive  |  Pig
+  ----------|----------|--------|-------|--------
+  --version   ${green}5.4.2${reset}    | 2.6.0  | 1.1.0 | 0.12.0
+  --version   ${green}5.16.1${reset}   | 2.6.0  | 1.1.0 | 0.12.0
+  --version   ${green}6.2.0${reset}    | 3.0.0  | 2.2.1 | 0.17.0
+
 CAT
           exit -1
           ;;
@@ -80,7 +90,7 @@ CAT
   export repository="red/cdh"
   export image_version="${cdh_version}-${image_patch}"
 
-  export project_name="${project_name:-cdh}"
+  export project_name="${project_name:-cdh${cdh_version:0:1}}"
   export hadoop_auth="${hadoop_auth:-simple}"
   export sasl_protection="${sasl_protection:-authentication}"
   export tls_encryption="${tls_encryption:-false}"

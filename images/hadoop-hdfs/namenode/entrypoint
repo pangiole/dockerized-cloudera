@@ -6,7 +6,7 @@
 #
 # Setup user accounts with proper ~/.bash_profile
 #
-chmod +x /etc/docker/setup
+#
 # --------------   user   group   domain
 /etc/docker/setup  hdfs   hadoop  docker.net
 
@@ -15,7 +15,7 @@ chmod +x /etc/docker/setup
 #
 # Render configuration templates by replacing {{ PLACEHOLDER }}
 # with corresponding shell environment variable values
-chmod +x /etc/docker/render
+
 /etc/docker/render  /etc/hadoop/conf/core-site.xml
 /etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
 
@@ -63,14 +63,16 @@ while ! echo exit | nc namenode.docker.net 8020; do sleep 1; done
 # create /tmp yourself, another process may create it automatically with
 # restrictive permissions that will prevent your other applications from using it.
 #
-su - hdfs <<'EOF'
+su - alice <<'EOF'
 hadoop fs -chown hdfs:hadoop /
 hadoop fs -chmod 755 /
 
 hadoop fs -mkdir -p /tmp
+hadoop fs -chown hdfs:hadoop /tmp
 hadoop fs -chmod -R 1777 /tmp
 
 hadoop fs -mkdir -p /data
+hadoop fs -chown hdfs:hadoop /data
 hadoop fs -chmod -R 1777 /data
 EOF
 

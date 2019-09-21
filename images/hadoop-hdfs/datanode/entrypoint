@@ -3,7 +3,7 @@
 #
 # Setup user accounts with proper ~/.bash_profile
 #
-chmod +x /etc/docker/setup
+#
 # --------------   user   group   domain
 /etc/docker/setup  hdfs   hadoop  docker.net
 
@@ -22,7 +22,7 @@ fi
 #
 # Render configuration templates by replacing {{ PLACEHOLDER }}
 # with corresponding shell environment variable values
-chmod +x /etc/docker/render
+
 /etc/docker/render  /etc/hadoop/conf/core-site.xml
 /etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
 

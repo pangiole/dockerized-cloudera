@@ -32,11 +32,11 @@ services:
 
   namenode:
     image: "$registry/$repository/hadoop-hdfs/namenode:$image_version"
-    hostname: "namenode.docker.net"
     environment:
       HADOOP_AUTHENTICATION: "$hadoop_auth"
       SASL_PROTECTION: "$sasl_protection"
       TLS_ENCRYPTION: "$tls_encryption"
+    hostname: "namenode.docker.net"
     networks:
       - docker-net
     ports:
@@ -51,12 +51,12 @@ services:
 
   datanode1:
     image: "$registry/$repository/hadoop-hdfs/datanode:$image_version"
-    hostname: "datanode1.docker.net"
     environment:
       HADOOP_AUTHENTICATION: "$hadoop_auth"
       SASL_PROTECTION: "$sasl_protection"
       TLS_ENCRYPTION: "$tls_encryption"
     privileged: true
+    hostname: "datanode1.docker.net"
     networks:
       - docker-net
     ports:
@@ -71,87 +71,112 @@ services:
     depends_on:
       - namenode
 
-  #
-  # jobhistory:
-  #   image: "$registry/$repository/hadoop-mapred/jobhistory:$image_version"
-  #   hostname: "jobhistory.docker.net"
-  #   environment:
-  #     HADOOP_AUTHENTICATION: "$hadoop_auth"
-  #     SASL_PROTECTION: "$sasl_protection"
-  #     TLS_ENCRYPTION: "$tls_encryption"
-  #   networks:
-  #     - docker-net
-  #   ports:
-  #     - "19888:19888" # http      (yarn-ui)
-  #     - "10020:10020" # protobuf
-  #     #- "5053:5053"  # jvm-debug
-  #   volumes:
-  #     - "$mount/conf:/mount/conf"
-  #     - "$mount/secrets:/mount/secrets"
-  #   depends_on:
-  #     - namenode
-  #
-  #
-  # resourcemanager:
-  #   image: "$registry/$repository/hadoop-yarn/resourcemanager:$image_version"
-  #   hostname: "resourcemanager.docker.net"
-  #   environment:
-  #     HADOOP_AUTHENTICATION: "$hadoop_auth"
-  #     SASL_PROTECTION: "$sasl_protection"
-  #     TLS_ENCRYPTION: "$tls_encryption"
-  #   networks:
-  #     - docker-net
-  #   ports:
-  #     - "8088:8088"   # http      (yarn-ui)
-  #     - "8032:8032"   # protobuf
-  #     - "8030:8030"   # protobuf
-  #     #- "5054:5054"  # jvm-debug
-  #   volumes:
-  #     - "$mount/conf:/mount/conf"
-  #     - "$mount/secrets:/mount/secrets"
-  #   depends_on:
-  #     - namenode
-  #     - jobhistory
-  #
-  #
-  # nodemanager1:
-  #   image: "$registry/$repository/hadoop-yarn/nodemanager:$image_version"
-  #   hostname: "nodemanager1.docker.net"
-  #   environment:
-  #     HADOOP_AUTHENTICATION: "$hadoop_auth"
-  #     SASL_PROTECTION: "$sasl_protection"
-  #     TLS_ENCRYPTION: "$tls_encryption"
-  #   networks:
-  #     - docker-net
-  #   ports:
-  #     - "8041:8041"   # protobuf
-  #     - "8042:8042"   # http     (yarn-ui)
-  #     - "8043:8043"   # protobuf (map-reduce-AM)
-  #     - "4041:4040"   # http     (spark-ui)
-  #     #- "5055:5055"  # jvm-debug
-  #   volumes:
-  #     - "$mount/secrets:/mount/secrets"
-  #   depends_on:
-  #     - namenode
-  #     - jobhistory
-  #     - resourcemanager
-  #
-  #
-  # hive:
-  #   image: "$registry/$repository/hive:$image_version"
-  #   hostname: "hive.docker.net"
-  #   environment:
-  #     HADOOP_AUTHENTICATION: "$hadoop_auth"
-  #     SASL_PROTECTION: "$sasl_protection"
-  #     TLS_ENCRYPTION: "$tls_encryption"
-  #   networks:
-  #     - docker-net
-  #   ports:
-  #     - "10000:10000" # jdbc
-  #     #- "5056:5056"  # jvm-debug
-  #   volumes:
-  #     - "$mount/conf:/mount/conf"
-  #     - "$mount/secrets:/mount/secrets"
-  #   depends_on:
-  #     - namenode
-  #     - resourcemanager
+
+  jobhistory:
+    image: "$registry/$repository/hadoop-mapred/jobhistory:$image_version"
+    environment:
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
+    hostname: "jobhistory.docker.net"
+    networks:
+      - docker-net
+    ports:
+      - "19888:19888" # http      (yarn-ui)
+      - "10020:10020" # protobuf
+      #- "5053:5053"  # jvm-debug
+    volumes:
+      - "shared:/shared"
+    depends_on:
+      - namenode
+
+
+  resourcemanager:
+    image: "$registry/$repository/hadoop-yarn/resourcemanager:$image_version"
+    environment:
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
+    hostname: "resourcemanager.docker.net"
+    networks:
+      - docker-net
+    ports:
+      - "8088:8088"   # http      (yarn-ui)
+      - "8032:8032"   # protobuf
+      - "8030:8030"   # protobuf
+      #- "5054:5054"  # jvm-debug
+    volumes:
+      - "shared:/shared"
+    depends_on:
+      - namenode
+      - jobhistory
+
+
+  nodemanager1:
+    image: "$registry/$repository/hadoop-yarn/nodemanager:$image_version"
+    environment:
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
+    hostname: "nodemanager1.docker.net"
+    networks:
+      - docker-net
+    ports:
+      - "8041:8041"   # protobuf
+      - "8042:8042"   # http     (yarn-ui)
+      - "8043:8043"   # protobuf (map-reduce-AM)
+      - "4041:4040"   # http     (spark-ui)
+      #- "5055:5055"  # jvm-debug
+    volumes:
+      - "shared:/shared"
+    depends_on:
+      - namenode
+      - jobhistory
+      - resourcemanager
+
+
+  mysql:
+    image: "mysql:5.5"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: "hive"
+      MYSQL_PASSWORD: "hive"
+      MYSQL_DATABASE: "hive"
+    hostname: "mysql.docker.net"
+    networks:
+      - docker-net
+    ports:
+      - "3306:3306"
+
+
+  hivemetastore:
+    image: "$registry/$repository/hive/metastore:$image_version"
+    hostname: "hivemetastore.docker.net"
+    networks:
+      - docker-net
+    ports:
+      - "9083:9083"   # thrift
+    volumes:
+      - "shared:/shared"
+    depends_on:
+      - mysql
+
+
+  hiveserver2:
+    image: "$registry/$repository/hive/server2:$image_version"
+    hostname: "hiveserver2.docker.net"
+    environment:
+      HADOOP_AUTHENTICATION: "$hadoop_auth"
+      SASL_PROTECTION: "$sasl_protection"
+      TLS_ENCRYPTION: "$tls_encryption"
+    networks:
+      - docker-net
+    ports:
+      - "10000:10000" # jdbc
+      #- "5056:5056"  # jvm-debug
+    volumes:
+      - "shared:/shared"
+    depends_on:
+      - namenode
+      - resourcemanager
+      - hivemetastore

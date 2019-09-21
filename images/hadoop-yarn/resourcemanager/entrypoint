@@ -3,7 +3,7 @@
 #
 # Setup user accounts with proper ~/.bash_profile
 #
-chmod +x /etc/docker/setup
+#
 # --------------   user   group   domain
 /etc/docker/setup  yarn   hadoop  docker.net
 
@@ -11,7 +11,7 @@ chmod +x /etc/docker/setup
 #
 # Render configuration templates by replacing {{ PLACEHOLDER }}
 # with corresponding shell environment variable values
-chmod +x /etc/docker/render
+
 /etc/docker/render  /etc/hadoop/conf/core-site.xml
 /etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
 /etc/docker/render  /etc/hadoop/conf/mapred-site.xml
@@ -47,7 +47,7 @@ while ! echo exit | nc namenode.docker.net 8020; do sleep 10; done
 #
 # See the yarn.app.mapreduce.am.staging-dir property as set in mapred-site.xml
 #
-su - yarn <<'EOF'
+su - alice <<'EOF'
 hadoop fs -mkdir -p /tmp/hadoop-yarn/staging
 hadoop fs -chown yarn:hadoop /tmp/hadoop-yarn/staging
 hadoop fs -chmod -R 1777 /tmp/hadoop-yarn/staging

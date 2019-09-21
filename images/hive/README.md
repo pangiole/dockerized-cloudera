@@ -1,15 +1,38 @@
-# Hive JDBC URL
+# hive
 TBD
 
-## Simple
-When connecting to HiveServer2 with simple authentication, the URL format is:
+```
+   ┌──────────────┐
+   │  beeline     │
+   └────────────o─┘
+                ║ Thrift over JDBC
+                ║
+                ║
+                ║
+   ┌─(10000)────V─┐ Thrift over TCP
+   │   server     │═══════════>                       _______
+   └───o──────────┘         ┌─(9083)──────┐  JDBC   (._______.)
+       ║                    │  metastore  │════════>|3306|    │
+       ║                    └─────────────┘         │         │
+       ║ protobuf                                   │  mysql  │
+       ║                                            '._______.'
+       V______
+     (._______.)
+     |         │
+     │  HDFS   │
+     '._______.'
+```
+
+
+## simple
+When connecting to the HiveServer2 with simple authentication, the JDBC URL format is:
 
 ```sh
 url="jdbc:hive2://$host:$port/$db"
 ```
 
 
-## Kerberos
+## kerberos
 When connecting to HiveServer2 with Kerberos authentication, the JDBC URL requires additional parameters as follows:
 
 ```sh
@@ -69,3 +92,7 @@ val conn =
     driver.connect()
   })  
 ```
+
+
+## ldap
+TBD

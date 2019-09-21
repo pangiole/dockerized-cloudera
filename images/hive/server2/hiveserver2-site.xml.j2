@@ -1,32 +1,35 @@
 <configuration>
-    <!-- see https://cwiki.apache.org/confluence/display/Hive/Configuration+Properties -->
 
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <!-- Hive Metastore in Embedded Mode  -->
+    <!-- HiveServer2                      -->
     <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <property>
-        <name>hive.metastore.warehouse.dir</name>
-        <value>/user/hive/warehouse</value>
-        <description>Location of default database for the warehouse</description>
-    </property>
 
+    <!--
+      The TCP port number which this HiveServer binds a socket listener to
+    -->
     <property>
-        <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:derby:;databaseName=/var/lib/hive/metastore/metastore_db;create=true</value>
-        <description>JDBC connect string from a JDBC metastore</description>
-    </property>
-
-    <property>
-        <name>javax.jdo.option.ConnectionDriverName</name>
-        <value>org.apache.derby.jdbc.EmbeddedDriver</value>
-        <description>Driver class name from a JDBC metastore</description>
+        <name>hive.server2.thrift.port</name>
+        <value>10000</value>
     </property>
 
 
-    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <!-- Transactions and Compactor       -->
-    <!-- See https://www.cloudera.com/documentation/enterprise/5-15-x/topics/cdh_ig_hiveserver2_configure.html#topic_18_5_1 -->
-    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--
+        URI of the Thrift metastore server which this HiveServer2 connects to
+    -->
+    <property>
+      <name>hive.metastore.uris</name>
+      <value>thrift://hivemetastore.docker.net:9083</value>
+    </property>
+
+    <!--
+        The default location of non-external Hive tables in HDFS.
+    -->
+    <property>
+      <name>hive.metastore.warehouse.dir</name>
+      <value>/user/hive/warehouse</value>
+    </property>
+
+
     <!--
       Whether hive supports concurrency or not.
       A zookeeper instance must be up and running for the
@@ -37,26 +40,10 @@
         <value>false</value>
     </property>
 
-
-    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <!-- HiveServer2                      -->
-    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <!--
-      TCP port number to listen on, default 10000
-    -->
-    <property>
-        <name>hive.server2.thrift.port</name>
-        <value>10000</value>
-    </property>
-
-
-    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <!-- Query and DDL Execution          -->
-    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <!--
       Chooses data processing engine. Options are:
-        * mr (Map Reduce, default),
-        * tez (Tez execution, for Hadoop 2 only),
+        * mr    (Map Reduce, default),
+        * tez   (Tez execution, for Hadoop 2 only),
         * spark (Spark execution, for Hive 1.1.0 onward)
     -->
     <property>

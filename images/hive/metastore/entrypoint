@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+#
+# Setup user accounts with proper ~/.bash_profile
+#
+# --------------   user   group   domain
+/etc/docker/setup  hive   hadoop  docker.net
+
+#
+# Render configuration templates by replacing {{ PLACEHOLDER }}
+# with corresponding shell environment variable values
+# --------------
+/etc/docker/render /etc/hive/conf/hivemetastore-site.xml
+
+
+# Wait until mysql service is available
+while ! echo exit | nc mysql.docker.net 3306; do sleep 1; done
+
+
+#  Initialize the metastore schema
+/usr/lib/hive/bin/schematool -dbType mysql -initSchema
+
+
+# Start Hive Metastore service
+service hive-metastore start
+
+
+# Keep this container running
+/etc/docker/idle

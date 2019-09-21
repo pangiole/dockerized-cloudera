@@ -113,7 +113,9 @@ Docker port forwarding will allow applications/services running on host to commu
 127.0.0.1    jobhistory.docker.net
 127.0.0.1    datanode1.docker.net
 127.0.0.1    nodemanager1.docker.net
-127.0.0.1    hive.docker.net
+127.0.0.1    hiveserver.docker.net
+127.0.0.1    hivemetastore.docker.net
+127.0.0.1    mysql.docker.net
 ```
 
 

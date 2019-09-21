@@ -1,0 +1,41 @@
+<configuration>
+
+    <!-- This Hive Metastore listener port number -->
+    <property>
+        <name>hive.metastore.port</name>
+        <value>9083</value>
+    </property>
+
+
+    <!--
+        JDBC connect string for a JDBC metastore
+    -->
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:mysql://mysql.docker.net:3306/hive?createDatabaseIfNotExist=true</value><!-- &amp;sessionVariables=sql_mode=ANSI_QUOTES -->
+    </property>
+
+    <!--
+        Driver class name from a JDBC metastore
+    -->
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>org.mysql.jdbc.Driver</value>
+    </property>
+
+    <!--
+        Username to use against metastore database
+    -->
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>hive</value>
+    </property>
+
+    <!--
+        Password to use against metastore database
+    -->
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>hive</value>
+    </property>
+</configuration>

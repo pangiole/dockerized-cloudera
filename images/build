@@ -70,8 +70,8 @@ CAT
   docker image build \
     --network ${network}  \
     --build-arg repository=${repository} \
-    --build-arg cdh_version=${cdh_version} \
     --build-arg image_version=${image_version} \
+    --build-arg cdh_version=${cdh_version} \
     --file ${selfdir}/${image}/Dockerfile \
     --tag ${repository}/${image}:${image_version} \
     ${selfdir}/${image}
