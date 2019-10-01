@@ -18,11 +18,11 @@
 /etc/docker/render  /etc/hadoop/conf/mapred-site.xml
 
 
-# Publish the Hadoop configuration through the /shared/conf directory
-mkdir -p /shared/conf
-rm -f  /shared/conf/mapred-site.xml
+# Publish the Hadoop configuration through the /conf directory
+mkdir -p /conf
+rm -f  /conf/mapred-site.xml
 
-cp /etc/hadoop/conf/mapred-site.xml /shared/conf
+cp /etc/hadoop/conf/mapred-site.xml /conf
 
 
 #

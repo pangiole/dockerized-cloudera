@@ -33,8 +33,8 @@ function kerbers_merge {
       princs="$princs $user"
     fi
   done
-  kadmin.local -q "ktadd -norandkey -k /shared/secrets/$file $princs"
-  chmod 644 /shared/secrets/$file
+  kadmin.local -q "ktadd -norandkey -k /conf/$file $princs"
+  chmod 644 /conf/$file
 }
 
 
@@ -51,14 +51,15 @@ function kerberos_init {
   echo -e "root\nroot" | kdb5_util create -s
 
   # Make the directory where the krb5.conf is shared across the cluster
-  mkdir -p /shared/conf
-  cp /etc/krb5.conf /shared/conf/krb5.conf
+  mkdir -p /conf
+  rm -rf /conf/krb5.conf
+  cp /etc/krb5.conf /conf/krb5.conf
 
   # Make the directory where secrets are shared across the cluster
-  mkdir -p /shared/secrets
+  mkdir -p /conf
 
   # Cleanup previous secrets (if any existed)
-  rm -Rf /shared/secrets/*
+  rm -Rf /conf/*.keytab
 
 
   # ----------   user          domain

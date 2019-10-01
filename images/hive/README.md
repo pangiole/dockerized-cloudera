@@ -60,7 +60,7 @@ The Kerberos TGT can be acquired using the `kinit` program as follows:
 
 ```sh
 
-kinit -k -t /shared/secrets/alice.keytab alice@DOCKER.NET
+kinit -k -t /conf/alice.keytab alice@DOCKER.NET
 ```
 
 The JDBC URL allows an additional parameter as follows:
@@ -77,7 +77,7 @@ url="$url;hive.server2.proxy.user=$proxyUser"
 // Obtain the Kerberos TGT first as the realUser
 val impersonator = "alice"
 val principal    = s"$impersonatorr@DOCKER.NET"
-val keytab       = s"/shared/secrets/$impersonator.keytab"
+val keytab       = s"/conf/$impersonator.keytab"
 val realUser     =
   UserGroupInformation.loginUserFromKeytabAndReturnUGI(principal, keytab)
 

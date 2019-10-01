@@ -17,11 +17,11 @@
 /etc/docker/render  /etc/hadoop/conf/mapred-site.xml
 /etc/docker/render  /etc/hadoop/conf/yarn-site.xml
 
-# Publish the Hadoop configuration through the /shared/conf directory
-mkdir -p /shared/conf
-rm -f  /shared/conf/yarn-site.xml
+# Publish the Hadoop configuration through the /conf directory
+mkdir -p /conf
+rm -f  /conf/yarn-site.xml
 
-cp /etc/hadoop/conf/yarn-site.xml /shared/conf
+cp /etc/hadoop/conf/yarn-site.xml /conf
 
 
 #

@@ -20,12 +20,12 @@
 /etc/docker/render  /etc/hadoop/conf/hdfs-site.xml
 
 
-# Publish the Hadoop configuration through the /shared/conf directory
-mkdir -p /shared/conf
-rm -f  /shared/conf/core-site.xml /shared/conf//hdfs-site.xml
+# Publish the Hadoop configuration through the /conf directory
+mkdir -p /conf
+rm -f  /conf/core-site.xml /conf//hdfs-site.xml
 
-cp /etc/hadoop/conf/core-site.xml /shared/conf
-cp /etc/hadoop/conf/hdfs-site.xml /shared/conf
+cp /etc/hadoop/conf/core-site.xml /conf
+cp /etc/hadoop/conf/hdfs-site.xml /conf
 
 
 #

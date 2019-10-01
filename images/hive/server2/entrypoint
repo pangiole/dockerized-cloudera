@@ -17,12 +17,12 @@
 /etc/docker/render /etc/hive/conf/beeline-site.env
 
 
-# Publish the Hadoop configuration through the /shared/conf directory
-mkdir -p /shared/conf
-rm -f  /shared/conf/hive-site.xml /shared/conf/beeline-site.env
+# Publish the Hadoop configuration through the /conf directory
+mkdir -p /conf
+rm -f  /conf/hive-site.xml /conf/beeline-site.env
 
-cp /etc/hive/conf/hive-site.xml /shared/conf
-cp /etc/hive/conf/beeline-site.env /shared/conf
+cp /etc/hive/conf/hive-site.xml /conf
+cp /etc/hive/conf/beeline-site.env /conf
 
 
 # Make TLS/SSL Certificates
