@@ -80,6 +80,7 @@ COPY core-site.xml.j2    /etc/hadoop/conf/core-site.xml.j2
 COPY hdfs-site.xml.j2    /etc/hadoop/conf/hdfs-site.xml.j2
 COPY yarn-site.xml.j2    /etc/hadoop/conf/yarn-site.xml.j2
 COPY mapred-site.xml.j2  /etc/hadoop/conf/mapred-site.xml.j2
+COPY log4j.properties    /etc/hadoop/conf/log4j.properties
 
 
 RUN  yum clean all
