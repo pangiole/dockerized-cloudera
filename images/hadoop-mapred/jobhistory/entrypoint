@@ -3,10 +3,10 @@
 #
 # Setup user accounts with proper ~/.bash_profile
 #
-#
-# --------------   user   group   domain
+# --------------   user    group   domain
 /etc/docker/setup  mapred  hadoop  docker.net
-
+/etc/docker/setup  alice   hadoop  docker.net
+/etc/docker/setup  bob     hadoop  docker.net
 
 #
 # Render configuration templates by replacing {{ PLACEHOLDER }}

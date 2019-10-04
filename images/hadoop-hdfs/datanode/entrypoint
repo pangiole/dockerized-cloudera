@@ -3,9 +3,10 @@
 #
 # Setup user accounts with proper ~/.bash_profile
 #
-#
 # --------------   user   group   domain
 /etc/docker/setup  hdfs   hadoop  docker.net
+/etc/docker/setup  alice  hadoop
+/etc/docker/setup  bob    hadoop
 
 
 if [[ "$HADOOP_AUTHENTICATION" == "kerberos" ]]; then

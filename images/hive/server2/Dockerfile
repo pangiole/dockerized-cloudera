@@ -8,7 +8,8 @@ LABEL description="This image provides Apache Hive Server2 on Cloudera Hadoop $i
 
 RUN yum update -y \
 &&  yum install -y hive-server2 \
-&&  yum clean all
+&&  yum clean all \
+&&  usermod -a -G hadoop hive
 
 COPY hiveserver2-site.xml.j2    /etc/hive/conf/hiveserver2-site.xml.j2
 COPY beeline-site.env.j2        /etc/hive/conf/beeline-site.env.j2

@@ -2,10 +2,11 @@
 
 #
 # Setup user accounts with proper ~/.bash_profile
-#
-#
+# 
 # --------------   user   group   domain
 /etc/docker/setup  yarn   hadoop  docker.net
+/etc/docker/setup  alice  hadoop
+/etc/docker/setup  bob    hadoop
 
 
 #

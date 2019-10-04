@@ -5,6 +5,9 @@
 #
 # --------------   user   group   domain
 /etc/docker/setup  hive   hadoop  docker.net
+/etc/docker/setup  alice  hadoop
+/etc/docker/setup  bob    hadoop
+
 
 #
 # Render configuration templates by replacing {{ PLACEHOLDER }}
